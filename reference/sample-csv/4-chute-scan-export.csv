@@ -1,0 +1,9 @@
+tag_id,eid,breed,sex,coat_color,birth_date,est_weight_lb,frame_score,bcs,scan_confidence_pct,scanned_at,station,flag
+HCR-2660,840003186666176,Angus cross,heifer,black,2026-03-07,496,5,5,98.4,2026-11-06T08:10:28,Barn 2 chute tunnel,
+HCR-2661,840003159010928,Angus cross,heifer,black,2026-03-12,566,5,5,93.6,2026-11-06T08:11:04,Barn 2 chute tunnel,
+HCR-2663,840003196245957,Angus cross,heifer,black,2026-03-04,550,5,6,98.4,2026-11-06T08:12:30,Barn 2 chute tunnel,
+HCR-2664,840003174121547,Angus cross,heifer,black,2026-03-17,490,5,5,91.2,2026-11-06T08:13:33,Barn 2 chute tunnel,rescan
+HCR-2666,840003180841485,Angus cross,heifer,black,2026-03-12,516,5,6,95.0,2026-11-06T08:14:40,Barn 2 chute tunnel,
+HCR-2667,840003133633875,Angus cross,heifer,black,2026-03-01,523,5,6,94.0,2026-11-06T08:15:16,Barn 2 chute tunnel,
+HCR-2668,840003195755131,Angus cross,heifer,black,2026-03-16,513,5,6,93.8,2026-11-06T08:16:13,Barn 2 chute tunnel,
+HCR-2670,840003190751163,Angus cross,heifer,red,2026-03-06,543,5,6,95.8,2026-11-06T08:17:05,Barn 2 chute tunnel,

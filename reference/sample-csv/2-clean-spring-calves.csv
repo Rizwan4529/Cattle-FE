@@ -1,0 +1,13 @@
+tag_id,eid,breed,sex,coat_color,birth_date,est_weight_lb,frame_score,bcs,scan_confidence_pct,scan_date,notes
+HCR-2620,840003160181590,Angus,steer,black,2026-03-11,559,6,5,93.2,2026-11-05,
+HCR-2621,840003113186091,Angus cross,steer,black,2026-03-14,593,5,5,96.7,2026-11-05,
+HCR-2622,840003130824628,Angus cross,steer,black baldy,2026-03-13,546,5,6,96.6,2026-11-05,Easy keeper
+HCR-2623,840003119935181,Angus,steer,black,2026-03-22,563,6,5,97.0,2026-11-05,
+HCR-2624,840003165797543,Angus cross,steer,red,2026-03-16,608,5,5,93.5,2026-11-05,
+HCR-2625,840003175749118,Angus cross,steer,black,2026-03-10,607,5,5,97.8,2026-11-05,
+HCR-2626,840003160189555,Angus,steer,black,2026-03-05,602,6,6,96.7,2026-11-05,
+HCR-2627,840003114710497,Angus cross,heifer,black,2026-03-15,503,5,6,98.7,2026-11-05,
+HCR-2628,840003175291703,Angus cross,heifer,black baldy,2026-03-12,497,5,5,97.7,2026-11-05,Replacement prospect
+HCR-2629,840003171276842,Angus,heifer,black,2026-03-13,545,5,6,97.5,2026-11-05,
+HCR-2630,840003132122330,Angus cross,heifer,red,2026-03-12,543,5,5,94.7,2026-11-05,
+HCR-2631,840003168599528,Angus cross,heifer,black,2026-03-01,513,6,5,95.9,2026-11-05,
