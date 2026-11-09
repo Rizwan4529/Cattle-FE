@@ -11,7 +11,9 @@ function Quote({ q }: { q: MarketQuote }) {
       <span className="font-semibold">{q.label}</span>
       <span className="text-sm text-leather-foreground/65">{q.detail}</span>
       <span className="font-heading text-lg font-bold tabular-nums">{formatCurrency(q.price, true)}</span>
-      <span className={cn('inline-flex items-center gap-1 self-center text-sm font-semibold tabular-nums', up ? 'text-leather-up' : 'text-leather-down')}>
+      <span
+        className={cn('inline-flex items-center gap-1 self-center text-sm font-semibold tabular-nums', up ? 'text-leather-up' : 'text-leather-down')}
+      >
         <Icon className="size-4" aria-hidden />
         <span className="sr-only">{up ? 'up' : 'down'}</span>
         {up ? '+' : '−'}

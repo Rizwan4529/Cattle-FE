@@ -6,15 +6,7 @@ import { Slider } from '@/components/ui/slider'
 import type { LotClass, LotStatus } from '@/data/types'
 import { formatCurrency, formatNumber } from '@/lib/format'
 import { LOT_CLASS_LABELS, LOT_STATUS_LABELS } from '@/lib/labels'
-import {
-  type FilterBounds,
-  HEAD_OPTIONS,
-  type LotFilters,
-  normalizeRange,
-  PRICE_STEP,
-  type Range,
-  WEIGHT_STEP,
-} from '@/lib/lotFilters'
+import { type FilterBounds, HEAD_OPTIONS, type LotFilters, normalizeRange, PRICE_STEP, type Range, WEIGHT_STEP } from '@/lib/lotFilters'
 import type { LotRow } from '@/lib/lots'
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
@@ -43,10 +35,7 @@ function CheckList<T extends string>({
         const inputId = `${id}-${o.value}`
         return (
           <li key={o.value}>
-            <Label
-              htmlFor={inputId}
-              className="flex min-h-11 cursor-pointer items-center gap-3 rounded-md px-2 font-normal hover:bg-muted"
-            >
+            <Label htmlFor={inputId} className="flex min-h-11 cursor-pointer items-center gap-3 rounded-md px-2 font-normal hover:bg-muted">
               <Checkbox
                 id={inputId}
                 checked={checked}
@@ -168,11 +157,7 @@ export function FilterPanel({
       </Section>
 
       <Section title="Head in the lot">
-        <RadioGroup
-          value={String(filters.minHead)}
-          onValueChange={(v) => onChange({ minHead: Number(v) })}
-          className="grid gap-1"
-        >
+        <RadioGroup value={String(filters.minHead)} onValueChange={(v) => onChange({ minHead: Number(v) })} className="grid gap-1">
           {HEAD_OPTIONS.map((n) => (
             <Label
               key={n}

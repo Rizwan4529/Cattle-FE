@@ -32,7 +32,13 @@ export function HeroScanCard() {
   return (
     <figure className="overflow-hidden rounded-2xl border bg-card shadow-lg shadow-foreground/5">
       <div className="relative aspect-16/10 overflow-hidden">
-        <CattleImage coat={animal.coatColor} sex={animal.sex} seed="hero-2417" pose="standing" alt={`Illustration of ${animal.breed} ${animal.sex} ${animal.tagId}`} />
+        <CattleImage
+          coat={animal.coatColor}
+          sex={animal.sex}
+          seed="hero-2417"
+          pose="standing"
+          alt={`Illustration of ${animal.breed} ${animal.sex} ${animal.tagId}`}
+        />
         {!reduce && (
           <motion.div
             aria-hidden

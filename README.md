@@ -25,7 +25,7 @@ npm run lint
 1. **Home → Browse cattle.** Filter by class, weight, or price, or search an ear tag like `2417`.
 2. **Open a lot**, then click any ear tag in its table to see that animal's record: shots, weight chart, camera scans, and a printable version.
 3. **Chute scan** (`/scan`). Press Start and watch cattle walk through the camera tunnel. At the end, choose **Create lot from scan** or **Download CSV**.
-4. **Owner dashboard** (`/dashboard`):
+4. **Owner dashboard** (`/dashboard`). Use the sidebar (the **Dashboard menu** button on phones):
    - **Overview:** sales and herd numbers.
    - **Herd:** edit a weight inline, or tick a few animals and choose **Create lot from selected**.
    - **Offers:** accept, counter, or decline.
@@ -58,7 +58,7 @@ The browser-tab icon is a static file at `public/favicon.svg`. Update its letter
 | `src/store/` | Zustand stores. `useRanchStore` holds the demo data and saves it to localStorage. `usePreferences` holds light/dark, the freight ZIP, and pickup or delivery. |
 | `src/lib/` | Logic with no UI: lot stats, filters, freight, chute scan timing, CSV import and export, lot suggestions, cart math, dashboard numbers |
 | `src/components/` | Grouped by area: `layout/`, `cattle/` (`CattleImage`, `EarTag`), `lots/`, `lot/`, `animal/`, `scan/`, `dashboard/`, `syndicate/`, `cart/`, and `ui/` (shadcn/ui) |
-| `src/pages/` | One file per route |
+| `src/pages/` | One file per route; owner pages are in `src/pages/dashboard/` and share `components/layout/OwnerLayout.tsx` |
 | `reference/sample-csv/` | Sample files for the CSV import, with a README explaining each |
 
 ### Mock data notes

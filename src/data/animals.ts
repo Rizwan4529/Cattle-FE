@@ -1,13 +1,4 @@
-import type {
-  Animal,
-  AnimalSex,
-  CalfAtSide,
-  CoatColor,
-  HealthEvent,
-  Pregnancy,
-  ScanRecord,
-  WeighIn,
-} from './types'
+import type { Animal, AnimalSex, CalfAtSide, CoatColor, HealthEvent, Pregnancy, ScanRecord, WeighIn } from './types'
 
 /**
  * Mock herd: 44 head across 10 lots plus a few unlisted animals.
@@ -41,7 +32,7 @@ function mulberry32(seed: number) {
 const rand = mulberry32(2417)
 const between = (min: number, max: number) => min + rand() * (max - min)
 const int = (min: number, max: number) => Math.round(between(min, max))
-const pick = <T,>(items: readonly T[]) => items[Math.floor(rand() * items.length)]
+const pick = <T>(items: readonly T[]) => items[Math.floor(rand() * items.length)]
 
 const DAY = 86_400_000
 const toDate = (iso: string) => new Date(`${iso}T12:00:00Z`)
@@ -417,9 +408,7 @@ function growthFor(
     }
   }
 
-  const scanDates = [addDays(group.lastScan, -int(26, 34)), group.lastScan].filter(
-    (d) => d > (isYoung ? addDays(birthDate, 60) : '2026-07-01'),
-  )
+  const scanDates = [addDays(group.lastScan, -int(26, 34)), group.lastScan].filter((d) => d > (isYoung ? addDays(birthDate, 60) : '2026-07-01'))
   const scans: ScanRecord[] = scanDates.map((date, i) => {
     const latest = i === scanDates.length - 1
     return {

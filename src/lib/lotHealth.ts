@@ -45,7 +45,10 @@ export function getVerifications(animals: Animal[]): Verification[] {
   if (all((a) => a.sex === 'bull') && all((a) => hasEvent(a, (e) => e.detail.startsWith('Breeding soundness exam passed')))) {
     out.push({ id: 'bse', label: 'Breeding soundness tested', detail: 'Passed a vet BSE and tested negative for trich', icon: HeartPulse })
   }
-  const latestScan = animals.map((a) => a.scanDate).sort().at(-1)!
+  const latestScan = animals
+    .map((a) => a.scanDate)
+    .sort()
+    .at(-1)!
   const avgConfidence = animals.reduce((s, a) => s + a.scanConfidence, 0) / head
   out.push({
     id: 'scan',
@@ -80,7 +83,14 @@ export function getHealthSummary(animals: Animal[]): HealthSummary {
   for (const a of animals) {
     for (const e of a.health) {
       if ((e.type === 'vaccination' || e.type === 'deworming') && e.product) {
-        const entry = byProduct.get(e.product) ?? { product: e.product, purpose: e.detail, type: e.type, head: 0, lastDate: e.date, tags: new Set<string>() }
+        const entry = byProduct.get(e.product) ?? {
+          product: e.product,
+          purpose: e.detail,
+          type: e.type,
+          head: 0,
+          lastDate: e.date,
+          tags: new Set<string>(),
+        }
         entry.tags.add(a.tagId)
         entry.head = entry.tags.size
         if (e.date > entry.lastDate) {
@@ -121,7 +131,8 @@ export function getHealthSummary(animals: Animal[]): HealthSummary {
   const trich = count((a) => a.health.some((e) => e.detail.startsWith('Trichomoniasis') && e.detail.endsWith('negative')))
   if (trich) notes.push(`${trich} of ${head} tested negative for trichomoniasis.`)
   const calves = animals.filter((a) => a.calfAtSide)
-  if (calves.length) notes.push(`${calves.length} calves at side, born ${formatShortDate(calves.map((a) => a.calfAtSide!.birthDate).sort()[0])} or later.`)
+  if (calves.length)
+    notes.push(`${calves.length} calves at side, born ${formatShortDate(calves.map((a) => a.calfAtSide!.birthDate).sort()[0])} or later.`)
 
   return {
     products: [...byProduct.values()]

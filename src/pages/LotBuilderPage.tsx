@@ -277,14 +277,14 @@ function LotBuilderForm({ existing, initialTags }: { existing?: Lot; initialTags
   return (
     // Pressing Enter in a field saves without changing whether the lot is public.
     <form onSubmit={submit(Boolean(existing && !existing.draft))} noValidate className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_26rem]">
-      <div className="grid min-w-0 gap-6">
+      <div className="@container grid min-w-0 gap-6">
         {/* Animals */}
         <Section
           id={`${id}-animals-heading`}
           title="1. Pick the animals"
           description="Head count, weights, and totals are worked out from the animals you pick."
         >
-          <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_12rem_12rem]">
+          <div className="grid gap-3 @2xl:grid-cols-[minmax(0,1fr)_12rem_12rem]">
             <div className="grid gap-1.5">
               <Label htmlFor={`${id}-q`}>Search</Label>
               <div className="relative">
@@ -330,7 +330,7 @@ function LotBuilderForm({ existing, initialTags }: { existing?: Lot; initialTags
             </div>
           </div>
 
-          <dl className="grid grid-cols-2 gap-x-6 gap-y-3 rounded-xl bg-muted/60 p-4 tabular-nums sm:grid-cols-4" aria-live="polite">
+          <dl className="grid grid-cols-2 gap-x-6 gap-y-3 rounded-xl bg-muted/60 p-4 tabular-nums @xl:grid-cols-4" aria-live="polite">
             {[
               { label: 'Head', value: String(chosen.length) },
               { label: 'Average weight', value: chosen.length ? `${formatNumber(stats.avgWeight)} lb` : '–' },
@@ -433,7 +433,7 @@ function LotBuilderForm({ existing, initialTags }: { existing?: Lot; initialTags
             )}
           </div>
 
-          <div className="grid gap-5 sm:grid-cols-2">
+          <div className="grid gap-5 @xl:grid-cols-2">
             <div className="grid gap-2">
               <Label htmlFor={`${id}-class`}>Class</Label>
               <Select value={lotClass} onValueChange={(v) => set('lotClass', v as LotClass)}>
@@ -473,7 +473,7 @@ function LotBuilderForm({ existing, initialTags }: { existing?: Lot; initialTags
 
           <fieldset className="grid gap-2">
             <legend className="mb-2 text-base font-medium">Highlights (up to 4)</legend>
-            <div className="grid gap-2 sm:grid-cols-2">
+            <div className="grid gap-2 @xl:grid-cols-2">
               {highlights.map((h, i) => (
                 <Input
                   key={i}
@@ -499,7 +499,7 @@ function LotBuilderForm({ existing, initialTags }: { existing?: Lot; initialTags
 
         {/* Price */}
         <Section id={`${id}-price-heading`} title="3. Set the price">
-          <div className="grid gap-5 sm:grid-cols-2">
+          <div className="grid gap-5 @xl:grid-cols-2">
             <div className="grid gap-2">
               <Label htmlFor={`${id}-price`}>Asking price ($/{unit})</Label>
               <Input
@@ -538,7 +538,7 @@ function LotBuilderForm({ existing, initialTags }: { existing?: Lot; initialTags
 
           <fieldset className="grid gap-3">
             <legend className="mb-3 text-base font-medium">How buyers can buy</legend>
-            <RadioGroup value={form.pricingMode} onValueChange={(v) => set('pricingMode', v as PricingMode)} className="grid gap-2 md:grid-cols-3">
+            <RadioGroup value={form.pricingMode} onValueChange={(v) => set('pricingMode', v as PricingMode)} className="grid gap-2 @2xl:grid-cols-3">
               {PRICING.map((p) => (
                 <Label
                   key={p.value}
@@ -556,7 +556,7 @@ function LotBuilderForm({ existing, initialTags }: { existing?: Lot; initialTags
           </fieldset>
 
           {form.pricingMode !== 'buy-now' && chosen.length > 1 && (
-            <div className="grid gap-3 sm:grid-cols-[auto_10rem] sm:items-end sm:gap-6">
+            <div className="grid gap-3 @xl:grid-cols-[auto_10rem] @xl:items-end @xl:gap-6">
               <Label htmlFor={`${id}-partial`} className="flex min-h-11 cursor-pointer items-center gap-3 font-normal">
                 <Switch id={`${id}-partial`} checked={form.allowPartial} onCheckedChange={(v) => set('allowPartial', v)} />
                 Take offers on part of the lot
@@ -586,7 +586,7 @@ function LotBuilderForm({ existing, initialTags }: { existing?: Lot; initialTags
 
         {/* Pickup */}
         <Section id={`${id}-pickup-heading`} title="4. Pickup" description="Cattle stay on the ranch until the buyer picks them up.">
-          <div className="grid gap-5 sm:grid-cols-3">
+          <div className="grid gap-5 @xl:grid-cols-3">
             <div className="grid gap-2">
               <Label htmlFor={`${id}-pasture`}>Where they are</Label>
               <Input
@@ -681,7 +681,7 @@ function LotBuilderForm({ existing, initialTags }: { existing?: Lot; initialTags
                     onClick={() => {
                       deleteLot(existing.id)
                       toast(`Lot ${existing.number} taken down`, { description: 'The animals are back in your herd as unlisted.' })
-                      navigate('/dashboard?tab=lots')
+                      navigate('/dashboard/lots')
                     }}
                   >
                     Take it down
@@ -705,7 +705,7 @@ export default function LotBuilderPage() {
   const initialTags = (params.get('tags') ?? '').split(',').filter(Boolean)
 
   const back = (
-    <Link to="/dashboard?tab=lots" className="inline-flex min-h-11 items-center gap-1 font-medium text-primary underline-offset-4 hover:underline">
+    <Link to="/dashboard/lots" className="inline-flex min-h-11 items-center gap-1 font-medium text-primary underline-offset-4 hover:underline">
       <ChevronLeft className="size-4" aria-hidden />
       Your lots
     </Link>
@@ -713,7 +713,7 @@ export default function LotBuilderPage() {
 
   if (editing && !lot) {
     return (
-      <div className="container-page max-w-2xl py-12">
+      <div className="max-w-2xl">
         {back}
         <h1 className="mt-4 text-4xl font-bold">That lot isn't here</h1>
         <p className="mt-3 text-lg text-muted-foreground">It may have been taken down. Pick another from your lots.</p>
@@ -723,7 +723,7 @@ export default function LotBuilderPage() {
 
   if (lot?.status === 'sold') {
     return (
-      <div className="container-page max-w-2xl py-12">
+      <div className="max-w-2xl">
         {back}
         <h1 className="mt-4 text-4xl font-bold">Lot {lot.number} has sold</h1>
         <p className="mt-3 text-lg text-muted-foreground">Sold lots are kept as they were sold, so they can't be changed.</p>
@@ -735,11 +735,11 @@ export default function LotBuilderPage() {
   }
 
   return (
-    <div className="container-page pb-16">
-      <div className="pt-4">{back}</div>
-      <div className="pt-4 pb-8">
-        <h1 className="text-4xl font-bold sm:text-5xl">{lot ? `Edit Lot ${lot.number}` : 'Build a new lot'}</h1>
-        <p className="mt-3 max-w-3xl text-lg text-muted-foreground">
+    <div>
+      {back}
+      <div className="pt-2 pb-8">
+        <h1 className="text-4xl font-bold">{lot ? `Edit Lot ${lot.number}` : 'Build a new lot'}</h1>
+        <p className="mt-2 max-w-3xl text-lg text-muted-foreground">
           {lot
             ? `${lot.draft ? 'A draft' : 'Listed for sale'}. Change the animals, wording, or price; the preview updates as you go.`
             : 'Pick the animals, check the wording and price, and see the listing before buyers do.'}

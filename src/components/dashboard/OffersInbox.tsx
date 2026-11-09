@@ -106,7 +106,7 @@ function OfferCard({ offer, lot, onAsk }: { offer: Offer; lot?: Lot; onAsk: (p: 
           <dt className="text-sm text-muted-foreground">Offer</dt>
           <dd className="font-heading text-2xl font-bold tabular-nums">
             {formatCurrency(offer.pricePerHead)}
-            <span className="font-sans text-base font-normal text-muted-foreground">/{unit}</span>
+            <span className="inline-block font-sans text-base font-normal text-muted-foreground">/{unit}</span>
           </dd>
         </div>
         <div>
@@ -283,10 +283,10 @@ export function OffersInbox() {
   return (
     <section aria-labelledby="offers-heading" className="grid gap-5">
       <div>
-        <h2 id="offers-heading" className="text-3xl font-bold">
+        <h1 id="offers-heading" className="text-4xl font-bold">
           Offers
-        </h2>
-        <p className="mt-1 text-muted-foreground">Accept, counter, or decline. Accepting marks the lot sold everywhere on the site.</p>
+        </h1>
+        <p className="mt-2 text-lg text-muted-foreground">Accept, counter, or decline. Accepting marks the lot sold everywhere on the site.</p>
       </div>
 
       <ToggleGroup

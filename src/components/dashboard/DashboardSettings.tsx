@@ -23,9 +23,9 @@ function Panel({ id, title, description, children }: { id: string; title: string
       className="grid gap-4 rounded-2xl border bg-card p-5 sm:p-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-center lg:gap-10"
     >
       <div>
-        <h3 id={id} className="text-2xl font-bold">
+        <h2 id={id} className="text-2xl font-bold">
           {title}
-        </h3>
+        </h2>
         <p className="mt-1 text-muted-foreground">{description}</p>
       </div>
       <div>{children}</div>
@@ -38,7 +38,7 @@ export function DashboardSettings() {
 
   return (
     <div className="grid gap-5">
-      <h2 className="text-3xl font-bold">Settings</h2>
+      <h1 className="text-4xl font-bold">Settings</h1>
 
       <Panel id="settings-ranch" title="Ranch details" description="Shown in the header, on every listing, and on printed animal records.">
         <dl className="grid gap-3 sm:grid-cols-2">

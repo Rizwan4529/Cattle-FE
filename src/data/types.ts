@@ -10,14 +10,7 @@ export type PricingMode = 'buy-now' | 'offer' | 'both'
 
 export type LotStatus = 'available' | 'pending' | 'sold'
 
-export type HealthEventType =
-  | 'vaccination'
-  | 'deworming'
-  | 'treatment'
-  | 'castration'
-  | 'weaning'
-  | 'pregnancy-check'
-  | 'exam'
+export type HealthEventType = 'vaccination' | 'deworming' | 'treatment' | 'castration' | 'weaning' | 'pregnancy-check' | 'exam'
 
 export interface HealthEvent {
   id: string

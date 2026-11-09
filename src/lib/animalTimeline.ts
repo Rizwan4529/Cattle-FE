@@ -44,7 +44,14 @@ export function buildTimeline(animal: Animal): TimelineEntry[] {
       continue
     }
     if (w.source === 'chute-scan') continue // shown as a scan entry below
-    entries.push({ id: `w-${w.date}`, date: w.date, kind: 'weigh-in', title: `Weighed ${formatNumber(w.weight)} lb`, detail: 'On the scale', group: 'weights' })
+    entries.push({
+      id: `w-${w.date}`,
+      date: w.date,
+      kind: 'weigh-in',
+      title: `Weighed ${formatNumber(w.weight)} lb`,
+      detail: 'On the scale',
+      group: 'weights',
+    })
   }
 
   for (const s of animal.scans) {

@@ -81,7 +81,7 @@ export function HerdTable() {
   const animals = useRanchStore((s) => s.animals)
   const lots = useRanchStore((s) => s.lots)
   const updateAnimal = useRanchStore((s) => s.updateAnimal)
-  const wide = useMediaQuery('(min-width: 1024px)')
+  const wide = useMediaQuery('(min-width: 1440px)')
   const index = indexLots(lots)
 
   const [query, setQuery] = useState('')
@@ -227,10 +227,10 @@ export function HerdTable() {
   return (
     <section aria-labelledby="herd-heading" className="grid gap-5">
       <div>
-        <h2 id="herd-heading" className="text-3xl font-bold">
+        <h1 id="herd-heading" className="text-4xl font-bold">
           Herd inventory
-        </h2>
-        <p className="mt-1 text-muted-foreground">Edit a weight or score and every lot it's in updates. Pick animals to make a new lot.</p>
+        </h1>
+        <p className="mt-2 text-lg text-muted-foreground">Edit a weight or score and every lot it's in updates. Pick animals to make a new lot.</p>
       </div>
 
       {/* Filters */}

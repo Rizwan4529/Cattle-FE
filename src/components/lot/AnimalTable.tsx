@@ -112,8 +112,7 @@ export function AnimalTable({ lot, animals }: { lot: Lot; animals: Animal[] }) {
       </button>
     )
   }
-  const ariaSort = (key?: SortKey) =>
-    key && sort.key === key ? (sort.dir === 'asc' ? 'ascending' : 'descending') : key ? 'none' : undefined
+  const ariaSort = (key?: SortKey) => (key && sort.key === key ? (sort.dir === 'asc' ? 'ascending' : 'descending') : key ? 'none' : undefined)
 
   return (
     <div className="overflow-hidden rounded-xl border bg-card">

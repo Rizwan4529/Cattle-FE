@@ -37,9 +37,7 @@ export function HowItWorksSteps() {
           <h2 id="how-heading" className="text-4xl font-bold sm:text-5xl">
             From pasture to your trailer
           </h2>
-          <p className="mt-3 text-lg text-muted-foreground">
-            Four steps, and every one leaves a record you can check before you buy.
-          </p>
+          <p className="mt-3 text-lg text-muted-foreground">Four steps, and every one leaves a record you can check before you buy.</p>
         </div>
 
         <ol className="relative mt-12 grid gap-10 md:grid-cols-4 md:gap-6">

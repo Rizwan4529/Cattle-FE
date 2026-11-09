@@ -6,7 +6,7 @@ function Stat({ label, value, note }: { label: string; value: string; note: Reac
   return (
     <div className="min-w-0 bg-card px-5 py-4">
       <dt className="text-muted-foreground">{label}</dt>
-      <dd className="font-heading text-3xl font-bold tabular-nums sm:text-4xl">{value}</dd>
+      <dd className="font-heading text-[1.75rem] font-bold tabular-nums sm:text-4xl">{value}</dd>
       <dd className="text-sm text-muted-foreground">{note}</dd>
     </div>
   )
@@ -16,7 +16,7 @@ function Stat({ label, value, note }: { label: string; value: string; note: Reac
 export function OverviewStats({ overview, onOpenOffers }: { overview: Overview; onOpenOffers: () => void }) {
   const o = overview
   return (
-    <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-2xl border bg-border md:grid-cols-3 xl:grid-cols-6">
+    <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-2xl border bg-border md:grid-cols-3 2xl:grid-cols-6">
       <Stat label="Total head" value={formatNumber(o.totalHead)} note="On the ranch now" />
       <Stat
         label="Head listed"

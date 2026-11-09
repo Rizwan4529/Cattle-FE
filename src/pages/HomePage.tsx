@@ -23,12 +23,10 @@ export default function HomePage() {
       <section className="bg-card">
         <div className="container-page grid items-center gap-10 py-10 lg:grid-cols-[1.05fr_1fr] lg:gap-14 lg:py-16">
           <div>
-            <h1 className="text-5xl font-bold sm:text-6xl xl:text-7xl">
-              Ranch-direct cattle. Every animal tagged, scanned, and verified.
-            </h1>
+            <h1 className="text-5xl font-bold sm:text-6xl xl:text-7xl">Ranch-direct cattle. Every animal tagged, scanned, and verified.</h1>
             <p className="mt-6 max-w-xl text-xl text-muted-foreground">
-              Buy straight from {ranch.name} in {ranch.location.stateName}. Each head comes with its weights, shots, and
-              camera scans, so you know what you're getting before the trailer backs up.
+              Buy straight from {ranch.name} in {ranch.location.stateName}. Each head comes with its weights, shots, and camera scans, so you know
+              what you're getting before the trailer backs up.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Button asChild size="lg">
@@ -61,8 +59,7 @@ export default function HomePage() {
           <div>
             <h2 className="text-3xl font-bold sm:text-4xl">Rather talk it over?</h2>
             <p className="mt-2 max-w-xl text-lg text-primary-foreground/85">
-              Call {ranch.owner} directly to hear what's ready to ship and what's coming, or to set up a time to see
-              the cattle in person.
+              Call {ranch.owner} directly to hear what's ready to ship and what's coming, or to set up a time to see the cattle in person.
             </p>
           </div>
           <Button asChild size="lg" variant="secondary" className="text-lg">

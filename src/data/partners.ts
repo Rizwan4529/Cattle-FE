@@ -38,7 +38,11 @@ const raw: [name: string, city: string, state: string, phone: string, kind?: Auc
   ['Cattle Country Video', 'Torrington', 'WY', '(307) 575-0018', 'video-auction'],
 ]
 
-const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+const slug = (s: string) =>
+  s
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '')
 
 export const auctionPartners: AuctionPartner[] = raw.map(([name, city, state, phone, kind = 'sale-barn']) => ({
   id: slug(`${name}-${state}`),

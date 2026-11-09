@@ -1,5 +1,5 @@
 import { Gauge, Phone, ShoppingCart } from 'lucide-react'
-import { Link, NavLink, useNavigation } from 'react-router'
+import { Link, NavLink, useMatch, useNavigation } from 'react-router'
 import { Button } from '@/components/ui/button'
 import { ranch, ranchPhoneHref } from '@/config/ranch'
 import { cn } from '@/lib/utils'
@@ -27,6 +27,8 @@ function CartButton({ className }: { className?: string }) {
 
 export function Header() {
   const navigation = useNavigation()
+  // Owner pages use the wider app layout; keep the header lined up with it.
+  const ownerArea = Boolean(useMatch('/dashboard/*'))
 
   return (
     <header className="sticky top-0 z-40 border-b print:hidden bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/85">
@@ -38,7 +40,7 @@ export function Header() {
           navigation.state === 'loading' ? 'scale-x-75' : 'scale-x-0 duration-0',
         )}
       />
-      <div className="container-page flex h-16 items-center gap-2 lg:h-20">
+      <div className={cn(ownerArea ? 'container-wide' : 'container-page', 'flex h-16 items-center gap-2 lg:h-20')}>
         <RanchBrand />
 
         <nav aria-label="Main" className="ml-6 hidden items-center gap-0.5 xl:flex 2xl:ml-10">

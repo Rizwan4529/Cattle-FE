@@ -141,9 +141,9 @@ export function FreightEstimator({ animals, unit }: { animals: Animal[]; unit: '
             <p className="flex gap-2 rounded-md border border-warning/40 bg-warning/10 p-3 text-sm">
               <Info className="mt-0.5 size-4 shrink-0 text-warning" aria-hidden />
               <span>
-                <strong>Plan for shrink.</strong> Cattle lose weight on the truck. Expect about{' '}
-                {Math.round(estimate.shrink * 1000) / 10}% on a haul this long, roughly {formatNumber(estimate.shrinkLb)} lb across the
-                lot. Loading them full and calm, and hauling early in the day, keeps shrink down.
+                <strong>Plan for shrink.</strong> Cattle lose weight on the truck. Expect about {Math.round(estimate.shrink * 1000) / 10}% on a haul
+                this long, roughly {formatNumber(estimate.shrinkLb)} lb across the lot. Loading them full and calm, and hauling early in the day,
+                keeps shrink down.
               </span>
             </p>
           </div>

@@ -1,5 +1,5 @@
 import { type ReactNode, useCallback, useId, useState } from 'react'
-import { ChevronLeft, Download, Printer, Search, Send, UserRound } from 'lucide-react'
+import { Download, Printer, Search, Send } from 'lucide-react'
 import Papa from 'papaparse'
 import { Link, useSearchParams } from 'react-router'
 import { toast } from 'sonner'
@@ -154,28 +154,18 @@ export default function SyndicatePage() {
   }, [sending, lotIds, format, logSend])
 
   return (
-    <div className="container-page pb-16 print:max-w-none print:px-0 print:pb-0">
-      <div className="pt-4 print:hidden">
-        <Link to="/dashboard" className="inline-flex min-h-11 items-center gap-1 font-medium text-primary underline-offset-4 hover:underline">
-          <ChevronLeft className="size-4" aria-hidden />
-          Owner dashboard
-        </Link>
-      </div>
-      <div className="flex flex-col gap-4 pt-4 pb-8 sm:flex-row sm:items-end sm:justify-between print:hidden">
+    <div>
+      <div className="pb-8 print:hidden">
         <div className="max-w-3xl">
-          <h1 className="text-4xl font-bold sm:text-5xl">Send to auction partners</h1>
-          <p className="mt-3 text-lg text-muted-foreground">
+          <h1 className="text-4xl font-bold">Send to auction partners</h1>
+          <p className="mt-2 text-lg text-muted-foreground">
             Send your lots to sale barns, video auctions, and buyer networks in one go. They get a file they can use as-is, and the cattle stay on the
             ranch until they sell.
           </p>
         </div>
-        <span className="inline-flex items-center gap-1.5 self-start rounded-full border bg-card px-3 py-1 font-medium sm:self-auto">
-          <UserRound className="size-4 text-primary" aria-hidden />
-          Logged in as Owner
-        </span>
       </div>
 
-      <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_24rem] print:block">
+      <div className="grid gap-8 2xl:grid-cols-[minmax(0,1fr)_24rem] print:block">
         <div className="grid min-w-0 gap-6 print:block">
           {/* 1. Lots */}
           <Step
@@ -404,7 +394,7 @@ export default function SyndicatePage() {
         {/* 4. Send */}
         <aside
           aria-labelledby={`${id}-send`}
-          className="grid content-start gap-4 rounded-2xl border bg-card p-5 sm:p-6 xl:sticky xl:top-28 xl:self-start print:hidden"
+          className="grid content-start gap-4 rounded-2xl border bg-card p-5 sm:p-6 2xl:sticky 2xl:top-28 2xl:self-start print:hidden"
         >
           <h2 id={`${id}-send`} className="text-2xl font-bold">
             4. Send

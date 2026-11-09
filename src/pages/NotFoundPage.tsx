@@ -12,9 +12,7 @@ export default function NotFoundPage() {
       </div>
       <div>
         <h1 className="text-5xl font-bold">This one wandered off</h1>
-        <p className="mt-4 text-lg text-muted-foreground">
-          We couldn't find that page. The link may be old, or the lot may have been taken down.
-        </p>
+        <p className="mt-4 text-lg text-muted-foreground">We couldn't find that page. The link may be old, or the lot may have been taken down.</p>
         <div className="mt-6 flex flex-col gap-3 sm:flex-row">
           <Button asChild size="lg">
             <Link to="/cattle">Browse cattle</Link>

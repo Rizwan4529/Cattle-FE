@@ -13,8 +13,7 @@ export function RouteError() {
       <TriangleAlert className="size-10 text-destructive" aria-hidden />
       <h1 className="mt-4 text-4xl font-bold">This page didn't load</h1>
       <p className="mt-3 text-lg text-muted-foreground">
-        Something went wrong while showing this page. Reload to try again. If it keeps happening, reset the demo data
-        from the owner dashboard.
+        Something went wrong while showing this page. Reload to try again. If it keeps happening, reset the demo data from the owner dashboard.
       </p>
       <div className="mt-6 flex flex-col gap-3 sm:flex-row">
         <Button size="lg" onClick={() => window.location.reload()}>

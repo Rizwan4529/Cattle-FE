@@ -25,10 +25,10 @@ export function LotsOverview({ onOpenOffers }: { onOpenOffers: () => void }) {
     <section aria-labelledby="lots-heading" className="grid gap-4">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h2 id="lots-heading" className="text-3xl font-bold">
+          <h1 id="lots-heading" className="text-4xl font-bold">
             Your lots
-          </h2>
-          <p className="mt-1 text-muted-foreground">
+          </h1>
+          <p className="mt-2 text-lg text-muted-foreground">
             {rows.filter((r) => !r.lot.draft && r.lot.status !== 'sold').length} for sale, {rows.filter((r) => r.lot.draft).length} in draft,{' '}
             {rows.filter((r) => r.lot.status === 'sold').length} sold.
           </p>

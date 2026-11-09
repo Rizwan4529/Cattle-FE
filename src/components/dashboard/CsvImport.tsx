@@ -157,10 +157,10 @@ export function CsvImport({ onShowHerd }: { onShowHerd: () => void }) {
     <section aria-labelledby="import-heading" className="grid gap-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h2 id="import-heading" className="text-3xl font-bold">
-            Import from a spreadsheet
-          </h2>
-          <p className="mt-1 max-w-[70ch] text-muted-foreground">
+          <h1 id="import-heading" className="text-4xl font-bold">
+            Import a spreadsheet
+          </h1>
+          <p className="mt-2 max-w-[70ch] text-lg text-muted-foreground">
             Bring in ear tags and weights from a CSV file: a sale barn sheet, your own spreadsheet, or the chute scan file.
           </p>
         </div>
@@ -222,7 +222,7 @@ export function CsvImport({ onShowHerd }: { onShowHerd: () => void }) {
           </div>
 
           <div className="grid content-start gap-4 rounded-2xl border bg-card p-5 sm:p-6">
-            <h3 className="text-2xl font-bold">What the file needs</h3>
+            <h2 className="text-2xl font-bold">What the file needs</h2>
             <ul className="grid gap-2">
               <li>
                 <strong className="font-semibold">Ear tag and weight</strong> on every row.
@@ -469,9 +469,9 @@ export function CsvImport({ onShowHerd }: { onShowHerd: () => void }) {
           <div className="flex items-start gap-3">
             <CircleCheck className="mt-1 size-7 shrink-0 text-success" aria-hidden />
             <div>
-              <h3 className="text-3xl font-bold">
+              <h2 className="text-3xl font-bold">
                 {result.added.length} new {result.added.length === 1 ? 'animal' : 'animals'} added, {result.updated.length} updated
-              </h3>
+              </h2>
               <p className="mt-1 text-lg text-muted-foreground">
                 {result.skipped > 0 ? `${result.skipped} ${result.skipped === 1 ? 'row was' : 'rows were'} left out. ` : ''}
                 Each animal has its own record, and new weights show on its chart.

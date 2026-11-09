@@ -131,13 +131,7 @@ function AnimalShape({ palette, sex, grazing, shade }: AnimalShapeProps) {
       <>
         {leg(SHAPES.legFrontFar, 1, palette.shade, false, true)}
         {leg(SHAPES.legBackFar, 2, palette.shade, false, false)}
-        <path
-          d={SHAPES.tail}
-          fill="none"
-          stroke={outline ? undefined : palette.body}
-          strokeWidth={outline ? 7.5 : 4.5}
-          strokeLinecap="round"
-        />
+        <path d={SHAPES.tail} fill="none" stroke={outline ? undefined : palette.body} strokeWidth={outline ? 7.5 : 4.5} strokeLinecap="round" />
         <path d={SHAPES.switch} fill={paint(palette.markings ? WHITE : palette.shade)} />
         {shaded(SHAPES.body, palette.body)}
         {!outline && (
@@ -220,17 +214,7 @@ export function CattleSprite({ coat, sex, grazing = false }: { coat: CoatColor; 
   )
 }
 
-export function CattleImage({
-  coat,
-  sex,
-  withCalf = false,
-  photos,
-  photoIndex = 0,
-  seed = coat,
-  pose,
-  alt,
-  className,
-}: CattleImageProps) {
+export function CattleImage({ coat, sex, withCalf = false, photos, photoIndex = 0, seed = coat, pose, alt, className }: CattleImageProps) {
   const rawId = useId()
   const photo = photos?.[photoIndex]
 

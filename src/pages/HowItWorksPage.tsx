@@ -63,7 +63,7 @@ const SELLER_STEPS: Step[] = [
   {
     title: 'Answer offers and load out',
     text: 'Accept, counter, or decline offers from the dashboard. Sold lots come off the site everywhere at once, and the cattle stay home until pickup.',
-    link: { to: '/dashboard?tab=offers', label: 'See the offers inbox' },
+    link: { to: '/dashboard/offers', label: 'See the offers inbox' },
   },
 ]
 

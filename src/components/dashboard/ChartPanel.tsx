@@ -27,9 +27,9 @@ export function ChartPanel({
       <div className="flex h-full flex-col gap-4 rounded-2xl border bg-card p-5 sm:p-6">
         <div className="grid items-start gap-x-4 gap-y-1 sm:grid-cols-[minmax(0,1fr)_auto]">
           <div className="min-w-0">
-            <h3 id={id} className="text-2xl font-bold">
+            <h2 id={id} className="text-2xl font-bold">
               {title}
-            </h3>
+            </h2>
             <p className="mt-1 text-muted-foreground">{summary}</p>
           </div>
           <Button

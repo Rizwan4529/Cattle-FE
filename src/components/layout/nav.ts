@@ -1,16 +1,4 @@
-import {
-  CircleHelp,
-  Gauge,
-  House,
-  type LucideIcon,
-  Phone,
-  Route,
-  ScanLine,
-  Send,
-  ShoppingCart,
-  Store,
-  Wheat,
-} from 'lucide-react'
+import { CircleHelp, Gauge, House, type LucideIcon, Phone, Route, ScanLine, Send, ShoppingCart, Store, Wheat } from 'lucide-react'
 
 export interface NavItem {
   to: string

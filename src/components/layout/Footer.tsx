@@ -35,8 +35,8 @@ export function Footer() {
             <p className="font-heading text-2xl font-bold">{ranch.name}</p>
           </div>
           <p className="mt-4 max-w-xs text-leather-foreground/75">
-            {ranch.family} has raised beef cattle in {location.county} since {ranch.established}. Every animal we sell
-            carries our tag and its full record.
+            {ranch.family} has raised beef cattle in {location.county} since {ranch.established}. Every animal we sell carries our tag and its full
+            record.
           </p>
         </div>
 

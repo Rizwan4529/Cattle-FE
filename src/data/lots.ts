@@ -119,8 +119,7 @@ export const lots: Lot[] = [
     title: '5 Charolais-Cross Feeder Steers, ~780 lb',
     class: 'steers',
     breedSummary: 'Charolais cross',
-    description:
-      'Big-framed Charolais-cross steers with plenty of stretch. Weaned since August and fully vaccinated. Ready for the feedyard.',
+    description: 'Big-framed Charolais-cross steers with plenty of stretch. Weaned since August and fully vaccinated. Ready for the feedyard.',
     tagIds: ['HCR-2441', 'HCR-2443', 'HCR-2444', 'HCR-2447', 'HCR-2448'],
     pricePerHead: 2500,
     pricingMode: 'both',
@@ -139,8 +138,7 @@ export const lots: Lot[] = [
     title: '4 Hereford Stocker Heifers, ~520 lb',
     class: 'heifers',
     breedSummary: 'Hereford',
-    description:
-      'Light Hereford heifers that will do well on winter wheat or spring grass. Weaned in September and preconditioned.',
+    description: 'Light Hereford heifers that will do well on winter wheat or spring grass. Weaned in September and preconditioned.',
     tagIds: ['HCR-2452', 'HCR-2455', 'HCR-2457', 'HCR-2459'],
     pricePerHead: 1770,
     pricingMode: 'both',
