@@ -16,6 +16,10 @@ npm run preview  # serve the production build
 npm run lint
 ```
 
+### Deploying
+
+`dist/` is a static site that works on any static host. Every route is drawn by `index.html`, so the host must send unknown paths there, or reloading a page like `/cattle` returns 404. `vercel.json` does this for Vercel. On Netlify, add a `public/_redirects` file containing `/* /index.html 200`.
+
 ## A five-minute demo
 
 1. **Home → Browse cattle.** Filter by class, weight, or price, or search an ear tag like `2417`.
