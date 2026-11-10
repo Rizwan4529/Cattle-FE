@@ -32,7 +32,7 @@ export function LotActions({
 }) {
   const navigate = useNavigate()
   const [offerOpen, setOfferOpen] = useState(false)
-  const inCart = useRanchStore((s) => s.cart.some((i) => i.lotId === lot.id))
+  const inCart = useRanchStore((s) => s.cart.some((i) => i.kind === 'lot' && i.lotId === lot.id))
   const addToCart = useRanchStore((s) => s.addToCart)
   const myOffer = useRanchStore((s) => s.offers.find((o) => o.lotId === lot.id && o.fromThisDevice && o.status === 'pending'))
   const lotUrl = `/lots/${lot.id}`

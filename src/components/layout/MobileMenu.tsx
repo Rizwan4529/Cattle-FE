@@ -1,16 +1,18 @@
 import { useState } from 'react'
 import { Menu, Phone } from 'lucide-react'
-import { NavLink } from 'react-router'
+import { NavLink, useLocation } from 'react-router'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { ranch, ranchPhoneHref } from '@/config/ranch'
+import { useSide } from '@/lib/useSide'
 import { cn } from '@/lib/utils'
-import { moreNav, type NavItem, primaryNav } from './nav'
+import { moreNav, type NavItem, navActive, primaryNav } from './nav'
 import { ThemeSegmented } from './ThemeToggle'
 
 function MenuLink({ item, onNavigate }: { item: NavItem; onNavigate: () => void }) {
   const Icon = item.icon
+  const { pathname } = useLocation()
   return (
     <NavLink
       to={item.to}
@@ -19,7 +21,7 @@ function MenuLink({ item, onNavigate }: { item: NavItem; onNavigate: () => void 
       className={({ isActive }) =>
         cn(
           'flex min-h-14 items-center gap-4 rounded-lg px-3 text-lg font-medium transition-colors hover:bg-muted',
-          isActive && 'bg-secondary text-secondary-foreground',
+          navActive(item.to, isActive, pathname) && 'bg-secondary text-secondary-foreground',
         )
       }
     >
@@ -32,11 +34,12 @@ function MenuLink({ item, onNavigate }: { item: NavItem; onNavigate: () => void 
 export function MobileMenu() {
   const [open, setOpen] = useState(false)
   const close = () => setOpen(false)
+  const side = useSide()
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" aria-label="Open menu" className="xl:hidden">
+        <Button variant="ghost" size="icon" aria-label="Open menu">
           <Menu className="size-6" />
         </Button>
       </SheetTrigger>
@@ -47,7 +50,7 @@ export function MobileMenu() {
         </SheetHeader>
 
         <nav aria-label="Main" className="flex flex-col gap-1 p-3">
-          {primaryNav.map((item) => (
+          {primaryNav[side].map((item) => (
             <MenuLink key={item.to} item={item} onNavigate={close} />
           ))}
           <Separator className="my-2" />

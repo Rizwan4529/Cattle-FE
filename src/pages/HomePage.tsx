@@ -16,7 +16,7 @@ const PROMISES = [
 ]
 
 export default function HomePage() {
-  usePageTitle()
+  usePageTitle('Buy cattle')
 
   return (
     <>

@@ -13,10 +13,13 @@ export type LotIndex = Map<string, Lot>
 /** Which lot each ear tag is in. */
 export const indexLots = (lots: Lot[]): LotIndex => new Map(lots.flatMap((l) => l.tagIds.map((t) => [t, l] as const)))
 
-export type HerdStatus = 'unlisted' | 'draft' | 'listed' | 'pending' | 'sold'
+export type HerdStatus = 'unlisted' | 'draft' | 'listed' | 'pending' | 'sold' | 'beef' | 'harvested'
 
-export function herdStatus(tagId: string, index: LotIndex): HerdStatus {
-  const lot = index.get(tagId)
+export function herdStatus(animal: Pick<Animal, 'tagId' | 'feedProgram' | 'harvest'>, index: LotIndex): HerdStatus {
+  // Animals raised for beef are sold by the share (Buy Beef), never in a cattle lot.
+  if (animal.harvest) return 'harvested'
+  if (animal.feedProgram) return 'beef'
+  const lot = index.get(animal.tagId)
   if (!lot) return 'unlisted'
   if (lot.draft) return 'draft'
   return lot.status === 'available' ? 'listed' : lot.status
@@ -28,7 +31,12 @@ export const HERD_STATUS_LABELS: Record<HerdStatus, string> = {
   listed: 'Listed for sale',
   pending: 'Offer pending',
   sold: 'Sold, awaiting pickup',
+  beef: 'Raised for beef',
+  harvested: 'Harvested for beef',
 }
+
+/** Still on the ranch: not sold to a buyer and not harvested. */
+export const onRanch = (s: HerdStatus) => s !== 'sold' && s !== 'harvested'
 
 export const isOpenOffer = (o: Offer) => o.status === 'pending' || o.status === 'countered'
 
@@ -67,7 +75,7 @@ export interface Overview {
 
 export function getOverview(animals: Animal[], lots: Lot[], offers: Offer[], sales: MonthlySales[]): Overview {
   const index = indexLots(lots)
-  const statuses = animals.map((a) => herdStatus(a.tagId, index))
+  const statuses = animals.map((a) => herdStatus(a, index))
   // $/cwt only means something for cattle sold by weight, so pairs and bulls are left out.
   const listedLots = lots.filter((l) => !l.draft && l.status !== 'sold' && l.class !== 'pairs' && l.class !== 'bulls')
   let dollars = 0
@@ -78,7 +86,7 @@ export function getOverview(animals: Animal[], lots: Lot[], offers: Offer[], sal
     pounds += s.avgWeight * s.headCount
   }
   return {
-    totalHead: statuses.filter((s) => s !== 'sold').length,
+    totalHead: statuses.filter(onRanch).length,
     headListed: statuses.filter((s) => s === 'listed' || s === 'pending').length,
     headSold: sales.reduce((n, m) => n + m.head, 0),
     revenue: sales.reduce((n, m) => n + m.revenue, 0),
@@ -107,8 +115,8 @@ export type HerdClassId = (typeof HERD_CLASSES)[number]['id']
 /** Head on the ranch (sold animals left out) by class. */
 export function classBreakdown(animals: Animal[], index: LotIndex): ClassRow[] {
   return HERD_CLASSES.map(({ label, match }) => {
-    const members = animals.filter((a) => match(a) && herdStatus(a.tagId, index) !== 'sold')
-    const listed = members.filter((a) => ['listed', 'pending'].includes(herdStatus(a.tagId, index))).length
+    const members = animals.filter((a) => match(a) && onRanch(herdStatus(a, index)))
+    const listed = members.filter((a) => ['listed', 'pending'].includes(herdStatus(a, index))).length
     return { label, head: members.length, listed }
   })
 }
@@ -121,7 +129,7 @@ export interface WeightBin {
 
 /** Head on the ranch in 200 lb steps, from the lightest step that has cattle to the heaviest. */
 export function weightBins(animals: Animal[], index: LotIndex, step = 200): WeightBin[] {
-  const weights = animals.filter((a) => herdStatus(a.tagId, index) !== 'sold').map((a) => a.estWeight)
+  const weights = animals.filter((a) => onRanch(herdStatus(a, index))).map((a) => a.estWeight)
   if (!weights.length) return []
   const first = Math.floor(Math.min(...weights) / step) * step
   const last = Math.floor(Math.max(...weights) / step) * step
@@ -151,7 +159,7 @@ export function herdCsv(animals: Animal[], index: LotIndex) {
         scan_confidence_pct: a.scanConfidence,
         scan_date: a.scanDate,
         lot: lot ? lot.number : '',
-        status: HERD_STATUS_LABELS[herdStatus(a.tagId, index)].toLowerCase(),
+        status: HERD_STATUS_LABELS[herdStatus(a, index)].toLowerCase(),
         notes: a.notes,
       }
     }),

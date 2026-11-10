@@ -18,7 +18,7 @@ import { cn } from '@/lib/utils'
 import { useRanchStore } from '@/store/useRanchStore'
 
 type SortKey = 'tag' | 'age' | 'weight'
-type StatusFilter = 'all' | 'unlisted' | 'listed' | 'draft' | 'sold'
+type StatusFilter = 'all' | 'unlisted' | 'listed' | 'draft' | 'sold' | 'beef'
 
 const STATUS_FILTERS: { value: StatusFilter; label: string }[] = [
   { value: 'all', label: 'Any status' },
@@ -26,10 +26,19 @@ const STATUS_FILTERS: { value: StatusFilter; label: string }[] = [
   { value: 'listed', label: 'Listed for sale' },
   { value: 'draft', label: 'In a draft lot' },
   { value: 'sold', label: 'Sold' },
+  { value: 'beef', label: 'Raised for beef' },
 ]
 
 const matchesStatus = (status: HerdStatus, filter: StatusFilter) =>
-  filter === 'all' || (filter === 'listed' ? status === 'listed' || status === 'pending' : status === filter)
+  filter === 'all' ||
+  (filter === 'listed'
+    ? status === 'listed' || status === 'pending'
+    : filter === 'beef'
+      ? status === 'beef' || status === 'harvested'
+      : status === filter)
+
+/** Animals raised for beef are sold by the share, so they can't be picked for a cattle lot. */
+const selectable = (a: Animal) => !a.feedProgram
 
 interface Draft {
   tagId: string
@@ -45,12 +54,20 @@ const LIMITS = {
 } as const
 type EditField = keyof typeof LIMITS
 
-function Where({ tagId, index }: { tagId: string; index: LotIndex }) {
-  const status = herdStatus(tagId, index)
-  const lot = index.get(tagId)
-  const short: Record<HerdStatus, string> = { unlisted: 'Not listed', draft: 'Draft', listed: 'Listed', pending: 'Offer pending', sold: 'Sold' }
+function Where({ animal, index }: { animal: Animal; index: LotIndex }) {
+  const status = herdStatus(animal, index)
+  const lot = index.get(animal.tagId)
+  const short: Record<HerdStatus, string> = {
+    unlisted: 'Not listed',
+    draft: 'Draft',
+    listed: 'Listed',
+    pending: 'Offer pending',
+    sold: 'Sold',
+    beef: 'Raised for beef',
+    harvested: 'Harvested',
+  }
   return (
-    <span className="whitespace-nowrap">
+    <span className="xl:whitespace-nowrap">
       <span
         className={cn(
           status === 'unlisted' && 'text-muted-foreground',
@@ -59,6 +76,14 @@ function Where({ tagId, index }: { tagId: string; index: LotIndex }) {
       >
         {short[status]}
       </span>
+      {animal.feedProgram && (
+        <>
+          {', '}
+          <Link to={`/beef/${animal.tagId}`} className="font-medium text-primary underline-offset-4 hover:underline">
+            beef page
+          </Link>
+        </>
+      )}
       {lot && (
         <>
           {', '}
@@ -100,7 +125,7 @@ export function HerdTable() {
   const classMatch = HERD_CLASSES.find((c) => c.id === classId)?.match
   const visible = animals
     .filter((a) => !classMatch || classMatch(a))
-    .filter((a) => matchesStatus(herdStatus(a.tagId, index), status))
+    .filter((a) => matchesStatus(herdStatus(a, index), status))
     .filter((a) => !q || [a.tagId, a.breed, a.eid ?? '', a.notes, COAT_LABELS[a.coatColor]].some((f) => f.toLowerCase().includes(q)))
     .sort((a, b) => {
       const d =
@@ -113,6 +138,7 @@ export function HerdTable() {
     })
 
   const visibleSelected = visible.filter((a) => selected.has(a.tagId)).length
+  const pickable = visible.filter(selectable).length
   const hiddenSelected = selected.size - visibleSelected
   const selectedAnimals = animals.filter((a) => selected.has(a.tagId))
   const filtered = query !== '' || classId !== 'all' || status !== 'all'
@@ -127,7 +153,7 @@ export function HerdTable() {
   const toggleVisible = (on: boolean) =>
     setSelected((s) => {
       const next = new Set(s)
-      for (const a of visible) {
+      for (const a of visible.filter(selectable)) {
         if (on) next.add(a.tagId)
         else next.delete(a.tagId)
       }
@@ -217,10 +243,10 @@ export function HerdTable() {
 
   const headerCheck = (
     <Checkbox
-      checked={visibleSelected === 0 ? false : visibleSelected === visible.length ? true : 'indeterminate'}
+      checked={visibleSelected === 0 ? false : visibleSelected === pickable ? true : 'indeterminate'}
       onCheckedChange={(v) => toggleVisible(v === true)}
-      aria-label={visibleSelected === visible.length && visible.length ? 'Clear the selection' : `Select all ${visible.length} shown`}
-      disabled={visible.length === 0}
+      aria-label={visibleSelected === pickable && pickable ? 'Clear the selection' : `Select all ${pickable} shown`}
+      disabled={pickable === 0}
     />
   )
 
@@ -376,7 +402,12 @@ export function HerdTable() {
                 return (
                   <tr key={a.tagId} className={cn('border-t [&_td]:px-3 [&_td]:py-2', isSelected && 'bg-primary/5', editing && 'bg-secondary/60')}>
                     <td>
-                      <Checkbox checked={isSelected} onCheckedChange={(v) => toggle(a.tagId, v === true)} aria-label={`Select ${a.tagId}`} />
+                      <Checkbox
+                        checked={isSelected}
+                        disabled={!selectable(a)}
+                        onCheckedChange={(v) => toggle(a.tagId, v === true)}
+                        aria-label={selectable(a) ? `Select ${a.tagId}` : `${a.tagId} is raised for beef and sold by the share`}
+                      />
                     </td>
                     <th scope="row" className="px-3 py-2">
                       <Link to={`/animal/${a.tagId}`} className="font-heading text-lg font-bold whitespace-nowrap underline-offset-4 hover:underline">
@@ -395,7 +426,7 @@ export function HerdTable() {
                     <td className="text-right">{editing ? editInput('frameScore', 'ml-auto w-16 text-right') : a.frameScore}</td>
                     <td className="text-right">{editing ? editInput('bcs', 'ml-auto w-16 text-right') : a.bcs}</td>
                     <td>
-                      <Where tagId={a.tagId} index={index} />
+                      <Where animal={a} index={index} />
                     </td>
                     <td className="text-right whitespace-nowrap">
                       {editing ? (
@@ -425,7 +456,7 @@ export function HerdTable() {
         <>
           <label className="flex min-h-11 items-center gap-3 px-1">
             {headerCheck}
-            <span>Select all {visible.length} shown</span>
+            <span>Select all {pickable} shown</span>
           </label>
           <ul className="grid gap-3">
             {visible.map((a) => {
@@ -436,8 +467,9 @@ export function HerdTable() {
                   <div className="flex items-start gap-3">
                     <Checkbox
                       checked={isSelected}
+                      disabled={!selectable(a)}
                       onCheckedChange={(v) => toggle(a.tagId, v === true)}
-                      aria-label={`Select ${a.tagId}`}
+                      aria-label={selectable(a) ? `Select ${a.tagId}` : `${a.tagId} is raised for beef and sold by the share`}
                       className="mt-1.5"
                     />
                     <div className="min-w-0 flex-1">
@@ -447,7 +479,7 @@ export function HerdTable() {
                       <p className="text-muted-foreground">
                         {a.breed} {SEX_LABELS[a.sex].toLowerCase()}, {formatAge(a.birthDate)}
                       </p>
-                      <Where tagId={a.tagId} index={index} />
+                      <Where animal={a} index={index} />
                     </div>
                     {!editing && (
                       <Button size="sm" variant="outline" onClick={() => startEdit(a)} aria-label={`Edit ${a.tagId}`}>

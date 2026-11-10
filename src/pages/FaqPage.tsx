@@ -2,16 +2,11 @@ import { ChevronDown } from 'lucide-react'
 import { Link } from 'react-router'
 import { PageHeader } from '@/components/PageHeader'
 import { ranch, ranchPhoneHref } from '@/config/ranch'
+import { BEEF_FAQ, type FaqTopic } from '@/data/beefFaq'
 import { depositPercent } from '@/lib/checkout'
 import { usePageTitle } from '@/lib/usePageTitle'
 
-interface Topic {
-  id: string
-  title: string
-  questions: { q: string; a: string }[]
-}
-
-const TOPICS: Topic[] = [
+const CATTLE_TOPICS: FaqTopic[] = [
   {
     id: 'inspection',
     title: 'Inspection',
@@ -118,46 +113,66 @@ const TOPICS: Topic[] = [
   },
 ]
 
+const GROUPS = [
+  { id: 'buying-beef', title: 'Buying beef', topics: BEEF_FAQ },
+  { id: 'buying-cattle', title: 'Buying cattle', topics: CATTLE_TOPICS },
+]
+
 export default function FaqPage() {
   usePageTitle('Questions and answers')
   return (
     <div className="container-page pb-16">
-      <PageHeader title="Questions and answers" description="What buyers ask most about inspection, paperwork, freight, and payment." />
+      <PageHeader
+        title="Questions and answers"
+        description="What families ask about beef shares and the Butcher Shop, and what ranchers ask about buying cattle."
+      />
 
       <div className="grid gap-10 lg:grid-cols-[14rem_minmax(0,1fr)]">
         <nav aria-label="Topics" className="lg:sticky lg:top-28 lg:self-start">
-          <ul className="flex flex-wrap gap-2 lg:grid lg:gap-1">
-            {TOPICS.map((t) => (
-              <li key={t.id}>
-                <a
-                  href={`#${t.id}`}
-                  className="inline-flex min-h-11 items-center rounded-full border bg-card px-4 font-medium hover:bg-muted lg:w-full lg:rounded-lg lg:border-0 lg:bg-transparent lg:px-3"
-                >
-                  {t.title}
-                </a>
-              </li>
+          <div className="grid gap-4">
+            {GROUPS.map((g) => (
+              <div key={g.id} className="grid gap-1">
+                <p className="px-3 text-sm font-semibold text-muted-foreground">{g.title}</p>
+                <ul className="flex flex-wrap gap-2 lg:grid lg:gap-1">
+                  {g.topics.map((t) => (
+                    <li key={t.id}>
+                      <a
+                        href={`#${t.id}`}
+                        className="inline-flex min-h-11 items-center rounded-full border bg-card px-4 font-medium hover:bg-muted lg:w-full lg:rounded-lg lg:border-0 lg:bg-transparent lg:px-3"
+                      >
+                        {t.title}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             ))}
-          </ul>
+          </div>
         </nav>
 
         <div className="grid gap-12">
-          {TOPICS.map((t) => (
-            <section key={t.id} id={t.id} aria-labelledby={`${t.id}-heading`} className="grid scroll-mt-28 gap-3">
-              <h2 id={`${t.id}-heading`} className="text-3xl font-bold">
-                {t.title}
-              </h2>
-              <div className="divide-y rounded-2xl border bg-card">
-                {t.questions.map((item) => (
-                  <details key={item.q} className="group">
-                    <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 px-5 py-3 text-lg font-semibold hover:bg-muted/60 [&::-webkit-details-marker]:hidden">
-                      {item.q}
-                      <ChevronDown className="size-5 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" aria-hidden />
-                    </summary>
-                    <p className="max-w-[70ch] px-5 pb-5 text-lg">{item.a}</p>
-                  </details>
-                ))}
-              </div>
-            </section>
+          {GROUPS.map((g) => (
+            <div key={g.id} id={g.id} className="grid scroll-mt-28 gap-10">
+              <h2 className="border-b pb-2 font-heading text-4xl font-bold">{g.title}</h2>
+              {g.topics.map((t) => (
+                <section key={t.id} id={t.id} aria-labelledby={`${t.id}-heading`} className="grid scroll-mt-28 gap-3">
+                  <h3 id={`${t.id}-heading`} className="text-3xl font-bold">
+                    {t.title}
+                  </h3>
+                  <div className="divide-y rounded-2xl border bg-card">
+                    {t.questions.map((item) => (
+                      <details key={item.q} className="group">
+                        <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 px-5 py-3 text-lg font-semibold hover:bg-muted/60 [&::-webkit-details-marker]:hidden">
+                          {item.q}
+                          <ChevronDown className="size-5 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" aria-hidden />
+                        </summary>
+                        <p className="max-w-[70ch] px-5 pb-5 text-lg">{item.a}</p>
+                      </details>
+                    ))}
+                  </div>
+                </section>
+              ))}
+            </div>
           ))}
 
           <section className="rounded-2xl bg-leather p-6 text-leather-foreground sm:p-8">

@@ -9,7 +9,7 @@ import { LOT_CLASS_LABELS, LOT_STATUS_LABELS } from '@/lib/labels'
 import { type FilterBounds, HEAD_OPTIONS, type LotFilters, normalizeRange, PRICE_STEP, type Range, WEIGHT_STEP } from '@/lib/lotFilters'
 import type { LotRow } from '@/lib/lots'
 
-function Section({ title, children }: { title: string; children: ReactNode }) {
+export function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
     <fieldset className="border-b pb-6 last:border-b-0">
       <legend className="mb-3 font-heading text-xl font-bold">{title}</legend>
@@ -18,7 +18,7 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
   )
 }
 
-function CheckList<T extends string>({
+export function CheckList<T extends string>({
   options,
   selected,
   onChange,

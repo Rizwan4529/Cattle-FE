@@ -1,25 +1,36 @@
 import { Mail, MapPin, Phone } from 'lucide-react'
 import { Link } from 'react-router'
+import { beefConfig } from '@/config/beef'
 import { ranch, ranchPhoneHref } from '@/config/ranch'
 import { BrandMark } from './RanchBrand'
 
 const columns = [
   {
+    heading: 'Buying beef',
+    links: [
+      { to: '/beef', label: 'Claim a share' },
+      ...(beefConfig.sellByTheCut ? [{ to: '/shop', label: 'Butcher Shop' }] : []),
+      { to: '/shop/ranch-box', label: 'Ranch Box' },
+      { to: '/gifts', label: 'Gifts & gift cards' },
+      { to: '/account', label: 'Your account' },
+    ],
+  },
+  {
     heading: 'Buying cattle',
     links: [
       { to: '/cattle', label: 'Browse cattle' },
       { to: '/how-it-works', label: 'How it works' },
-      { to: '/faq', label: 'Questions & answers' },
-      { to: '/cart', label: 'Your cart' },
+      { to: '/scan', label: 'Chute scan demo' },
+      { to: '/dashboard', label: 'Owner dashboard' },
     ],
   },
   {
     heading: 'The ranch',
     links: [
       { to: '/about', label: 'About us' },
-      { to: '/scan', label: 'Chute scan demo' },
+      { to: '/faq', label: 'Questions & answers' },
       { to: '/contact', label: 'Contact' },
-      { to: '/dashboard', label: 'Owner dashboard' },
+      { to: '/cart', label: 'Your cart' },
     ],
   },
 ]
@@ -28,7 +39,7 @@ export function Footer() {
   const { location } = ranch
   return (
     <footer className="bg-leather pb-24 text-leather-foreground lg:pb-0 print:hidden">
-      <div className="container-page grid gap-10 py-12 md:grid-cols-[1.3fr_1fr_1fr_1.2fr]">
+      <div className="container-page grid gap-10 py-12 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-[1.2fr_0.9fr_0.9fr_0.9fr_1.5fr]">
         <div>
           <div className="flex items-center gap-3">
             <BrandMark className="h-12 text-tag" />

@@ -40,6 +40,7 @@ export function summarizeCart(
   const lines: CartLine[] = []
   const unavailable: CartSummary['unavailable'] = []
   for (const item of cart) {
+    if (item.kind !== 'lot') continue
     const lot = byId.get(item.lotId)
     if (!lot || lot.status === 'sold' || lot.draft || lot.pricingMode === 'offer') unavailable.push({ lotId: item.lotId, lot })
     else lines.push({ lot, stats: getLotStats(lot, animals) })

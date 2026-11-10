@@ -1,11 +1,12 @@
-import { Gauge, Phone, ShoppingCart } from 'lucide-react'
-import { Link, NavLink, useMatch, useNavigation } from 'react-router'
+import { Gauge, Phone, ShoppingCart, UserRound } from 'lucide-react'
+import { Link, NavLink, useLocation, useMatch, useNavigation } from 'react-router'
 import { Button } from '@/components/ui/button'
 import { ranch, ranchPhoneHref } from '@/config/ranch'
+import { useSide } from '@/lib/useSide'
 import { cn } from '@/lib/utils'
 import { useRanchStore } from '@/store/useRanchStore'
 import { MobileMenu } from './MobileMenu'
-import { primaryNav } from './nav'
+import { navActive, primaryNav } from './nav'
 import { RanchBrand } from './RanchBrand'
 import { ThemeToggle } from './ThemeToggle'
 
@@ -13,7 +14,7 @@ function CartButton({ className }: { className?: string }) {
   const count = useRanchStore((s) => s.cart.length)
   return (
     <Button asChild variant="ghost" size="icon" className={cn('relative', className)}>
-      <Link to="/cart" aria-label={count ? `Cart, ${count} lot${count === 1 ? '' : 's'}` : 'Cart, empty'}>
+      <Link to="/cart" aria-label={count ? `Cart, ${count} item${count === 1 ? '' : 's'}` : 'Cart, empty'}>
         <ShoppingCart className="size-5" />
         {count > 0 && (
           <span className="absolute top-1 right-0.5 grid min-w-5 place-items-center rounded-full bg-primary px-1 text-xs leading-5 font-bold text-primary-foreground">
@@ -25,10 +26,27 @@ function CartButton({ className }: { className?: string }) {
   )
 }
 
+function AccountButton({ className }: { className?: string }) {
+  const account = useRanchStore((s) => s.account)
+  return (
+    <Button asChild variant="ghost" size="icon" className={className}>
+      <Link
+        to="/account"
+        aria-label={account ? `Your account, ${account.name}` : 'Sign in to your account'}
+        title={account ? 'Your account' : 'Sign in'}
+      >
+        <UserRound className="size-5" />
+      </Link>
+    </Button>
+  )
+}
+
 export function Header() {
   const navigation = useNavigation()
   // Owner pages use the wider app layout; keep the header lined up with it.
   const ownerArea = Boolean(useMatch('/dashboard/*'))
+  const side = useSide()
+  const { pathname } = useLocation()
 
   return (
     <header className="sticky top-0 z-40 border-b print:hidden bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/85">
@@ -41,32 +59,36 @@ export function Header() {
         )}
       />
       <div className={cn(ownerArea ? 'container-wide' : 'container-page', 'flex h-16 items-center gap-2 lg:h-20')}>
-        <RanchBrand />
+        <RanchBrand className="sm:shrink-0" />
 
-        <nav aria-label="Main" className="ml-6 hidden items-center gap-0.5 xl:flex 2xl:ml-10">
-          {primaryNav.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              className={({ isActive }) =>
-                cn(
-                  'relative rounded-md px-3 py-2 text-[0.95rem] whitespace-nowrap font-medium text-foreground/80 transition-colors hover:bg-muted hover:text-foreground',
-                  isActive &&
-                    'text-foreground after:absolute after:inset-x-3 after:-bottom-[1.05rem] after:h-[3px] after:rounded-full after:bg-primary',
-                )
-              }
-            >
-              {item.short ?? item.label}
-            </NavLink>
-          ))}
+        <nav aria-label="Main" className="ml-6 hidden min-w-0 items-center gap-0.5 xl:flex">
+          {primaryNav[side]
+            .filter((item) => !item.menuOnly)
+            .map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                className={({ isActive: matched }) => {
+                  const isActive = navActive(item.to, matched, pathname)
+                  return cn(
+                    'relative rounded-md px-3 py-2 text-[0.95rem] whitespace-nowrap font-medium text-foreground/80 transition-colors hover:bg-muted hover:text-foreground',
+                    isActive &&
+                      'text-foreground after:absolute after:inset-x-3 after:-bottom-[1.05rem] after:h-[3px] after:rounded-full after:bg-primary',
+                  )
+                }}
+              >
+                {item.short ?? item.label}
+              </NavLink>
+            ))}
         </nav>
 
         <div className="ml-auto flex shrink-0 items-center gap-1">
-          <Button asChild variant="outline" className="hidden sm:inline-flex">
-            <a href={ranchPhoneHref}>
+          {/* Full number where there's room (no desktop links yet); just "Call" or the icon once the links take the space */}
+          <Button asChild variant="outline" className="hidden sm:inline-flex xl:max-2xl:w-9 xl:max-2xl:px-0">
+            <a href={ranchPhoneHref} aria-label={`Call ${ranch.phone}`} title={ranch.phone}>
               <Phone className="size-4" />
-              <span className="hidden 2xl:inline">{ranch.phone}</span>
-              <span className="2xl:hidden">Call</span>
+              <span className="hidden md:inline xl:hidden">{ranch.phone}</span>
+              <span className="md:hidden 2xl:inline">Call</span>
             </a>
           </Button>
           <Button asChild variant="ghost" size="icon" className="sm:hidden">
@@ -78,6 +100,7 @@ export function Header() {
           <div className="hidden items-center gap-1 sm:flex">
             <ThemeToggle />
           </div>
+          <AccountButton className="hidden lg:inline-flex" />
           <CartButton className="hidden lg:inline-flex" />
           <Button asChild variant="secondary" className="ml-1 hidden xl:inline-flex">
             <Link to="/dashboard">

@@ -2,6 +2,7 @@ import { Outlet, ScrollRestoration } from 'react-router'
 import { Footer } from './Footer'
 import { Header } from './Header'
 import { MobileTabBar } from './MobileTabBar'
+import { SideSwitch } from './SideSwitch'
 
 export function SiteLayout() {
   return (
@@ -12,6 +13,7 @@ export function SiteLayout() {
       >
         Skip to content
       </a>
+      <SideSwitch />
       <Header />
       <main id="main" tabIndex={-1} className="flex-1 outline-none">
         <Outlet />

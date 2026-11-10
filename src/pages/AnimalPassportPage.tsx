@@ -11,7 +11,7 @@ import { LotStatusBadge } from '@/components/lots/LotStatusBadge'
 import { Button } from '@/components/ui/button'
 import { ranch, ranchPhoneHref } from '@/config/ranch'
 import type { Animal, Lot } from '@/data/types'
-import { formatCurrency, formatToday } from '@/lib/format'
+import { formatCurrency, formatDate, formatNumber, formatToday } from '@/lib/format'
 import { priceUnit } from '@/lib/labels'
 import { usePageTitle } from '@/lib/usePageTitle'
 import { useRanchStore } from '@/store/useRanchStore'
@@ -30,8 +30,27 @@ function Section({ id, title, description, children }: { id: string; title: stri
   )
 }
 
-/** Where this animal stands: for sale in a lot, sold, or kept in the herd. */
+/** Where this animal stands: for sale in a lot, sold, kept in the herd, or raised for beef. */
 function SaleStatus({ animal, lot }: { animal: Animal; lot?: Lot }) {
+  if (animal.feedProgram) {
+    return (
+      <div className="flex flex-col gap-4 rounded-xl border bg-card p-5 sm:flex-row sm:items-center sm:justify-between">
+        <p>
+          <strong className="font-semibold">
+            {animal.harvest ? `Harvested for beef on ${formatDate(animal.harvest.date)}.` : `${animal.tagId} is raised for beef.`}
+          </strong>{' '}
+          <span className="text-muted-foreground">
+            {animal.harvest
+              ? `Hanging weight ${formatNumber(animal.harvest.hangingWeight)} lb, dry-aged ${animal.harvest.agedDays} days at ${animal.harvest.processor}.`
+              : 'Families claim shares of its beef before harvest.'}
+          </span>
+        </p>
+        <Button asChild className="print:hidden">
+          <Link to={`/beef/${animal.tagId}`}>{animal.harvest ? 'See its beef page' : 'Claim a share'}</Link>
+        </Button>
+      </div>
+    )
+  }
   if (!lot) {
     return (
       <div className="flex flex-col gap-4 rounded-xl border bg-card p-5 sm:flex-row sm:items-center sm:justify-between">

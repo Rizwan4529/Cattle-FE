@@ -1,5 +1,21 @@
 import { useState } from 'react'
-import { FileUp, Gauge, HandCoins, type LucideIcon, Package, PanelLeft, ScanLine, Send, Settings, Tags } from 'lucide-react'
+import {
+  Beef,
+  Calculator,
+  CalendarDays,
+  ChartColumn,
+  FileUp,
+  Gauge,
+  HandCoins,
+  type LucideIcon,
+  Package,
+  PanelLeft,
+  ScanLine,
+  Send,
+  Settings,
+  Snowflake,
+  Tags,
+} from 'lucide-react'
 import { NavLink, Outlet, useLocation } from 'react-router'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
@@ -25,6 +41,16 @@ const GROUPS: { label: string; links: OwnerLink[] }[] = [
       { to: '/dashboard/herd', label: 'Herd', icon: Tags },
       { to: '/dashboard/lots', label: 'Lots', icon: Package },
       { to: '/dashboard/offers', label: 'Offers', icon: HandCoins, showOpenOffers: true },
+    ],
+  },
+  {
+    label: 'Beef',
+    links: [
+      { to: '/dashboard/pools', label: 'Share pools', icon: Beef },
+      { to: '/dashboard/harvest', label: 'Harvest schedule', icon: CalendarDays },
+      { to: '/dashboard/inventory', label: 'Packaged inventory', icon: Snowflake },
+      { to: '/dashboard/beef-sales', label: 'Beef sales', icon: ChartColumn },
+      { to: '/dashboard/live-vs-beef', label: 'Live vs. beef calculator', icon: Calculator },
     ],
   },
   {
@@ -58,7 +84,7 @@ function SidebarLink({ link, openOffers, onNavigate }: { link: OwnerLink; openOf
       onClick={onNavigate}
       className={({ isActive }) =>
         cn(
-          'relative flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 text-base font-medium text-foreground/85 transition-colors hover:bg-muted hover:text-foreground',
+          'relative flex min-h-10 items-center gap-3 rounded-lg px-3 py-1.5 text-base font-medium text-foreground/85 transition-colors hover:bg-muted hover:text-foreground',
           isActive &&
             'bg-primary/10 font-semibold text-foreground before:absolute before:inset-y-2 before:left-0 before:w-[3px] before:rounded-full before:bg-primary',
         )
@@ -84,11 +110,11 @@ function SidebarLink({ link, openOffers, onNavigate }: { link: OwnerLink; openOf
 function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
   const openOffers = useRanchStore((s) => s.offers.filter(isOpenOffer).length)
   return (
-    <nav aria-label="Owner dashboard" className="grid gap-6">
+    <nav aria-label="Owner dashboard" className="grid gap-3">
       {GROUPS.map((group) => (
-        <div key={group.label} className="grid gap-1">
-          <p className="px-3 pb-1 text-sm font-medium text-muted-foreground">{group.label}</p>
-          <ul className="grid gap-1">
+        <div key={group.label} className="grid gap-0.5">
+          <p className="px-3 pb-0.5 text-sm font-medium text-muted-foreground">{group.label}</p>
+          <ul className="grid gap-0.5">
             {group.links.map((link) => (
               <li key={link.to}>
                 <SidebarLink link={link} openOffers={openOffers} onNavigate={onNavigate} />
@@ -97,7 +123,7 @@ function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
           </ul>
         </div>
       ))}
-      <div className="border-t pt-4">
+      <div className="border-t pt-3">
         <SidebarLink link={SETTINGS} openOffers={openOffers} onNavigate={onNavigate} />
       </div>
     </nav>
@@ -106,10 +132,10 @@ function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
 
 function OwnerBadge() {
   return (
-    <div className="flex items-center gap-3 rounded-xl border bg-card p-3">
+    <div className="flex items-center gap-3 rounded-xl border bg-card p-2.5">
       <span
         aria-hidden
-        className="grid size-11 shrink-0 place-items-center rounded-full bg-primary font-heading text-lg font-bold text-primary-foreground"
+        className="grid size-10 shrink-0 place-items-center rounded-full bg-primary font-heading text-lg font-bold text-primary-foreground"
       >
         {ranch.owner
           .split(' ')
@@ -133,7 +159,7 @@ export default function OwnerLayout() {
     <div className="container-wide lg:grid lg:grid-cols-[16.5rem_minmax(0,1fr)] lg:gap-10 print:block print:max-w-none print:px-0">
       <aside
         aria-label="Owner pages"
-        className="hidden lg:sticky lg:top-24 lg:my-8 lg:grid lg:max-h-[calc(100svh-8rem)] lg:content-start lg:gap-6 lg:self-start lg:overflow-y-auto print:hidden"
+        className="hidden lg:sticky lg:top-24 lg:my-6 lg:grid lg:max-h-[calc(100svh-6.5rem)] lg:content-start lg:gap-4 lg:self-start lg:overflow-y-auto print:hidden"
       >
         <OwnerBadge />
         <SidebarNav />

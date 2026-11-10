@@ -1,4 +1,5 @@
 import { NavLink } from 'react-router'
+import { useSide } from '@/lib/useSide'
 import { cn } from '@/lib/utils'
 import { useRanchStore } from '@/store/useRanchStore'
 import { tabNav } from './nav'
@@ -6,6 +7,7 @@ import { tabNav } from './nav'
 /** Thumb-reachable tab bar on phones. Hidden on large screens. */
 export function MobileTabBar() {
   const cartCount = useRanchStore((s) => s.cart.length)
+  const side = useSide()
 
   return (
     <nav
@@ -13,7 +15,7 @@ export function MobileTabBar() {
       className="fixed inset-x-0 bottom-0 z-40 border-t bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden print:hidden"
     >
       <ul className="mx-auto grid max-w-lg grid-cols-4">
-        {tabNav.map(({ to, label, icon: Icon }) => (
+        {tabNav[side].map(({ to, label, icon: Icon }) => (
           <li key={to}>
             <NavLink
               to={to}

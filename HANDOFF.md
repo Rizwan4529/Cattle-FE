@@ -2,6 +2,10 @@
 
 You're continuing a build that's partway done. Read `reference/Spec.md` first (the full product spec), then this file. The project lives at `d:\Client Projects\Cattke website\Cattle-FE` (Windows, not a git repo). Work in the spec's phases, show a short plan before each phase, then build, then verify in a real browser before reporting.
 
+## Beef storefront (SPEC-BEEF)
+
+The Buy Beef side (`reference/spec-beef.md`) was built in phases B1–B7. The plan, the decisions made along the way, and a per-phase log of what was built and where it lives are in `reference/beef-build-plan.md`. Read that before changing anything on the beef side. The status below covers the original cattle marketplace.
+
 ## Status
 - **Done:** Phases 1 to 4. Home, Browse, Lot Detail, Animal Passport, Chute Scan (`/scan`), and the owner dashboard: one page per section in a sidebar layout (`src/components/layout/OwnerLayout.tsx`): `/dashboard`, `/dashboard/herd`, `/lots`, `/offers`, `/import`, `/settings`, `/syndicate`; old `?tab=` links redirect: overview stats and charts, herd table (search, filters, inline edit, bulk select, create lot, CSV download), lots list, offers inbox, CSV import, settings with Reset demo data. Lot builder at `/dashboard/lots/new` (accepts `?tags=HCR-1,HCR-2`) and `/dashboard/lots/:lotId/edit`.
 - **Also done (task 8):** syndication at `/dashboard/syndicate` (accepts `?lots=lot-101,lot-102`): pick lots, sale barns (search, state filter) and marketplace channels, pick a format (auction-ready CSV, standard CSV, printable lot sheet with preview), real CSV downloads, printing only the lot sheet, an animated send dialog, and a send history whose partner replies (viewed/interested) arrive over the next ~30 seconds with toasts.

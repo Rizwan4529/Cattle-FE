@@ -1,3 +1,4 @@
+import { beefConfig } from '@/config/beef'
 import type { Animal, AnimalSex, CalfAtSide, CoatColor, HealthEvent, Pregnancy, ScanRecord, WeighIn } from './types'
 
 /**
@@ -281,7 +282,188 @@ const groups: HerdGroup[] = [
     sires: ['HCR Big Sky 1903'],
     notes: ['Held back until his foot rot treatment withdrawal clears.'],
   },
+
+  // -------------------------------------------------------------------------
+  // Raised for beef (Buy Beef). Added last so the cattle above keep the same
+  // generated values. Feed programs and harvest records are in BEEF_ANIMALS.
+  // -------------------------------------------------------------------------
+
+  // Grain-finished Angus steers in share pools
+  {
+    tags: [2701, 2711, 2714],
+    breed: 'Angus',
+    sex: 'steer',
+    coat: 'black',
+    born: ['2025-02-08', '2025-03-22'],
+    weight: [1300, 1385],
+    frame: [5, 6],
+    bcs: [6, 7],
+    program: 'yearling',
+    weanDate: '2025-09-10',
+    lastScan: '2026-10-08',
+    sires: COMMERCIAL_SIRES,
+    notes: ['On the finishing ration since June.', 'Top of the pen on gain.', 'Calm and easy to handle.'],
+  },
+  // Grass-finished Angus steer
+  {
+    tags: [2709],
+    breed: 'Angus',
+    sex: 'steer',
+    coat: 'black',
+    born: ['2024-10-05', '2024-11-20'],
+    weight: [1150, 1210],
+    frame: [5, 6],
+    bcs: [6, 6],
+    program: 'yearling',
+    weanDate: '2025-05-20',
+    lastScan: '2026-10-07',
+    sires: COMMERCIAL_SIRES,
+    notes: ['Never had a bite of grain. Finished on fall fescue and clover.'],
+  },
+  // Hereford steers
+  {
+    tags: [2703, 2715],
+    breed: 'Hereford',
+    sex: 'steer',
+    coat: 'hereford',
+    born: ['2024-11-01', '2025-01-15'],
+    weight: [1150, 1260],
+    frame: [5, 6],
+    bcs: [6, 6],
+    program: 'yearling',
+    weanDate: '2025-06-10',
+    lastScan: '2026-10-06',
+    sires: ['HCR Domino 1714'],
+    notes: ['Out of one of our oldest Hereford cow families.', 'Wintered on our own hay.'],
+  },
+  // Red Angus heifer
+  {
+    tags: [2706],
+    breed: 'Red Angus',
+    sex: 'heifer',
+    coat: 'red',
+    born: ['2025-01-20', '2025-01-20'],
+    weight: [1180, 1200],
+    frame: [5, 5],
+    bcs: [6, 6],
+    program: 'yearling',
+    weanDate: '2025-08-15',
+    lastScan: '2026-10-08',
+    sires: ['HCR Red Ember 1810'],
+    notes: ['Never bred. Finished alongside the steers.'],
+  },
+  // Wagyu-cross steer
+  {
+    tags: [2708],
+    breed: 'Wagyu cross',
+    sex: 'steer',
+    coat: 'black',
+    born: ['2024-11-15', '2025-01-05'],
+    weight: [1340, 1420],
+    frame: [5, 6],
+    bcs: [7, 7],
+    program: 'yearling',
+    weanDate: '2025-07-01',
+    lastScan: '2026-10-08',
+    sires: ['Kumamoto Line 88 (Wagyu, AI)'],
+    notes: ['Angus dam, AI-sired by a fullblood Wagyu bull. Fed a long, slow finish.'],
+  },
+  // Black Baldy steer, grass-finished
+  {
+    tags: [2712],
+    breed: 'Angus × Hereford',
+    sex: 'steer',
+    coat: 'black-baldy',
+    born: ['2024-10-20', '2024-10-20'],
+    weight: [1170, 1190],
+    frame: [5, 5],
+    bcs: [6, 6],
+    program: 'yearling',
+    weanDate: '2025-05-20',
+    lastScan: '2026-10-06',
+    sires: ['Harmon Boundary 708'],
+    notes: ['Grass his whole life.'],
+  },
+  // Harvested in September: the beef in the Butcher Shop comes from these three
+  {
+    tags: [2690],
+    breed: 'Angus',
+    sex: 'steer',
+    coat: 'black',
+    born: ['2024-09-10', '2024-09-10'],
+    weight: [1180, 1180],
+    frame: [5, 5],
+    bcs: [6, 6],
+    program: 'yearling',
+    weanDate: '2025-04-15',
+    lastScan: '2026-09-08',
+    sires: COMMERCIAL_SIRES,
+    notes: ['Grass-finished. Harvested in September; his beef is in the Butcher Shop.'],
+  },
+  {
+    tags: [2692],
+    breed: 'Angus',
+    sex: 'steer',
+    coat: 'black',
+    born: ['2025-01-12', '2025-01-12'],
+    weight: [1345, 1345],
+    frame: [6, 6],
+    bcs: [7, 7],
+    program: 'yearling',
+    weanDate: '2025-08-20',
+    lastScan: '2026-09-08',
+    sires: COMMERCIAL_SIRES,
+    notes: ['Grain-finished. Harvested in September; his beef is in the Butcher Shop.'],
+  },
+  {
+    tags: [2695],
+    breed: 'Wagyu cross',
+    sex: 'steer',
+    coat: 'black',
+    born: ['2024-10-28', '2024-10-28'],
+    weight: [1390, 1390],
+    frame: [5, 5],
+    bcs: [7, 7],
+    program: 'yearling',
+    weanDate: '2025-06-10',
+    lastScan: '2026-09-08',
+    sires: ['Kumamoto Line 88 (Wagyu, AI)'],
+    notes: ['Wagyu cross, grain-finished. Harvested in September; his beef is in the Butcher Shop.'],
+  },
 ]
+
+/** Feed program, finish date, and (for harvested animals) the processor's record. */
+const BEEF_ANIMALS: Record<string, Pick<Animal, 'feedProgram' | 'finishDate'> & { harvest?: { date: string; agedDays: number; dressing: number } }> =
+  {
+    'HCR-2701': { feedProgram: 'grain-finished', finishDate: '2026-11-20' },
+    'HCR-2703': { feedProgram: 'grass-finished', finishDate: '2026-12-05' },
+    'HCR-2706': { feedProgram: 'forage-grain', finishDate: '2026-11-28' },
+    'HCR-2708': { feedProgram: 'grain-finished', finishDate: '2026-11-15' },
+    'HCR-2709': { feedProgram: 'grass-finished', finishDate: '2026-11-12' },
+    'HCR-2711': { feedProgram: 'grain-finished', finishDate: '2026-11-10' },
+    'HCR-2712': { feedProgram: 'grass-finished', finishDate: '2026-10-25' },
+    'HCR-2714': { feedProgram: 'grain-finished', finishDate: '2026-10-15' },
+    'HCR-2715': { feedProgram: 'forage-grain', finishDate: '2026-10-08' },
+    'HCR-2690': { feedProgram: 'grass-finished', finishDate: '2026-09-10', harvest: { date: '2026-09-15', agedDays: 21, dressing: 0.608 } },
+    'HCR-2692': { feedProgram: 'grain-finished', finishDate: '2026-09-10', harvest: { date: '2026-09-15', agedDays: 18, dressing: 0.627 } },
+    'HCR-2695': { feedProgram: 'grain-finished', finishDate: '2026-09-10', harvest: { date: '2026-09-16', agedDays: 21, dressing: 0.634 } },
+  }
+
+function withBeef(a: Animal): Animal {
+  const beef = BEEF_ANIMALS[a.tagId]
+  if (!beef) return a
+  const { harvest, ...rest } = beef
+  return {
+    ...a,
+    ...rest,
+    harvest: harvest && {
+      date: harvest.date,
+      agedDays: harvest.agedDays,
+      hangingWeight: Math.round(a.estWeight * harvest.dressing),
+      processor: beefConfig.processor.name,
+    },
+  }
+}
 
 // ---------------------------------------------------------------------------
 // Generators
@@ -510,4 +692,4 @@ const special: Record<string, (a: Animal) => Animal> = {
   }),
 }
 
-export const animals: Animal[] = generated.map((a) => special[a.tagId]?.(a) ?? a)
+export const animals: Animal[] = generated.map((a) => withBeef(special[a.tagId]?.(a) ?? a))

@@ -157,7 +157,8 @@ function LotBuilderForm({ existing, initialTags }: { existing?: Lot; initialTags
 
   // Animals that can go in this lot: anything not sold in another lot.
   const isOwn = (tag: string) => existing?.tagIds.includes(tag) ?? false
-  const available = animals.filter((a) => isOwn(a.tagId) || index.get(a.tagId)?.status !== 'sold')
+  // Animals raised for beef are sold by the share, never in a cattle lot.
+  const available = animals.filter((a) => !a.feedProgram && (isOwn(a.tagId) || index.get(a.tagId)?.status !== 'sold'))
   const chosen = available.filter((a) => form.selected.has(a.tagId))
   const moving = chosen.filter((a) => index.has(a.tagId) && !isOwn(a.tagId))
   const q = query
