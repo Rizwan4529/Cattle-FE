@@ -75,7 +75,7 @@ export function BeefDeliveryChoice({ summary }: { summary: CheckoutSummary }) {
         value={chosen}
         onValueChange={(v) => setMethod(v as BeefDeliveryMethod)}
         className="grid gap-2"
-        aria-label="How your Butcher Shop beef gets to you"
+        aria-label="How your shop order gets to you"
       >
         {summary.options.map((o) => {
           const Icon = ICONS[o.method]

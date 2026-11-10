@@ -1,6 +1,7 @@
 /** Shared domain types. The ear tag ID (`tagId`) is the primary key for every animal. */
 
 import type { BoxItem, FeedProgramId, ShareSize, SubscriptionFrequency, SubscriptionSize, UnfilledChoice } from './beefTypes'
+import type { GoodsBoxId } from './goodsTypes'
 
 export type CoatColor = 'black' | 'red' | 'hereford' | 'black-baldy' | 'charolais' | 'smoke'
 
@@ -201,6 +202,17 @@ export interface SubscriptionCartItem {
   frequency: SubscriptionFrequency
   feedPreference: FeedProgramId | 'any'
   firstShip: string
+  /** A Ranch Goods box (dog chews, bone broth) instead of a beef Ranch Box */
+  box?: GoodsBoxId
+  addedAt: string
+}
+
+/** Units of one Ranch Goods item (a one-of-a-kind hide or horn is always 1) */
+export interface GoodsCartItem {
+  kind: 'goods'
+  id: string
+  goodsId: string
+  qty: number
   addedAt: string
 }
 
@@ -217,7 +229,7 @@ export interface GiftCardCartItem {
 }
 
 /** Everything sold in the Butcher Shop and Gifts pages */
-export type ShopCartItem = ProductCartItem | BundleCartItem | BoxCartItem | SubscriptionCartItem | GiftCardCartItem
+export type ShopCartItem = ProductCartItem | BundleCartItem | BoxCartItem | SubscriptionCartItem | GiftCardCartItem | GoodsCartItem
 
 /** One cart for both sides of the site, with a line type per kind of purchase. */
 export type CartItem = LotCartItem | ShareCartItem | ShopCartItem
@@ -231,6 +243,8 @@ export interface OrderItem {
   total: number
   /** Product packs it took from stock */
   packs?: BoxItem[]
+  /** Ranch Goods units it took from stock */
+  goods?: { goodsId: string; qty: number }[]
   /** Product or bundle id, for one-click reorder */
   ref?: string
 }

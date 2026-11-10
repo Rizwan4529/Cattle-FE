@@ -4,6 +4,7 @@ import { toast } from 'sonner'
 import { FreezerCalculator } from '@/components/beef/FreezerCalculator'
 import { BeefDeliveryChoice, ShareHandoffChoice, ZipChecker } from '@/components/beef/BeefDelivery'
 import { ShareCartLine, ShareTotals, UnavailableShare } from '@/components/beef/ShareCart'
+import { WholeAnimalExtras } from '@/components/goods/GoodsCrossSell'
 import { ShopCartLine } from '@/components/shop/ShopCartLine'
 import { DestinationZip, FulfillmentChoice, OrderTotals } from '@/components/cart/OrderSummary'
 import { CattleImage } from '@/components/cattle/CattleImage'
@@ -33,6 +34,7 @@ export default function CartPage() {
   const animals = useRanchStore((s) => s.animals)
   const pools = useRanchStore((s) => s.pools)
   const products = useRanchStore((s) => s.products)
+  const goods = useRanchStore((s) => s.goods)
   const removeFromCart = useRanchStore((s) => s.removeFromCart)
   const removeShare = useRanchStore((s) => s.removeCartLine)
   const setCartQty = useRanchStore((s) => s.setCartQty)
@@ -43,8 +45,9 @@ export default function CartPage() {
   const shares = summarizeShares(cart, pools, animals, now)
   const hasLots = summary.lines.length > 0 || summary.unavailable.length > 0
   const hasShares = shares.lines.length > 0 || shares.unavailable.length > 0
-  const shop = summarizeShop(cart, products, BUNDLES)
+  const shop = summarizeShop(cart, products, BUNDLES, goods)
   const hasShop = shop.lines.length > 0
+  const hasGoods = shop.lines.some((l) => l.item.kind === 'goods')
   // Show section headings only when the cart mixes kinds of purchase.
   const mixed = [hasShares, hasShop, hasLots].filter(Boolean).length > 1
   // Same numbers as checkout, including Butcher Shop delivery.
@@ -76,6 +79,9 @@ export default function CartPage() {
           </Button>
           <Button asChild size="lg" variant="outline">
             <Link to="/shop">Butcher Shop</Link>
+          </Button>
+          <Button asChild size="lg" variant="outline">
+            <Link to="/ranch-goods">Ranch Goods</Link>
           </Button>
           <Button asChild size="lg" variant="outline">
             <Link to="/cattle">Browse cattle</Link>
@@ -123,7 +129,7 @@ export default function CartPage() {
           {hasShop && (
             <section aria-labelledby="cart-shop" className="grid gap-4">
               <h2 id="cart-shop" className={mixed ? 'text-2xl font-bold' : 'sr-only'}>
-                Butcher Shop and gifts
+                {hasGoods ? 'Shop items' : 'Butcher Shop and gifts'}
               </h2>
               <ul className="grid gap-4">
                 {shop.lines.map((line) => (
@@ -131,6 +137,7 @@ export default function CartPage() {
                     key={line.item.id}
                     line={line}
                     products={products}
+                    goods={goods}
                     onQty={(qty) => setCartQty(line.item.id, qty)}
                     onRemove={() => removeShareLine(line.item.id, line.title)}
                   />
@@ -138,6 +145,9 @@ export default function CartPage() {
               </ul>
             </section>
           )}
+
+          {/* Upsell: the rest of the animal, when there's beef in the cart */}
+          {(shares.lines.length > 0 || shop.lines.some((l) => l.packs.length > 0)) && <WholeAnimalExtras />}
 
           {hasLots && (
             <section aria-labelledby="cart-cattle" className="grid gap-4">
@@ -223,7 +233,7 @@ export default function CartPage() {
               <ZipChecker summary={totals} />
               {totals.hasShopBeef && (
                 <div className="grid gap-3">
-                  <h3 className="text-lg font-bold">Butcher Shop order</h3>
+                  <h3 className="text-lg font-bold">{hasGoods ? 'Shop order' : 'Butcher Shop order'}</h3>
                   <BeefDeliveryChoice summary={totals} />
                 </div>
               )}
@@ -267,7 +277,7 @@ export default function CartPage() {
             <dl className={shares.lines.length ? 'border-t pt-4' : undefined}>
               <div className="flex items-baseline justify-between gap-4">
                 <dt className="font-semibold">
-                  Butcher Shop and gifts
+                  {hasGoods ? 'Shop items' : 'Butcher Shop and gifts'}
                   <span className="block text-sm font-normal text-muted-foreground">Paid in full today</span>
                 </dt>
                 <dd className="font-semibold tabular-nums">{formatCurrency(shop.subtotal, true)}</dd>

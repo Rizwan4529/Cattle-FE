@@ -20,7 +20,7 @@ const LINKS: AccountLink[] = [
   { to: '/account/shares', label: 'My shares', icon: Beef },
   { to: '/account/animals', label: 'My animals', icon: Tags },
   { to: '/account/cut-sheets', label: 'Cut sheets', icon: ClipboardList },
-  { to: '/account/ranch-box', label: 'Ranch Box', icon: Repeat },
+  { to: '/account/ranch-box', label: 'Subscriptions', icon: Repeat },
   { to: '/account/favorites', label: 'Favorites', icon: Heart },
   { to: '/account/gift-cards', label: 'Gift cards', icon: CreditCard },
   { to: '/account/addresses', label: 'Addresses', icon: MapPin },

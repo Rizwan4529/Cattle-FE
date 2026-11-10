@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest'
 import { products } from '@/data/products'
 import { BUNDLES, CUTS, REVIEWS } from '@/data/shop'
 import type { CartItem } from '@/data/types'
-import { boxPricing, bundlePricing, packPrice, ratingSummary, shortOf, stockLabel, summarizeShop } from './shop'
+import { goods } from '@/data/goods'
+import { boxPricing, bundlePricing, packPrice, ratingSummary, shortOf, stockLabel, summarizeShop, toOrderItems } from './shop'
 
 const byId = (id: string) => products.find((p) => p.id === id)!
 
@@ -104,5 +105,45 @@ describe('shop data', () => {
     const sum = ratingSummary([{ rating: 5 }, { rating: 4 }, { rating: 4 }])
     expect(sum).toMatchObject({ avg: 4.3, count: 3 })
     expect(sum.dist.find((d) => d.stars === 4)?.count).toBe(2)
+  })
+})
+
+describe('Ranch Goods in the cart', () => {
+  const t = '2026-11-10T00:00:00.000Z'
+
+  it('prices goods lines with the volume discount and takes their units from stock', () => {
+    const cart: CartItem[] = [{ kind: 'goods', id: 'g1', goodsId: 'rendered-tallow', qty: 20, addedAt: t }]
+    const s = summarizeShop(cart, products, BUNDLES, goods)
+    const line = s.lines[0]
+    expect(line.unitPrice).toBe(8)
+    expect(line.total).toBe(160)
+    expect(line.goods).toEqual([{ goodsId: 'rendered-tallow', qty: 20 }])
+    expect(line.lb).toBe(0)
+    expect(toOrderItems(s.lines)[0]).toMatchObject({ kind: 'goods', ref: 'rendered-tallow', goods: [{ goodsId: 'rendered-tallow', qty: 20 }] })
+  })
+
+  it('flags a one-of-a-kind item that already sold', () => {
+    const sold = goods.map((g) => (g.id === 'hide-rug-hcr-2672' ? { ...g, stock: 0 } : g))
+    const cart: CartItem[] = [{ kind: 'goods', id: 'g2', goodsId: 'hide-rug-hcr-2672', qty: 1, addedAt: t }]
+    expect(summarizeShop(cart, products, BUNDLES, sold).problems[0]?.problem).toBe('Already sold')
+  })
+
+  it('prices a Ranch Goods subscription box from its plan', () => {
+    const cart: CartItem[] = [
+      {
+        kind: 'subscription',
+        id: 's1',
+        size: 'large',
+        frequency: 'monthly',
+        feedPreference: 'any',
+        firstShip: '2026-11-17',
+        box: 'dog-chew-box',
+        addedAt: t,
+      },
+    ]
+    const line = summarizeShop(cart, products, BUNDLES, goods).lines[0]
+    expect(line.title).toBe('Monthly Dog Chew Box, Large dog')
+    expect(line.total).toBe(52)
+    expect(line.href).toBe('/ranch-goods/boxes')
   })
 })

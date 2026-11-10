@@ -7,10 +7,13 @@ import { PassportCard } from '@/components/animal/PassportCard'
 import { ScanHistory } from '@/components/animal/ScanHistory'
 import { WeightGainChart } from '@/components/animal/WeightGainChart'
 import { EarTag } from '@/components/cattle/EarTag'
+import { GoodsCard } from '@/components/goods/GoodsCard'
 import { LotStatusBadge } from '@/components/lots/LotStatusBadge'
 import { Button } from '@/components/ui/button'
+import { byproductsConfig } from '@/config/byproducts'
 import { ranch, ranchPhoneHref } from '@/config/ranch'
 import type { Animal, Lot } from '@/data/types'
+import { isListed } from '@/lib/byproducts'
 import { formatCurrency, formatDate, formatNumber, formatToday } from '@/lib/format'
 import { priceUnit } from '@/lib/labels'
 import { usePageTitle } from '@/lib/usePageTitle'
@@ -109,12 +112,18 @@ export default function AnimalPassportPage() {
   const id = tagId.toUpperCase()
   const animals = useRanchStore((s) => s.animals)
   const lots = useRanchStore((s) => s.lots)
+  const goods = useRanchStore((s) => s.goods)
   const animal = animals.find((a) => a.tagId === id)
   usePageTitle(animal ? `${animal.tagId} animal record` : 'Animal not found')
 
   if (!animal) return <AnimalNotFound tagId={id} />
 
   const lot = lots.find((l) => l.tagIds.includes(animal.tagId))
+  // One-of-a-kind pieces first, then other goods made partly from this animal
+  const fromAnimal = goods
+    .filter((g) => g.sourceTagIds.includes(animal.tagId) && isListed(g, byproductsConfig))
+    .sort((a, b) => Number(Boolean(b.unique)) - Number(Boolean(a.unique)))
+    .slice(0, 8)
   const position = lot ? lot.tagIds.indexOf(animal.tagId) : -1
   const prevTag = lot && position > 0 ? lot.tagIds[position - 1] : undefined
   const nextTag = lot && position < lot.tagIds.length - 1 ? lot.tagIds[position + 1] : undefined
@@ -207,6 +216,22 @@ export default function AnimalPassportPage() {
 
           <SaleStatus animal={animal} lot={lot} />
         </div>
+
+        {fromAnimal.length > 0 && (
+          <Section
+            id="goods-heading"
+            title={`Ranch Goods from ${animal.tagId}`}
+            description="Nothing wasted: the hide, horns, and more from this animal, in Ranch Goods."
+          >
+            <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4 print:hidden">
+              {fromAnimal.map((g) => (
+                <li key={g.id} className="grid">
+                  <GoodsCard product={g} animals={animals} compact />
+                </li>
+              ))}
+            </ul>
+          </Section>
+        )}
 
         <Section
           id="weight-heading"

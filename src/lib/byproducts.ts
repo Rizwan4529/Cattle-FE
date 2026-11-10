@@ -1,6 +1,7 @@
 import type { ByproductPart, ByproductsConfig, GoodsCategory, PriceTier } from '@/config/byproducts'
 import type { ByproductPartId, ByproductRecovery, ComplianceFlags, GoodsCategoryId, GoodsProduct } from '@/data/goodsTypes'
 import type { Animal } from '@/data/types'
+import { formatCurrency } from './format'
 
 /**
  * Ranch Goods math: tier prices, compliance, and what each part of an animal
@@ -65,9 +66,46 @@ export function lineTotal(product: GoodsProduct, qty: number, config: Byproducts
   return round2(unitPrice(product, qty, config) * qty)
 }
 
+/** How many count as "only a few left" */
+const LOW_STOCK = 4
+
+export const goodsUrl = (g: Pick<GoodsProduct, 'id'>) => `/ranch-goods/${g.id}`
+
+/** "Sold", "Sold out", "Only 3 left", or nothing. */
+export function goodsStockLabel(g: GoodsProduct) {
+  if (g.stock <= 0) return g.unique ? 'Sold' : 'Sold out'
+  if (!g.unique && g.stock <= LOW_STOCK) return `Only ${g.stock} left`
+  return ''
+}
+
 /** Most a shopper can buy: one of a kind is always 1. */
 export function maxQty(product: GoodsProduct) {
   return product.unique ? Math.min(1, product.stock) : product.stock
+}
+
+/** "From HCR-2672" / "From HCR-2690, HCR-2692 and 1 more" / "" */
+export function sourceLabel(product: Pick<GoodsProduct, 'sourceTagIds'>) {
+  const tags = product.sourceTagIds
+  if (!tags.length) return ''
+  if (tags.length <= 2) return `From ${tags.join(' and ')}`
+  return `From ${tags.slice(0, 2).join(', ')} and ${tags.length - 2} more`
+}
+
+/** Cart line detail: unit price, volume discount, and where it came from. */
+export function goodsDetail(product: GoodsProduct, qty: number, config: ByproductsConfig) {
+  const parts = [`${formatCurrency(product.price, true)} / ${product.unit}`]
+  if (product.bulk) {
+    const off = tierFor(qty, config.priceTiers).off
+    if (off) parts.push(`${Math.round(off * 100)}% volume discount`)
+  }
+  if (product.unique) parts.push('one of a kind')
+  const src = sourceLabel(product)
+  return `${parts.join(', ')}.${src ? ` ${src}.` : ''}`
+}
+
+/** Frozen weight that needs freezer space (bones and organ meat sold by the lb). Hides, chews, and tallow don't. */
+export function goodsLb(product: GoodsProduct, qty: number) {
+  return product.category === 'bones' && product.unit === 'lb' ? qty : 0
 }
 
 // ---------------------------------------------------------------------------
@@ -147,4 +185,50 @@ export function recoveryReport(config: ByproductsConfig, record: ByproductRecove
     return { part: p.id, expected, recovered, lost, lostValue: valueOfRaw(p, lost).net }
   })
   return { parts, lostValue: round2(parts.reduce((s, p) => s + p.lostValue, 0)) }
+}
+
+// ---------------------------------------------------------------------------
+// Storefront search, filter, and sort
+// ---------------------------------------------------------------------------
+
+export const PRICE_BUCKETS = [
+  { value: 'under-10', label: 'Under $10', min: 0, max: 9.99 },
+  { value: '10-50', label: '$10 to $50', min: 10, max: 50 },
+  { value: 'over-50', label: 'Over $50', min: 50.01, max: Infinity },
+] as const
+export type PriceBucket = (typeof PRICE_BUCKETS)[number]['value']
+
+export const GOODS_SORTS = [
+  { value: 'featured', label: 'Featured' },
+  { value: 'price-asc', label: 'Price: low to high' },
+  { value: 'price-desc', label: 'Price: high to low' },
+  { value: 'name', label: 'Name, A to Z' },
+] as const
+export type GoodsSort = (typeof GOODS_SORTS)[number]['value']
+
+export interface GoodsFilters {
+  q?: string
+  category?: GoodsCategoryId
+  use?: GoodsProduct['uses'][number]
+  price?: PriceBucket
+  sort?: GoodsSort
+}
+
+/** Search (name, description, ear tag), filter, and sort the catalog. Sold items sink to the bottom. */
+export function filterGoods(goods: GoodsProduct[], { q = '', category, use, price, sort = 'featured' }: GoodsFilters) {
+  const needle = q.trim().toLowerCase()
+  const bucket = PRICE_BUCKETS.find((b) => b.value === price)
+  return goods
+    .filter((g) => !category || g.category === category)
+    .filter((g) => !use || g.uses.includes(use))
+    .filter((g) => !bucket || (g.price >= bucket.min && g.price <= bucket.max))
+    .filter((g) => !needle || `${g.name} ${g.description} ${g.sourceTagIds.join(' ')} ${(g.details ?? []).join(' ')}`.toLowerCase().includes(needle))
+    .sort((a, b) => {
+      const sold = Number(a.stock <= 0) - Number(b.stock <= 0)
+      if (sold) return sold
+      if (sort === 'price-asc') return a.price - b.price
+      if (sort === 'price-desc') return b.price - a.price
+      if (sort === 'name') return a.name.localeCompare(b.name)
+      return Number(Boolean(b.featured)) - Number(Boolean(a.featured))
+    })
 }

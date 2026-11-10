@@ -18,8 +18,8 @@ import type {
 import { lots as seedLots } from '@/data/lots'
 import { seedOffers } from '@/data/offers'
 import { buildSeedPools, CLAIMANTS } from '@/data/pools'
-import { byproductRecoveries as seedRecoveries, goods as seedGoods, seedCompliance } from '@/data/goods'
-import type { ByproductRecovery, ComplianceStatus, GoodsCategoryId, GoodsProduct } from '@/data/goodsTypes'
+import { byproductRecoveries as seedRecoveries, goods as seedGoods, seedCompliance, seedWholesaleInquiries } from '@/data/goods'
+import type { ByproductRecovery, ComplianceStatus, GoodsCategoryId, GoodsProduct, WholesaleInquiry } from '@/data/goodsTypes'
 import { products as seedProducts } from '@/data/products'
 import type { Animal, CartItem, GiftCardCartItem, Lot, Offer, Order, SendRecord, ShareCartItem, SubscriptionCartItem } from '@/data/types'
 import { advancePool as stepPool, type NewPoolInput, newPool, scheduleHarvest as bookHarvest } from '@/lib/poolAdmin'
@@ -64,6 +64,8 @@ interface RanchData {
   compliance: Record<GoodsCategoryId, ComplianceStatus>
   /** What came back from the processor for each harvested animal */
   byproductRecoveries: ByproductRecovery[]
+  /** Makers & Wholesale requests (owner inbox) */
+  wholesaleInquiries: WholesaleInquiry[]
 }
 
 /** What else an order creates besides the order itself. */
@@ -96,7 +98,9 @@ interface RanchActions {
   addBoxToCart: (items: BoxItem[]) => void
   addSubscriptionToCart: (input: Omit<SubscriptionCartItem, 'kind' | 'id' | 'addedAt'>) => void
   addGiftCardToCart: (input: Omit<GiftCardCartItem, 'kind' | 'id' | 'addedAt'>) => void
-  /** Sets the quantity of a product or bundle line (0 removes it). */
+  /** Adds units of a Ranch Goods item (merging with the same item already in the cart; one-of-a-kind stays at 1). */
+  addGoodsToCart: (goodsId: string, qty?: number) => void
+  /** Sets the quantity of a product, bundle, or Ranch Goods line (0 removes it). */
   setCartQty: (lineId: string, qty: number) => void
   /** Removes any line that has an id (everything but cattle lots). */
   removeCartLine: (lineId: string) => void
@@ -164,6 +168,9 @@ interface RanchActions {
   declineOffer: (offerId: string) => void
   /** Makes a draft lot public. */
   publishLot: (lotId: string) => void
+  submitWholesaleInquiry: (inquiry: Omit<WholesaleInquiry, 'id' | 'createdAt' | 'status'>) => WholesaleInquiry
+  /** Owner: reply to or mark a wholesale inquiry handled. */
+  updateWholesaleInquiry: (id: string, patch: Partial<Pick<WholesaleInquiry, 'status' | 'reply'>>) => void
   /** Owner: sets a Ranch Goods item's stock. */
   setGoodsStock: (goodsId: string, stock: number) => void
   /** Owner: updates a category's compliance progress. */
@@ -206,6 +213,7 @@ function seed(): RanchData {
     goods: structuredClone(seedGoods),
     compliance: structuredClone(seedCompliance),
     byproductRecoveries: structuredClone(seedRecoveries),
+    wholesaleInquiries: structuredClone(seedWholesaleInquiries),
   }
 }
 
@@ -291,11 +299,22 @@ export const useRanchStore = create<RanchState>()(
       addGiftCardToCart: (input) =>
         set((s) => ({ cart: [...s.cart, { ...input, kind: 'gift-card', id: uid('gift'), addedAt: new Date().toISOString() }] })),
 
+      addGoodsToCart: (goodsId, qty = 1) =>
+        set((s) => {
+          const g = s.goods.find((x) => x.id === goodsId)
+          if (!g || g.stock <= 0) return s
+          const cap = g.unique ? 1 : g.stock
+          const existing = s.cart.find((i) => i.kind === 'goods' && i.goodsId === goodsId)
+          if (existing) return { cart: s.cart.map((i) => (i === existing && i.kind === 'goods' ? { ...i, qty: Math.min(cap, i.qty + qty) } : i)) }
+          return { cart: [...s.cart, { kind: 'goods', id: uid('goods'), goodsId, qty: Math.min(cap, qty), addedAt: new Date().toISOString() }] }
+        }),
+
       setCartQty: (lineId, qty) =>
         set((s) => ({
           cart: s.cart.flatMap((i) => {
-            if (!('id' in i) || i.id !== lineId || (i.kind !== 'product' && i.kind !== 'bundle')) return [i]
-            return qty > 0 ? [{ ...i, qty: Math.min(99, Math.round(qty)) }] : []
+            if (!('id' in i) || i.id !== lineId || (i.kind !== 'product' && i.kind !== 'bundle' && i.kind !== 'goods')) return [i]
+            const cap = i.kind === 'goods' && s.goods.find((g) => g.id === i.goodsId)?.unique ? 1 : 99
+            return qty > 0 ? [{ ...i, qty: Math.min(cap, Math.round(qty)) }] : []
           }),
         })),
 
@@ -326,7 +345,13 @@ export const useRanchStore = create<RanchState>()(
           // Packs leave the freezer as soon as they're bought.
           const taken = new Map<string, number>()
           for (const item of order.items ?? []) for (const p of item.packs ?? []) taken.set(p.productId, (taken.get(p.productId) ?? 0) + p.packs)
+          // Ranch Goods too: a one-of-a-kind hide or horn drops to 0 and shows as sold.
+          const goodsTaken = new Map<string, number>()
+          for (const item of order.items ?? []) for (const g of item.goods ?? []) goodsTaken.set(g.goodsId, (goodsTaken.get(g.goodsId) ?? 0) + g.qty)
           return {
+            goods: goodsTaken.size
+              ? s.goods.map((g) => (goodsTaken.has(g.id) ? { ...g, stock: Math.max(0, g.stock - goodsTaken.get(g.id)!) } : g))
+              : s.goods,
             orders: [order, ...s.orders],
             products: taken.size
               ? s.products.map((p) => (taken.has(p.id) ? { ...p, stock: Math.max(0, p.stock - taken.get(p.id)!) } : p))
@@ -448,6 +473,12 @@ export const useRanchStore = create<RanchState>()(
           } else if (item.kind === 'box' && item.packs) {
             get().addBoxToCart(item.packs)
             added++
+          } else if (item.kind === 'goods' && item.ref) {
+            const g = get().goods.find((x) => x.id === item.ref)
+            if (g && g.stock > 0) {
+              get().addGoodsToCart(g.id, Math.min(item.qty, g.stock))
+              added++
+            }
           }
         }
         return added
@@ -619,6 +650,15 @@ export const useRanchStore = create<RanchState>()(
           lots: s.lots.map((l) => (l.id === lotId ? { ...l, draft: false, listedAt: DEMO_TODAY } : l)),
         })),
 
+      submitWholesaleInquiry: (input) => {
+        const inquiry: WholesaleInquiry = { ...input, id: uid('wholesale'), status: 'new', createdAt: new Date().toISOString() }
+        set((s) => ({ wholesaleInquiries: [inquiry, ...s.wholesaleInquiries] }))
+        return inquiry
+      },
+
+      updateWholesaleInquiry: (id, patch) =>
+        set((s) => ({ wholesaleInquiries: s.wholesaleInquiries.map((w) => (w.id === id ? { ...w, ...patch } : w)) })),
+
       setGoodsStock: (goodsId, stock) =>
         set((s) => ({
           goods: s.goods.map((g) => (g.id === goodsId ? { ...g, stock: Math.max(0, Math.min(g.unique ? 1 : Infinity, Math.round(stock))) } : g)),
@@ -655,6 +695,7 @@ export const useRanchStore = create<RanchState>()(
         goods,
         compliance,
         byproductRecoveries,
+        wholesaleInquiries,
       }): RanchData => ({
         animals,
         lots,
@@ -676,6 +717,7 @@ export const useRanchStore = create<RanchState>()(
         goods,
         compliance,
         byproductRecoveries,
+        wholesaleInquiries,
       }),
     },
   ),

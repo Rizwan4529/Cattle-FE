@@ -34,6 +34,9 @@ export const router = createBrowserRouter([
           { path: 'shop/:productId', ...page(() => import('@/pages/shop/ProductPage')) },
           { path: 'gifts', ...page(() => import('@/pages/shop/GiftsPage')) },
           { path: 'ranch-goods', ...page(() => import('@/pages/goods/RanchGoodsPage')) },
+          { path: 'ranch-goods/wholesale', ...page(() => import('@/pages/goods/WholesalePage')) },
+          { path: 'ranch-goods/boxes', ...page(() => import('@/pages/goods/GoodsBoxesPage')) },
+          { path: 'ranch-goods/:goodsId', ...page(() => import('@/pages/goods/GoodsProductPage')) },
           { path: 'account/sign-in', ...page(() => import('@/pages/account/SignInPage')) },
           {
             path: 'account',

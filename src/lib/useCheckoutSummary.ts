@@ -22,6 +22,7 @@ export function useCheckoutSummary(code = '') {
   const animals = useRanchStore((s) => s.animals)
   const pools = useRanchStore((s) => s.pools)
   const products = useRanchStore((s) => s.products)
+  const goods = useRanchStore((s) => s.goods)
   const giftCards = useRanchStore((s) => s.giftCards)
   const fulfillment = usePreferences((s) => s.fulfillment)
   const destination = usePreferences((s) => s.freightDestination)
@@ -30,10 +31,10 @@ export function useCheckoutSummary(code = '') {
 
   const cattle = summarizeCart(cart, lots, animals, fulfillment, destination)
   const shares = summarizeShares(cart, pools, animals, now)
-  const shop = summarizeShop(cart, products, BUNDLES)
+  const shop = summarizeShop(cart, products, BUNDLES, goods)
 
-  // Beef that physically travels (not gift cards; subscriptions ship on their own schedule, shipping included)
-  const shopBeef = shop.lines.filter((l) => l.item.kind === 'product' || l.item.kind === 'bundle' || l.item.kind === 'box')
+  // Things that physically travel now: beef and Ranch Goods (not gift cards; subscriptions ship on their own schedule, shipping included)
+  const shopBeef = shop.lines.filter((l) => l.item.kind === 'product' || l.item.kind === 'bundle' || l.item.kind === 'box' || l.item.kind === 'goods')
   const beefSubtotal = round2(shopBeef.reduce((n, l) => n + l.total, 0))
   const beefLb = Math.round(shopBeef.reduce((n, l) => n + l.lb, 0))
   const options = deliveryOptions(zip, beefSubtotal, beefLb)

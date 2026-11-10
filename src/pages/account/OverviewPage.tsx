@@ -46,7 +46,7 @@ export default function OverviewPage() {
     {
       to: '/account/ranch-box',
       icon: Repeat,
-      title: 'Ranch Box',
+      title: 'Subscriptions',
       value: active ? formatShortDate(active.nextShip) : '–',
       note: active ? 'Next box ships' : subscriptions.length ? 'Paused' : 'Not subscribed',
     },

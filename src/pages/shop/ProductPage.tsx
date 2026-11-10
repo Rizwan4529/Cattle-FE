@@ -3,6 +3,7 @@ import { BadgeCheck, ChefHat, ChevronLeft, Snowflake, ShoppingCart, ThermometerS
 import { Link, useNavigate, useParams } from 'react-router'
 import { toast } from 'sonner'
 import { CutImage } from '@/components/beef/CutImage'
+import { GoodsForCut, TreatThePup } from '@/components/goods/GoodsCrossSell'
 import { EarTag } from '@/components/cattle/EarTag'
 import { ProductCard } from '@/components/shop/ProductCard'
 import { FavoriteButton, QtyStepper, Stars, TraceLine } from '@/components/shop/ShopBits'
@@ -265,6 +266,11 @@ export default function ProductPage() {
             </>
           )}
         </section>
+      </div>
+
+      <div className="mt-14 grid items-start gap-10 lg:grid-cols-2 empty:hidden">
+        <GoodsForCut cut={product.cut} />
+        <TreatThePup />
       </div>
 
       {pairs.length > 0 && (

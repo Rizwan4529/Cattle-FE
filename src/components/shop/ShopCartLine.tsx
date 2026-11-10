@@ -1,33 +1,45 @@
 import { CreditCard, Repeat, Trash2, TriangleAlert } from 'lucide-react'
 import { Link } from 'react-router'
 import { CutImage } from '@/components/beef/CutImage'
+import { GoodsImage } from '@/components/goods/GoodsImage'
 import { Button } from '@/components/ui/button'
 import type { BeefProduct } from '@/data/beefTypes'
+import { GOODS_BOXES } from '@/data/goods'
+import type { GoodsProduct } from '@/data/goodsTypes'
+import { maxQty } from '@/lib/byproducts'
 import { formatCurrency } from '@/lib/format'
 import type { ShopLine } from '@/lib/shop'
 import { QtyStepper } from './ShopBits'
 
-/** A Butcher Shop product, box, subscription, or gift card in the cart. */
+/** A Butcher Shop product, box, subscription, gift card, or Ranch Goods item in the cart. */
 export function ShopCartLine({
   line,
   products,
+  goods = [],
   onQty,
   onRemove,
 }: {
   line: ShopLine
   products: BeefProduct[]
+  goods?: GoodsProduct[]
   onQty: (qty: number) => void
   onRemove: () => void
 }) {
   const { item } = line
   const first = line.packs[0] && products.find((p) => p.id === line.packs[0].productId)
-  const stockMax = item.kind === 'product' ? (products.find((p) => p.id === item.productId)?.stock ?? 99) : 20
+  const goodsItem = item.kind === 'goods' ? goods.find((g) => g.id === item.goodsId) : undefined
+  const box = item.kind === 'subscription' && item.box ? GOODS_BOXES.find((b) => b.id === item.box) : undefined
+  const stockMax = item.kind === 'product' ? (products.find((p) => p.id === item.productId)?.stock ?? 99) : goodsItem ? maxQty(goodsItem) : 20
 
   return (
     <li className="grid gap-4 rounded-2xl border bg-card p-4 sm:grid-cols-[9rem_minmax(0,1fr)] sm:p-5">
       <Link to={line.href} tabIndex={-1} aria-hidden className="grid aspect-4/3 place-items-center overflow-hidden rounded-lg border bg-muted">
         {first ? (
           <CutImage cut={first.cut} seed={item.id} photos={first.photos} alt="" />
+        ) : goodsItem ? (
+          <GoodsImage art={goodsItem.art} coat={goodsItem.coat} seed={goodsItem.id} alt="" />
+        ) : box ? (
+          <GoodsImage art={box.art} seed={box.id} alt="" />
         ) : item.kind === 'gift-card' ? (
           <CreditCard className="size-10 text-primary" />
         ) : (
@@ -58,7 +70,7 @@ export function ShopCartLine({
           </p>
         )}
         <div className="flex flex-wrap items-center gap-3">
-          {(item.kind === 'product' || item.kind === 'bundle') && (
+          {(item.kind === 'product' || item.kind === 'bundle' || (item.kind === 'goods' && !goodsItem?.unique)) && (
             <QtyStepper value={line.qty} onChange={onQty} min={1} max={Math.max(1, stockMax)} label={`Quantity of ${line.title}`} />
           )}
           <Button variant="ghost" size="sm" onClick={onRemove} className="text-destructive hover:text-destructive">

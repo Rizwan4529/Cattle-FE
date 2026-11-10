@@ -13,6 +13,7 @@ import { SHARE_LABELS } from '@/lib/yield'
 import { beefConfig } from '@/config/beef'
 import { zoneForZip } from '@/lib/delivery'
 import { useRanchStore } from '@/store/useRanchStore'
+import { TreatThePup } from '@/components/goods/GoodsCrossSell'
 
 const placedOn = (iso: string) =>
   new Date(iso).toLocaleString('en-US', { month: 'long', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' })
@@ -54,7 +55,7 @@ export default function OrderConfirmationPage() {
   const paysToday = orderShares.length > 0 || items.length > 0
   const beefDelivery = order.beefDelivery
   const discount = order.discount?.amount ?? 0
-  const physical = items.filter((i) => i.kind === 'product' || i.kind === 'bundle' || i.kind === 'box')
+  const physical = items.filter((i) => i.kind === 'product' || i.kind === 'bundle' || i.kind === 'box' || i.kind === 'goods')
 
   // When the Butcher Shop beef gets to the customer
   const placed = new Date(order.createdAt)
@@ -229,7 +230,9 @@ export default function OrderConfirmationPage() {
           <dl className="grid gap-2 border-t pt-4 tabular-nums">
             {[
               ...(orderShares.length ? [['Beef shares, estimated', formatCurrency(sharesTotal, true)]] : []),
-              ...(items.length ? [['Butcher Shop and gifts', formatCurrency(itemsTotal, true)]] : []),
+              ...(items.length
+                ? [[items.some((i) => i.kind === 'goods') ? 'Shop items' : 'Butcher Shop and gifts', formatCurrency(itemsTotal, true)]]
+                : []),
               ...(beefDelivery
                 ? [
                     [
@@ -276,7 +279,7 @@ export default function OrderConfirmationPage() {
         {shopSteps.length > 0 && (
           <section aria-labelledby="order-shop-next" className="grid gap-5">
             <h2 id="order-shop-next" className="text-3xl font-bold">
-              {orderShares.length || hasLots ? 'Your Butcher Shop order' : 'What happens next'}
+              {orderShares.length || hasLots ? 'Your shop order' : 'What happens next'}
             </h2>
             {order.gift && (
               <p className="rounded-xl border bg-card p-4">
@@ -404,6 +407,8 @@ export default function OrderConfirmationPage() {
             )}
           </Button>
         </div>
+
+        {(orderShares.length > 0 || items.some((i) => i.packs?.length)) && <TreatThePup className="print:hidden" />}
       </div>
     </div>
   )

@@ -106,6 +106,27 @@ export interface ByproductRecovery {
   note?: string
 }
 
+/** Ranch Goods subscription boxes (they ride on the Ranch Box subscription system). */
+export type GoodsBoxId = 'dog-chew-box' | 'bone-broth-box'
+
+export interface GoodsBoxSize {
+  label: string
+  price: number
+  /** Who it suits, e.g. "Dogs under 30 lb" */
+  serves: string
+  contents: string
+}
+
+export interface GoodsBoxPlan {
+  id: GoodsBoxId
+  name: string
+  description: string
+  sizes: Record<'small' | 'medium' | 'large', GoodsBoxSize>
+  /** Items a box draws from (shown as "What's inside") */
+  includes: string[]
+  art: GoodsArt
+}
+
 /** A soap maker, pet-treat shop, leatherworker, or garden center asking for volume pricing. */
 export interface WholesaleInquiry {
   id: string

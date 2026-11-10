@@ -1,72 +1,18 @@
-import { useId, useState } from 'react'
+import { useState } from 'react'
 import { CalendarCheck, PauseCircle, Repeat, ShoppingCart, SkipForward } from 'lucide-react'
 import { Link, useNavigate } from 'react-router'
 import { toast } from 'sonner'
 import { CutImage } from '@/components/beef/CutImage'
 import { PageHeader } from '@/components/PageHeader'
 import { Button } from '@/components/ui/button'
-import { Label } from '@/components/ui/label'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { Choices } from '@/components/shop/Choices'
 import { beefConfig } from '@/config/beef'
 import type { FeedProgramId, SubscriptionFrequency, SubscriptionSize } from '@/data/beefTypes'
 import { SUBSCRIPTION_PLANS } from '@/data/shop'
 import { formatCurrency } from '@/lib/format'
-import { FREQUENCY_LABELS, subscriptionPlan } from '@/lib/shop'
+import { FREQUENCY_LABELS, shipDateLabel as dateLabel, shipDates, subscriptionPlan } from '@/lib/shop'
 import { usePageTitle } from '@/lib/usePageTitle'
-import { cn } from '@/lib/utils'
 import { useRanchStore } from '@/store/useRanchStore'
-
-/** The next few Tuesdays at least 3 days out (boxes ship early in the week so they never sit over a weekend). */
-function shipDates(count = 4) {
-  const d = new Date()
-  d.setHours(12, 0, 0, 0)
-  d.setDate(d.getDate() + 3)
-  while (d.getDay() !== 2) d.setDate(d.getDate() + 1)
-  return Array.from({ length: count }, (_, i) => {
-    const x = new Date(d)
-    x.setDate(d.getDate() + i * 7)
-    return x.toISOString().slice(0, 10)
-  })
-}
-
-const dateLabel = (iso: string) => new Date(`${iso}T12:00:00`).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })
-
-function Choices<T extends string>({
-  legend,
-  value,
-  onChange,
-  options,
-  className,
-}: {
-  legend: string
-  value: T
-  onChange: (v: T) => void
-  options: { value: T; label: string; hint?: string; extra?: string }[]
-  className?: string
-}) {
-  const id = useId()
-  return (
-    <fieldset className="grid gap-3">
-      <legend className="mb-1 text-xl font-bold">{legend}</legend>
-      <RadioGroup value={value} onValueChange={(v) => onChange(v as T)} className={cn('grid gap-3', className)}>
-        {options.map((o) => (
-          <Label
-            key={o.value}
-            htmlFor={`${id}-${o.value}`}
-            className="flex cursor-pointer items-start gap-3 rounded-xl border bg-card p-4 font-normal has-data-[state=checked]:border-primary has-data-[state=checked]:bg-primary/5 has-data-[state=checked]:ring-1 has-data-[state=checked]:ring-primary"
-          >
-            <RadioGroupItem id={`${id}-${o.value}`} value={o.value} className="mt-1" />
-            <span className="grid gap-0.5">
-              <span className="text-lg font-semibold">{o.label}</span>
-              {o.extra && <span className="font-heading text-2xl font-bold">{o.extra}</span>}
-              {o.hint && <span className="text-sm text-muted-foreground">{o.hint}</span>}
-            </span>
-          </Label>
-        ))}
-      </RadioGroup>
-    </fieldset>
-  )
-}
 
 export default function RanchBoxPage() {
   usePageTitle('Ranch Box subscription')

@@ -6,6 +6,7 @@ import {
   animalByproductValue,
   complianceFor,
   expectedRaw,
+  filterGoods,
   fullRecoveryRates,
   isListed,
   lineTotal,
@@ -133,5 +134,25 @@ describe('value per animal', () => {
     // Polled: no horns expected, so none lost.
     expect(report.parts.find((p) => p.part === 'horns')!.expected).toBe(0)
     expect(report.lostValue).toBeGreaterThan(0)
+  })
+})
+
+describe('storefront filters', () => {
+  it('searches by name and ear tag', () => {
+    expect(filterGoods(goods, { q: 'bully' }).map((g) => g.id)).toEqual(['bully-stick-12', 'bully-stick-6'])
+    expect(filterGoods(goods, { q: 'hcr-2678' }).every((g) => g.sourceTagIds.includes('HCR-2678'))).toBe(true)
+  })
+
+  it('filters by category, use, and price', () => {
+    expect(filterGoods(goods, { category: 'garden' })).toHaveLength(3)
+    expect(filterGoods(goods, { use: 'pets' }).every((g) => g.uses.includes('pets'))).toBe(true)
+    expect(filterGoods(goods, { price: 'over-50' }).every((g) => g.price > 50)).toBe(true)
+  })
+
+  it('sorts by price and keeps sold items last', () => {
+    const asc = filterGoods(goods, { sort: 'price-asc' }).map((g) => g.price)
+    expect(asc).toEqual([...asc].sort((a, b) => a - b))
+    const withSold = goods.map((g) => (g.id === 'oxtail' ? { ...g, stock: 0 } : g))
+    expect(filterGoods(withSold, {}).at(-1)?.id).toBe('oxtail')
   })
 })

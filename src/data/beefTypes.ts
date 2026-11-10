@@ -5,6 +5,8 @@
  * `feedProgram` (and a `harvest` record once it's been processed).
  */
 
+import type { GoodsBoxId } from './goodsTypes'
+
 export type FeedProgramId = 'grass-finished' | 'grain-finished' | 'forage-grain'
 
 /** How much of one animal a customer buys. Eighths are off unless the ranch turns them on. */
@@ -195,6 +197,8 @@ export interface Subscription {
   frequency: SubscriptionFrequency
   feedPreference: FeedProgramId | 'any'
   status: 'active' | 'paused'
+  /** A Ranch Goods box (dog chews, bone broth) instead of a beef Ranch Box */
+  box?: GoodsBoxId
   nextShip: string
   skipped: string[]
   createdAt: string

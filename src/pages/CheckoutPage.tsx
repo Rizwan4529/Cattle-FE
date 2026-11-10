@@ -88,6 +88,7 @@ export default function CheckoutPage() {
   const [code, setCode] = useState('')
   const t = useCheckoutSummary(code)
   const { cattle, shares, shop, hasLots, hasShares, hasShop, hasShopBeef } = t
+  const hasGoods = shop.lines.some((l) => l.item.kind === 'goods')
   const paysToday = hasShares || hasShop
 
   const home = addresses.find((a) => a.isDefault)
@@ -214,6 +215,7 @@ export default function CheckoutPage() {
                 size: item.size,
                 frequency: item.frequency,
                 feedPreference: item.feedPreference,
+                box: item.box,
                 status: 'active' as const,
                 nextShip: item.firstShip,
                 skipped: [],
@@ -377,7 +379,7 @@ export default function CheckoutPage() {
               <ZipChecker summary={t} />
               {hasShopBeef && (
                 <div className="grid gap-3" id={`${id}-slot`} tabIndex={-1}>
-                  <h3 className="text-lg font-bold">Butcher Shop order</h3>
+                  <h3 className="text-lg font-bold">{hasGoods ? 'Shop order' : 'Butcher Shop order'}</h3>
                   <BeefDeliveryChoice summary={t} />
                   {err('slot')}
                 </div>
@@ -512,7 +514,7 @@ export default function CheckoutPage() {
               paysToday
                 ? [
                     hasShares && 'Share deposits lock in your price per pound.',
-                    hasShop && 'Butcher Shop items are paid in full.',
+                    hasShop && 'Shop items are paid in full.',
                     hasLots && `The cattle need a ${depositPercent} deposit.`,
                     t.dueLater > 0 && `About ${formatCurrency(t.dueLater, true)} is due later.`,
                   ]
@@ -633,7 +635,7 @@ export default function CheckoutPage() {
           {hasShop && (
             <dl className="grid gap-2 border-t pt-4 tabular-nums">
               <div className="flex items-baseline justify-between gap-4">
-                <dt className="text-muted-foreground">Butcher Shop and gifts</dt>
+                <dt className="text-muted-foreground">{hasGoods ? 'Shop items' : 'Butcher Shop and gifts'}</dt>
                 <dd className="font-semibold">{formatCurrency(shop.subtotal, true)}</dd>
               </div>
               {hasShopBeef && (

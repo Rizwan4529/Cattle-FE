@@ -1,4 +1,5 @@
-import type { ByproductRecovery, ComplianceStatus, GoodsCategoryId, GoodsProduct } from './goodsTypes'
+import type { CutId } from './beefTypes'
+import type { ByproductRecovery, ComplianceStatus, GoodsBoxPlan, GoodsCategoryId, GoodsProduct, WholesaleInquiry } from './goodsTypes'
 
 /**
  * Ranch Goods catalog, seeded from the rancher's byproduct mockup (names,
@@ -546,3 +547,106 @@ export const seedCompliance: Record<GoodsCategoryId, ComplianceStatus> = {
   craft: { state: 'cleared', note: 'No registration needed for horn and craft goods.', updatedAt: '2026-08-10' },
   garden: { state: 'not-started', note: 'Needs a state fertilizer registration and a guaranteed-analysis label.', updatedAt: '2026-08-10' },
 }
+
+// ---------------------------------------------------------------------------
+// Subscription boxes (use the Ranch Box subscription system)
+// ---------------------------------------------------------------------------
+
+export const GOODS_BOXES: GoodsBoxPlan[] = [
+  {
+    id: 'dog-chew-box',
+    name: 'Monthly Dog Chew Box',
+    description: 'Single-ingredient chews from our own cattle, sized to your dog. Nothing added, nothing from overseas.',
+    sizes: {
+      small: { label: 'Small dog', price: 24, serves: 'Dogs under 25 lb', contents: 'About 7 chews: 6-inch bully sticks, cow ears, and a trachea' },
+      medium: { label: 'Medium dog', price: 36, serves: 'Dogs 25 to 60 lb', contents: 'About 8 chews: bully sticks, ears, a trachea, and hooves' },
+      large: {
+        label: 'Large dog',
+        price: 52,
+        serves: 'Dogs over 60 lb',
+        contents: '12-inch bully sticks, a smoked knuckle bone, hooves, and a tendon bag',
+      },
+    },
+    includes: ['bully-stick-6', 'bully-stick-12', 'cow-ear', 'trachea-chew', 'beef-hoof', 'smoked-knuckle', 'tendon-chews'],
+    art: 'bully-stick',
+  },
+  {
+    id: 'bone-broth-box',
+    name: 'Bone Broth Box',
+    description: 'Everything for a big pot of broth: knuckle, neck, and marrow bones, frozen and ready for the stockpot.',
+    sizes: {
+      small: { label: 'Small', price: 32, serves: 'One pot, about 3 quarts', contents: '5 lb soup bones and 1 lb marrow bones' },
+      medium: { label: 'Medium', price: 54, serves: 'Two pots, about 6 quarts', contents: '8 lb soup bones and 2 lb marrow bones' },
+      large: { label: 'Large', price: 86, serves: 'A month of broth', contents: '12 lb soup bones, 3 lb marrow bones, and 2 lb oxtail' },
+    },
+    includes: ['soup-bones', 'marrow-bones', 'oxtail'],
+    art: 'soup-bones',
+  },
+]
+
+// ---------------------------------------------------------------------------
+// Cross-sells
+// ---------------------------------------------------------------------------
+
+/** Ranch Goods that go with each Butcher Shop cut ("goes with your ribeye"). */
+export const GOODS_FOR_CUT: Record<CutId, string[]> = {
+  ribeye: ['marrow-bones', 'rendered-tallow'],
+  'ny-strip': ['marrow-bones', 'rendered-tallow'],
+  filet: ['marrow-bones', 'rendered-tallow'],
+  sirloin: ['rendered-tallow', 'marrow-bones'],
+  't-bone': ['marrow-bones', 'rendered-tallow'],
+  'flat-iron': ['rendered-tallow', 'beef-heart'],
+  brisket: ['rendered-tallow', 'raw-suet'],
+  'short-ribs': ['oxtail', 'soup-bones'],
+  roast: ['soup-bones', 'marrow-bones'],
+  ground: ['beef-heart', 'beef-liver'],
+  patties: ['rendered-tallow', 'beef-heart'],
+  stew: ['oxtail', 'soup-bones'],
+  bones: ['marrow-bones', 'oxtail'],
+}
+
+/** "Treat the pup": chews shown on every beef page. */
+export const PUP_TREATS = ['bully-stick-6', 'cow-ear', 'trachea-chew', 'beef-hoof']
+
+/** "Add the whole-animal extras": the cart upsell when there's beef in the cart. */
+export const CART_EXTRAS = ['marrow-bones', 'rendered-tallow', 'bully-stick-12', 'tallow-soap']
+
+/** A couple of requests already in the owner's inbox. */
+export const seedWholesaleInquiries: WholesaleInquiry[] = [
+  {
+    id: 'wholesale-seed-1',
+    business: 'Prairie Lye Soap Co.',
+    kind: 'soap-candle',
+    contact: 'Jenna Ruiz',
+    email: 'jenna@prairielye.example',
+    phone: '(417) 555-0148',
+    categories: ['tallow'],
+    volume: 'About 40 lb of rendered tallow a month',
+    message: 'We make cold-process soap in Springfield and want a local, grass-fed tallow source. Can you do 5 lb pails on a standing order?',
+    status: 'new',
+    createdAt: '2026-11-04T15:12:00.000Z',
+  },
+  {
+    id: 'wholesale-seed-2',
+    business: 'Ozark Barkery',
+    kind: 'pet-treats',
+    contact: 'Marcus Lee',
+    email: 'marcus@ozarkbarkery.example',
+    phone: '(417) 555-0193',
+    categories: ['dog-chews'],
+    volume: '50 bully sticks and 30 ears every other month',
+    message: 'Two pet stores in Bolivar and Springfield. Customers ask where our chews come from, and a named ranch would sell.',
+    status: 'replied',
+    reply: 'Thanks, Marcus. We can do about half that volume per harvest for now. Sending a price sheet.',
+    createdAt: '2026-10-22T18:40:00.000Z',
+  },
+]
+
+/** Kinds of business on the wholesale form and in the owner's inbox. */
+export const BUSINESS_KINDS: { value: WholesaleInquiry['kind']; label: string }[] = [
+  { value: 'soap-candle', label: 'Soap or candle maker' },
+  { value: 'pet-treats', label: 'Pet-treat shop' },
+  { value: 'leather-craft', label: 'Leatherworker or craft maker' },
+  { value: 'garden-center', label: 'Garden center or nursery' },
+  { value: 'other', label: 'Something else' },
+]

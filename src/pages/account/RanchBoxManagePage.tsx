@@ -21,7 +21,7 @@ import { beefConfig } from '@/config/beef'
 import type { FeedProgramId, Subscription, SubscriptionFrequency, SubscriptionSize } from '@/data/beefTypes'
 import { SUBSCRIPTION_PLANS } from '@/data/shop'
 import { formatCurrency, formatDate } from '@/lib/format'
-import { FREQUENCY_LABELS, subscriptionPlan } from '@/lib/shop'
+import { FREQUENCY_LABELS, goodsBox, subscriptionInfo } from '@/lib/shop'
 import { usePageTitle } from '@/lib/usePageTitle'
 import { useRanchStore } from '@/store/useRanchStore'
 import { AccountHeader } from './OverviewPage'
@@ -31,7 +31,11 @@ function SubscriptionCard({ sub }: { sub: Subscription }) {
   const update = useRanchStore((s) => s.updateSubscription)
   const skip = useRanchStore((s) => s.skipNextBox)
   const cancel = useRanchStore((s) => s.cancelSubscription)
-  const plan = subscriptionPlan(sub.size)
+  const info = subscriptionInfo(sub)
+  const box = sub.box ? goodsBox(sub.box) : undefined
+  const sizes = box
+    ? (['small', 'medium', 'large'] as SubscriptionSize[]).map((s) => ({ size: s, label: box.sizes[s].label, price: box.sizes[s].price }))
+    : SUBSCRIPTION_PLANS.map((p) => ({ size: p.size, label: p.label, price: p.price }))
   const paused = sub.status === 'paused'
 
   const change = (patch: Partial<Pick<Subscription, 'size' | 'frequency' | 'feedPreference'>>, what: string) => {
@@ -45,10 +49,11 @@ function SubscriptionCard({ sub }: { sub: Subscription }) {
         <div>
           <h2 className="flex items-center gap-2 text-2xl font-bold">
             <Repeat className="size-6 text-primary" aria-hidden />
-            Ranch Box, {plan.label}
+            {info.title}
           </h2>
           <p className="mt-1 text-muted-foreground">
-            {formatCurrency(plan.price)} {FREQUENCY_LABELS[sub.frequency].toLowerCase()}, about {plan.lb} lb. Started {formatDate(sub.createdAt)}.
+            {formatCurrency(info.price)} {FREQUENCY_LABELS[sub.frequency].toLowerCase()},{' '}
+            {box ? info.contents.charAt(0).toLowerCase() + info.contents.slice(1) : `about ${info.lb} lb`}. Started {formatDate(sub.createdAt)}.
           </p>
         </div>
         <Badge variant={paused ? 'secondary' : 'default'} className="h-7 px-3 text-sm">
@@ -67,7 +72,7 @@ function SubscriptionCard({ sub }: { sub: Subscription }) {
         {sub.skipped.length > 0 && <span className="block text-sm text-muted-foreground">Skipped: {sub.skipped.map(formatDate).join(', ')}</span>}
       </p>
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className={box ? 'grid gap-4 sm:grid-cols-2' : 'grid gap-4 sm:grid-cols-3'}>
         <div className="grid gap-2">
           <Label htmlFor={`${id}-size`}>Box size</Label>
           <Select value={sub.size} onValueChange={(v) => change({ size: v as SubscriptionSize }, 'Box size')}>
@@ -75,7 +80,7 @@ function SubscriptionCard({ sub }: { sub: Subscription }) {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {SUBSCRIPTION_PLANS.map((p) => (
+              {sizes.map((p) => (
                 <SelectItem key={p.size} value={p.size}>
                   {p.label}, {formatCurrency(p.price)}
                 </SelectItem>
@@ -98,22 +103,24 @@ function SubscriptionCard({ sub }: { sub: Subscription }) {
             </SelectContent>
           </Select>
         </div>
-        <div className="grid gap-2">
-          <Label htmlFor={`${id}-feed`}>Feed program</Label>
-          <Select value={sub.feedPreference} onValueChange={(v) => change({ feedPreference: v as FeedProgramId | 'any' }, 'Feed program')}>
-            <SelectTrigger id={`${id}-feed`} className="w-full">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="any">Surprise me</SelectItem>
-              {beefConfig.feedPrograms.map((p) => (
-                <SelectItem key={p.id} value={p.id}>
-                  {p.short}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        {!box && (
+          <div className="grid gap-2">
+            <Label htmlFor={`${id}-feed`}>Feed program</Label>
+            <Select value={sub.feedPreference} onValueChange={(v) => change({ feedPreference: v as FeedProgramId | 'any' }, 'Feed program')}>
+              <SelectTrigger id={`${id}-feed`} className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="any">Surprise me</SelectItem>
+                {beefConfig.feedPrograms.map((p) => (
+                  <SelectItem key={p.id} value={p.id}>
+                    {p.short}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
       </div>
 
       <div className="flex flex-wrap gap-2">
@@ -174,17 +181,27 @@ function SubscriptionCard({ sub }: { sub: Subscription }) {
 }
 
 export default function RanchBoxManagePage() {
-  usePageTitle('Ranch Box')
+  usePageTitle('Subscriptions')
   const subscriptions = useRanchStore((s) => s.subscriptions)
   return (
     <>
-      <AccountHeader title="Ranch Box" description="Change, skip, or pause your subscription. Changes apply from the next box." />
+      <AccountHeader
+        title="Subscriptions"
+        description="Your Ranch Box and Ranch Goods boxes. Change, skip, or pause any of them; changes apply from the next box."
+      />
       {subscriptions.length === 0 ? (
         <div className="grid justify-items-start gap-3 rounded-2xl border border-dashed bg-card p-6">
-          <p className="text-lg">You don’t have a Ranch Box yet. Our beef at your door every month or two, picked by the Harmon family.</p>
-          <Button asChild>
-            <Link to="/shop/ranch-box">Start a Ranch Box</Link>
-          </Button>
+          <p className="text-lg">
+            You don’t have a subscription yet. Our beef at your door every month or two, or chews and broth bones from Ranch Goods.
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <Button asChild>
+              <Link to="/shop/ranch-box">Start a Ranch Box</Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link to="/ranch-goods/boxes">Dog chew and bone broth boxes</Link>
+            </Button>
+          </div>
         </div>
       ) : (
         <ul className="grid gap-5">

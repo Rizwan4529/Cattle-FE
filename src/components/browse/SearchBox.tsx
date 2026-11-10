@@ -4,7 +4,17 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 
 /** Search field that updates the URL a moment after typing stops. */
-export function SearchBox({ value, onChange }: { value: string; onChange: (q: string) => void }) {
+export function SearchBox({
+  value,
+  onChange,
+  placeholder = 'Ear tag, breed, or keyword',
+  label = 'Search lots by ear tag number, breed, or keyword',
+}: {
+  value: string
+  onChange: (q: string) => void
+  placeholder?: string
+  label?: string
+}) {
   const [text, setText] = useState(value)
   const [synced, setSynced] = useState(value)
   // Follow outside changes (e.g. "Clear all" or the Back button).
@@ -28,8 +38,8 @@ export function SearchBox({ value, onChange }: { value: string; onChange: (q: st
         value={text}
         onChange={(e) => setText(e.target.value)}
         onKeyDown={(e) => e.key === 'Enter' && onChange(text.trim())}
-        placeholder="Ear tag, breed, or keyword"
-        aria-label="Search lots by ear tag number, breed, or keyword"
+        placeholder={placeholder}
+        aria-label={label}
         className="h-13 pr-12 pl-11 text-lg [&::-webkit-search-cancel-button]:hidden"
       />
       {text && (
