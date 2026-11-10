@@ -1,5 +1,13 @@
 import type { ByproductPart, ByproductsConfig, GoodsCategory, PriceTier } from '@/config/byproducts'
-import type { ByproductPartId, ByproductRecovery, ComplianceFlags, GoodsCategoryId, GoodsProduct } from '@/data/goodsTypes'
+import type {
+  ByproductBatch,
+  ByproductPartId,
+  ByproductRecovery,
+  ByproductSettings,
+  ComplianceFlags,
+  GoodsCategoryId,
+  GoodsProduct,
+} from '@/data/goodsTypes'
 import type { CutSheet, ShareClaim } from '@/data/beefTypes'
 import type { Animal } from '@/data/types'
 import { beefConfig } from '@/config/beef'
@@ -70,14 +78,14 @@ export function lineTotal(product: GoodsProduct, qty: number, config: Byproducts
 }
 
 /** How many count as "only a few left" */
-const LOW_STOCK = 4
+export const LOW_STOCK_GOODS = 4
 
 export const goodsUrl = (g: Pick<GoodsProduct, 'id'>) => `/ranch-goods/${g.id}`
 
 /** "Sold", "Sold out", "Only 3 left", or nothing. */
 export function goodsStockLabel(g: GoodsProduct) {
   if (g.stock <= 0) return g.unique ? 'Sold' : 'Sold out'
-  if (!g.unique && g.stock <= LOW_STOCK) return `Only ${g.stock} left`
+  if (!g.unique && g.stock <= LOW_STOCK_GOODS) return `Only ${g.stock} left`
   return ''
 }
 
@@ -180,9 +188,15 @@ export interface PartRecovery {
 }
 
 /** For one harvested animal: what came back, what didn't, and what the missing part was worth. */
-export function recoveryReport(config: ByproductsConfig, record: ByproductRecovery, animal?: Pick<Animal, 'horned' | 'sex'>) {
+export function recoveryReport(
+  config: ByproductsConfig,
+  record: Pick<ByproductRecovery, 'recovered'>,
+  animal?: Pick<Animal, 'horned' | 'sex'>,
+  /** What the ranch should get once share buyers' extras are taken out (from `ranchYield`) */
+  ranchShare?: Partial<Record<ByproductPartId, number>>,
+) {
   const parts: PartRecovery[] = config.parts.map((p) => {
-    const expected = expectedRaw(p, animal)
+    const expected = ranchShare?.[p.id] ?? expectedRaw(p, animal)
     const recovered = Math.min(expected, record.recovered[p.id] ?? 0)
     const lost = round2(Math.max(0, expected - recovered))
     return { part: p.id, expected, recovered, lost, lostValue: valueOfRaw(p, lost).net }
@@ -300,4 +314,92 @@ export function wholeAnimalValue(config: ByproductsConfig, beef: typeof beefConf
   const quote = quoteShare({ liveLb: beef.typicalLiveWeight, size: 'whole', feedProgram: 'grain-finished', breed: 'Angus' }, beef)
   const goods = animalByproductValue(config, { rates: fullRecoveryRates(config) })
   return { beef: Math.round(quote.beef), goods: Math.round(goods.gross), goodsNet: Math.round(goods.net) }
+}
+
+// ---------------------------------------------------------------------------
+// The owner's numbers, raw on hand, and the herd projection
+// ---------------------------------------------------------------------------
+
+/** Settings that start from the config's placeholder estimates. */
+export function defaultSettings(config: ByproductsConfig): ByproductSettings {
+  return {
+    parts: Object.fromEntries(
+      config.parts.map((p) => [p.id, { rawPerAnimal: p.rawPerAnimal, price: p.price, cost: p.cost, recoveryRate: p.recoveryRate }]),
+    ) as ByproductSettings['parts'],
+    headPerYear: 24,
+  }
+}
+
+/** The config with the owner's own yields, prices, costs, and recovery rates. */
+export function withSettings(config: ByproductsConfig, settings: ByproductSettings): ByproductsConfig {
+  return { ...config, parts: config.parts.map((p) => ({ ...p, ...(settings.parts[p.id] ?? {}) })) }
+}
+
+/** Which of the owner's numbers still match the placeholder estimates (so they keep the "Estimate" label). */
+export function isEstimate(
+  config: ByproductsConfig,
+  settings: ByproductSettings,
+  part: ByproductPartId,
+  field: keyof ByproductSettings['parts'][ByproductPartId],
+) {
+  if (config.estimatesConfirmed) return false
+  const base = partById(config, part)
+  return base ? base[field] === settings.parts[part]?.[field] : false
+}
+
+/**
+ * Raw byproducts recovered and not yet turned into stock, per part. Each
+ * one-of-a-kind listing (a rug, a horn) used up one hide or horn.
+ */
+export function rawOnHand(
+  config: ByproductsConfig,
+  recoveries: Pick<ByproductRecovery, 'recovered'>[],
+  batches: Pick<ByproductBatch, 'part' | 'rawUsed'>[],
+  goods: Pick<GoodsProduct, 'unique' | 'part'>[] = [],
+) {
+  const out = Object.fromEntries(config.parts.map((p) => [p.id, 0])) as Record<ByproductPartId, number>
+  for (const r of recoveries) for (const [part, n] of Object.entries(r.recovered) as [ByproductPartId, number][]) out[part] += n ?? 0
+  for (const b of batches) out[b.part] -= b.rawUsed
+  for (const g of goods) if (g.unique && g.part) out[g.part] -= 1
+  for (const k of Object.keys(out) as ByproductPartId[]) out[k] = round2(Math.max(0, out[k]))
+  return out
+}
+
+/** Stock a batch adds: raw × yield, rounded down to whole units. */
+export const batchUnits = (rawUsed: number, ratio: number) => Math.max(0, Math.floor(rawUsed * ratio + 1e-9))
+
+export interface ProjectionMonth {
+  month: number
+  /** Cumulative net from byproducts at today's recovery rates */
+  today: number
+  /** Cumulative net at the chosen recovery rate */
+  target: number
+}
+
+/**
+ * Herd projection: head harvested a year × byproduct net per animal. "Left on
+ * the table" is what full recovery would add over today's rates.
+ */
+export function herdProjection(config: ByproductsConfig, headPerYear: number, targetRate: number) {
+  const today = animalByproductValue(config).net
+  const target = animalByproductValue(config, {
+    rates: Object.fromEntries(config.parts.map((p) => [p.id, Math.max(p.recoveryRate, targetRate)])) as Record<ByproductPartId, number>,
+  }).net
+  const full = animalByproductValue(config, { rates: fullRecoveryRates(config) }).net
+  const perMonth = headPerYear / 12
+  const months: ProjectionMonth[] = Array.from({ length: 12 }, (_, i) => ({
+    month: i + 1,
+    today: Math.round(today * perMonth * (i + 1)),
+    target: Math.round(target * perMonth * (i + 1)),
+  }))
+  return {
+    perAnimal: { today, target, full },
+    yearToday: Math.round(today * headPerYear),
+    yearTarget: Math.round(target * headPerYear),
+    /** Each year, what's left with the processor at today's rates */
+    leftOnTable: Math.round((full - today) * headPerYear),
+    /** What reaching the target rate adds each year */
+    gain: Math.round((target - today) * headPerYear),
+    months,
+  }
 }

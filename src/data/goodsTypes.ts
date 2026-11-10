@@ -127,6 +127,43 @@ export interface GoodsBoxPlan {
   art: GoodsArt
 }
 
+/** The owner's own numbers for one part (start from the config's placeholder estimates). */
+export interface PartSettings {
+  rawPerAnimal: number
+  price: number
+  cost: number
+  recoveryRate: number
+}
+
+export interface ByproductSettings {
+  parts: Record<ByproductPartId, PartSettings>
+  /** Head harvested per year, for the herd projection */
+  headPerYear: number
+}
+
+/** A way to turn a raw byproduct into something on the shelf, e.g. raw fat → rendered tallow. */
+export interface ConversionRecipe {
+  id: string
+  part: ByproductPartId
+  goodsId: string
+  /** "Render into tallow" */
+  label: string
+  /** Default sellable units per raw unit (editable per batch) */
+  ratio: number
+}
+
+/** One conversion done in the Byproduct Inventory: raw in, stock out. */
+export interface ByproductBatch {
+  id: string
+  part: ByproductPartId
+  recipeId: string
+  goodsId: string
+  rawUsed: number
+  ratio: number
+  units: number
+  createdAt: string
+}
+
 /** A soap maker, pet-treat shop, leatherworker, or garden center asking for volume pricing. */
 export interface WholesaleInquiry {
   id: string

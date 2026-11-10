@@ -1,5 +1,14 @@
 import type { CutId } from './beefTypes'
-import type { ByproductRecovery, ComplianceStatus, GoodsBoxPlan, GoodsCategoryId, GoodsProduct, WholesaleInquiry } from './goodsTypes'
+import type {
+  ByproductBatch,
+  ByproductRecovery,
+  ComplianceStatus,
+  ConversionRecipe,
+  GoodsBoxPlan,
+  GoodsCategoryId,
+  GoodsProduct,
+  WholesaleInquiry,
+} from './goodsTypes'
 
 /**
  * Ranch Goods catalog, seeded from the rancher's byproduct mockup (names,
@@ -649,4 +658,106 @@ export const BUSINESS_KINDS: { value: WholesaleInquiry['kind']; label: string }[
   { value: 'leather-craft', label: 'Leatherworker or craft maker' },
   { value: 'garden-center', label: 'Garden center or nursery' },
   { value: 'other', label: 'Something else' },
+]
+
+// ---------------------------------------------------------------------------
+// Turning raw byproducts into stock (Byproduct Inventory)
+// ---------------------------------------------------------------------------
+
+/** Default yields are placeholders like the rest of the byproduct numbers; the owner edits them per batch. */
+export const RECIPES: ConversionRecipe[] = [
+  { id: 'fat-tallow', part: 'fat', goodsId: 'rendered-tallow', label: 'Render into tallow (lb)', ratio: 0.75 },
+  { id: 'fat-pail', part: 'fat', goodsId: 'tallow-pail', label: 'Render into 5 lb tallow pails', ratio: 0.15 },
+  { id: 'fat-soap', part: 'fat', goodsId: 'tallow-soap', label: 'Make tallow soap bars', ratio: 2.4 },
+  { id: 'fat-suet', part: 'fat', goodsId: 'raw-suet', label: 'Pack as raw suet (lb)', ratio: 1 },
+  { id: 'bones-soup', part: 'bones', goodsId: 'soup-bones', label: 'Cut soup bones (lb)', ratio: 0.75 },
+  { id: 'bones-marrow', part: 'bones', goodsId: 'marrow-bones', label: 'Cut marrow bones (lb)', ratio: 0.7 },
+  { id: 'bones-knuckle', part: 'bones', goodsId: 'smoked-knuckle', label: 'Smoke knuckle bones', ratio: 0.35 },
+  { id: 'bones-blanks', part: 'bones', goodsId: 'bone-blanks', label: 'Cut craft blanks (8 oz bags)', ratio: 0.6 },
+  { id: 'organs-liver', part: 'organs', goodsId: 'beef-liver', label: 'Slice liver (lb)', ratio: 0.73 },
+  { id: 'organs-heart', part: 'organs', goodsId: 'beef-heart', label: 'Trim heart (lb)', ratio: 0.27 },
+  { id: 'tail-oxtail', part: 'tail', goodsId: 'oxtail', label: 'Cut oxtail (lb)', ratio: 1 },
+  { id: 'tendons-chews', part: 'tendons', goodsId: 'tendon-chews', label: 'Dry into 1 lb chew bags', ratio: 0.5 },
+  { id: 'tendons-sinew', part: 'tendons', goodsId: 'sinew', label: 'Dry into sinew (oz)', ratio: 6 },
+  { id: 'ears-chews', part: 'ears', goodsId: 'cow-ear', label: 'Dry ears', ratio: 1 },
+  { id: 'trachea-chews', part: 'trachea', goodsId: 'trachea-chew', label: 'Dry trachea chews', ratio: 1 },
+  { id: 'hooves-chews', part: 'hooves', goodsId: 'beef-hoof', label: 'Dry hooves', ratio: 1 },
+  { id: 'pizzle-12', part: 'pizzle', goodsId: 'bully-stick-12', label: 'Dry into 12 in bully sticks', ratio: 2 },
+  { id: 'pizzle-6', part: 'pizzle', goodsId: 'bully-stick-6', label: 'Dry into 6 in bully sticks', ratio: 4 },
+  { id: 'hide-rawhide', part: 'hide', goodsId: 'rawhide-sheet', label: 'Dry into rawhide sheets', ratio: 2 },
+  { id: 'hide-leather', part: 'hide', goodsId: 'veg-tan-leather', label: 'Send to the tannery for veg-tan (sq ft)', ratio: 40 },
+]
+
+/** Conversions already done from the September harvest, so the on-hand numbers start realistic. */
+export const seedBatches: ByproductBatch[] = [
+  {
+    id: 'batch-seed-1',
+    part: 'fat',
+    recipeId: 'fat-tallow',
+    goodsId: 'rendered-tallow',
+    rawUsed: 40,
+    ratio: 0.75,
+    units: 30,
+    createdAt: '2026-09-29T15:00:00.000Z',
+  },
+  {
+    id: 'batch-seed-2',
+    part: 'fat',
+    recipeId: 'fat-pail',
+    goodsId: 'tallow-pail',
+    rawUsed: 40,
+    ratio: 0.15,
+    units: 6,
+    createdAt: '2026-09-29T15:30:00.000Z',
+  },
+  {
+    id: 'batch-seed-3',
+    part: 'fat',
+    recipeId: 'fat-suet',
+    goodsId: 'raw-suet',
+    rawUsed: 12,
+    ratio: 1,
+    units: 12,
+    createdAt: '2026-09-22T14:00:00.000Z',
+  },
+  {
+    id: 'batch-seed-4',
+    part: 'bones',
+    recipeId: 'bones-soup',
+    goodsId: 'soup-bones',
+    rawUsed: 40,
+    ratio: 0.75,
+    units: 30,
+    createdAt: '2026-09-24T16:00:00.000Z',
+  },
+  {
+    id: 'batch-seed-5',
+    part: 'bones',
+    recipeId: 'bones-marrow',
+    goodsId: 'marrow-bones',
+    rawUsed: 20,
+    ratio: 0.7,
+    units: 14,
+    createdAt: '2026-09-24T16:30:00.000Z',
+  },
+  {
+    id: 'batch-seed-7',
+    part: 'hide',
+    recipeId: 'hide-rawhide',
+    goodsId: 'rawhide-sheet',
+    rawUsed: 1,
+    ratio: 2,
+    units: 2,
+    createdAt: '2026-10-12T15:00:00.000Z',
+  },
+  {
+    id: 'batch-seed-6',
+    part: 'tendons',
+    recipeId: 'tendons-chews',
+    goodsId: 'tendon-chews',
+    rawUsed: 6,
+    ratio: 0.5,
+    units: 3,
+    createdAt: '2026-10-03T13:00:00.000Z',
+  },
 ]

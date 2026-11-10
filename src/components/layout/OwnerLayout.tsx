@@ -7,6 +7,10 @@ import {
   FileUp,
   Gauge,
   HandCoins,
+  Inbox,
+  PiggyBank,
+  ShieldCheck,
+  Warehouse,
   type LucideIcon,
   Package,
   PanelLeft,
@@ -19,6 +23,7 @@ import {
 import { NavLink, Outlet, useLocation } from 'react-router'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
+import { byproductsConfig } from '@/config/byproducts'
 import { ranch } from '@/config/ranch'
 import { isOpenOffer } from '@/lib/dashboard'
 import { cn } from '@/lib/utils'
@@ -31,6 +36,7 @@ interface OwnerLink {
   /** Match only this exact path (the overview would otherwise match every owner page) */
   end?: boolean
   showOpenOffers?: boolean
+  showNewInquiries?: boolean
 }
 
 const GROUPS: { label: string; links: OwnerLink[] }[] = [
@@ -49,10 +55,23 @@ const GROUPS: { label: string; links: OwnerLink[] }[] = [
       { to: '/dashboard/pools', label: 'Share pools', icon: Beef },
       { to: '/dashboard/harvest', label: 'Harvest schedule', icon: CalendarDays },
       { to: '/dashboard/inventory', label: 'Packaged inventory', icon: Snowflake },
-      { to: '/dashboard/beef-sales', label: 'Beef sales', icon: ChartColumn },
+      { to: '/dashboard/beef-sales', label: 'Sales by channel', icon: ChartColumn },
       { to: '/dashboard/live-vs-beef', label: 'Live vs. beef calculator', icon: Calculator },
     ],
   },
+  ...(byproductsConfig.enabled
+    ? [
+        {
+          label: 'Ranch Goods',
+          links: [
+            { to: '/dashboard/hidden-revenue', label: 'Hidden revenue', icon: PiggyBank },
+            { to: '/dashboard/byproducts', label: 'Byproduct inventory', icon: Warehouse },
+            { to: '/dashboard/wholesale', label: 'Wholesale inquiries', icon: Inbox, showNewInquiries: true },
+            { to: '/dashboard/compliance', label: 'Compliance checklist', icon: ShieldCheck },
+          ],
+        },
+      ]
+    : []),
   {
     label: 'Selling and records',
     links: [
@@ -75,7 +94,17 @@ function currentLabel(pathname: string) {
   return match?.label ?? 'Overview'
 }
 
-function SidebarLink({ link, openOffers, onNavigate }: { link: OwnerLink; openOffers: number; onNavigate?: () => void }) {
+function SidebarLink({
+  link,
+  openOffers,
+  newInquiries,
+  onNavigate,
+}: {
+  link: OwnerLink
+  openOffers: number
+  newInquiries: number
+  onNavigate?: () => void
+}) {
   const Icon = link.icon
   return (
     <NavLink
@@ -101,6 +130,13 @@ function SidebarLink({ link, openOffers, onNavigate }: { link: OwnerLink; openOf
               <span className="sr-only"> open</span>
             </span>
           )}
+          {link.showNewInquiries && newInquiries > 0 && (
+            <span className="grid min-w-6 place-items-center rounded-full bg-primary px-1.5 text-sm font-semibold text-primary-foreground tabular-nums">
+              <span className="sr-only">, </span>
+              {newInquiries}
+              <span className="sr-only"> new</span>
+            </span>
+          )}
         </>
       )}
     </NavLink>
@@ -109,6 +145,7 @@ function SidebarLink({ link, openOffers, onNavigate }: { link: OwnerLink; openOf
 
 function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
   const openOffers = useRanchStore((s) => s.offers.filter(isOpenOffer).length)
+  const newInquiries = useRanchStore((s) => s.wholesaleInquiries.filter((w) => w.status === 'new').length)
   return (
     <nav aria-label="Owner dashboard" className="grid gap-3">
       {GROUPS.map((group) => (
@@ -117,14 +154,14 @@ function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
           <ul className="grid gap-0.5">
             {group.links.map((link) => (
               <li key={link.to}>
-                <SidebarLink link={link} openOffers={openOffers} onNavigate={onNavigate} />
+                <SidebarLink link={link} openOffers={openOffers} newInquiries={newInquiries} onNavigate={onNavigate} />
               </li>
             ))}
           </ul>
         </div>
       ))}
       <div className="border-t pt-3">
-        <SidebarLink link={SETTINGS} openOffers={openOffers} onNavigate={onNavigate} />
+        <SidebarLink link={SETTINGS} openOffers={openOffers} newInquiries={newInquiries} onNavigate={onNavigate} />
       </div>
     </nav>
   )

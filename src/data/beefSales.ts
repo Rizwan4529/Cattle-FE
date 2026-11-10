@@ -10,15 +10,17 @@ export interface BeefMonth {
   shares: number
   cuts: number
   subscriptions: number
+  /** Ranch Goods (hides, tallow, chews…), including dog chew and bone broth boxes */
+  goods: number
 }
 
 export const beefSalesHistory: BeefMonth[] = [
-  { month: '2026-06', shares: 6_200, cuts: 1_850, subscriptions: 0 },
-  { month: '2026-07', shares: 9_800, cuts: 2_640, subscriptions: 478 },
-  { month: '2026-08', shares: 12_400, cuts: 3_910, subscriptions: 1_195 },
-  { month: '2026-09', shares: 16_300, cuts: 4_420, subscriptions: 1_912 },
-  { month: '2026-10', shares: 19_700, cuts: 6_080, subscriptions: 2_629 },
-  { month: '2026-11', shares: 7_100, cuts: 2_210, subscriptions: 1_195 },
+  { month: '2026-06', shares: 6_200, cuts: 1_850, subscriptions: 0, goods: 0 },
+  { month: '2026-07', shares: 9_800, cuts: 2_640, subscriptions: 478, goods: 0 },
+  { month: '2026-08', shares: 12_400, cuts: 3_910, subscriptions: 1_195, goods: 420 },
+  { month: '2026-09', shares: 16_300, cuts: 4_420, subscriptions: 1_912, goods: 1_180 },
+  { month: '2026-10', shares: 19_700, cuts: 6_080, subscriptions: 2_629, goods: 1_960 },
+  { month: '2026-11', shares: 7_100, cuts: 2_210, subscriptions: 1_195, goods: 740 },
 ]
 
 /** Packs sold by cut since June (sample) */

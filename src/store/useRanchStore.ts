@@ -18,8 +18,20 @@ import type {
 import { lots as seedLots } from '@/data/lots'
 import { seedOffers } from '@/data/offers'
 import { buildSeedPools, CLAIMANTS } from '@/data/pools'
-import { byproductRecoveries as seedRecoveries, goods as seedGoods, seedCompliance, seedWholesaleInquiries } from '@/data/goods'
-import type { ByproductRecovery, ComplianceStatus, GoodsCategoryId, GoodsProduct, WholesaleInquiry } from '@/data/goodsTypes'
+import { byproductRecoveries as seedRecoveries, goods as seedGoods, RECIPES, seedBatches, seedCompliance, seedWholesaleInquiries } from '@/data/goods'
+import type {
+  ByproductBatch,
+  ByproductPartId,
+  ByproductRecovery,
+  ByproductSettings,
+  ComplianceStatus,
+  GoodsCategoryId,
+  GoodsProduct,
+  PartSettings,
+  WholesaleInquiry,
+} from '@/data/goodsTypes'
+import { byproductsConfig } from '@/config/byproducts'
+import { batchUnits, defaultSettings } from '@/lib/byproducts'
 import { products as seedProducts } from '@/data/products'
 import type { Animal, CartItem, GiftCardCartItem, Lot, Offer, Order, SendRecord, ShareCartItem, SubscriptionCartItem } from '@/data/types'
 import { advancePool as stepPool, type NewPoolInput, newPool, scheduleHarvest as bookHarvest } from '@/lib/poolAdmin'
@@ -66,6 +78,10 @@ interface RanchData {
   byproductRecoveries: ByproductRecovery[]
   /** Makers & Wholesale requests (owner inbox) */
   wholesaleInquiries: WholesaleInquiry[]
+  /** Owner's own byproduct yields, prices, costs, and recovery rates (start from the config's estimates) */
+  byproductSettings: ByproductSettings
+  /** Raw byproducts turned into stock */
+  byproductBatches: ByproductBatch[]
 }
 
 /** What else an order creates besides the order itself. */
@@ -171,6 +187,15 @@ interface RanchActions {
   submitWholesaleInquiry: (inquiry: Omit<WholesaleInquiry, 'id' | 'createdAt' | 'status'>) => WholesaleInquiry
   /** Owner: reply to or mark a wholesale inquiry handled. */
   updateWholesaleInquiry: (id: string, patch: Partial<Pick<WholesaleInquiry, 'status' | 'reply'>>) => void
+  /** Owner: edits one part's yield, price, cost, or recovery rate. */
+  updateByproductPart: (part: ByproductPartId, patch: Partial<PartSettings>) => void
+  setHeadPerYear: (head: number) => void
+  /** Owner: back to the config's placeholder estimates. */
+  resetByproductSettings: () => void
+  /** Owner: records how much of a part came back from the processor for one harvested animal. */
+  setRecovery: (tagId: string, part: ByproductPartId, amount: number) => void
+  /** Owner: turns raw byproduct into stock (e.g. 40 lb fat → 30 lb tallow). Returns the batch, or null if nothing was made. */
+  convertBatch: (input: { recipeId: string; rawUsed: number; ratio: number }) => ByproductBatch | null
   /** Owner: sets a Ranch Goods item's stock. */
   setGoodsStock: (goodsId: string, stock: number) => void
   /** Owner: updates a category's compliance progress. */
@@ -214,6 +239,8 @@ function seed(): RanchData {
     compliance: structuredClone(seedCompliance),
     byproductRecoveries: structuredClone(seedRecoveries),
     wholesaleInquiries: structuredClone(seedWholesaleInquiries),
+    byproductSettings: defaultSettings(byproductsConfig),
+    byproductBatches: structuredClone(seedBatches),
   }
 }
 
@@ -660,6 +687,50 @@ export const useRanchStore = create<RanchState>()(
       updateWholesaleInquiry: (id, patch) =>
         set((s) => ({ wholesaleInquiries: s.wholesaleInquiries.map((w) => (w.id === id ? { ...w, ...patch } : w)) })),
 
+      updateByproductPart: (part, patch) =>
+        set((s) => ({
+          byproductSettings: {
+            ...s.byproductSettings,
+            parts: { ...s.byproductSettings.parts, [part]: { ...s.byproductSettings.parts[part], ...patch } },
+          },
+        })),
+
+      setHeadPerYear: (head) => set((s) => ({ byproductSettings: { ...s.byproductSettings, headPerYear: Math.max(0, Math.round(head)) } })),
+
+      resetByproductSettings: () => set({ byproductSettings: defaultSettings(byproductsConfig) }),
+
+      setRecovery: (tagId, part, amount) =>
+        set((s) => {
+          const value = Math.max(0, Math.round(amount * 10) / 10)
+          const exists = s.byproductRecoveries.some((r) => r.tagId === tagId)
+          return {
+            byproductRecoveries: exists
+              ? s.byproductRecoveries.map((r) => (r.tagId === tagId ? { ...r, recovered: { ...r.recovered, [part]: value } } : r))
+              : [...s.byproductRecoveries, { tagId, recovered: { [part]: value } }],
+          }
+        }),
+
+      convertBatch: ({ recipeId, rawUsed, ratio }) => {
+        const recipe = RECIPES.find((x) => x.id === recipeId)
+        const units = batchUnits(rawUsed, ratio)
+        if (!recipe || rawUsed <= 0 || units <= 0) return null
+        const batch: ByproductBatch = {
+          id: uid('batch'),
+          part: recipe.part,
+          recipeId,
+          goodsId: recipe.goodsId,
+          rawUsed: Math.round(rawUsed * 10) / 10,
+          ratio,
+          units,
+          createdAt: new Date().toISOString(),
+        }
+        set((s) => ({
+          byproductBatches: [batch, ...s.byproductBatches],
+          goods: s.goods.map((g) => (g.id === recipe.goodsId ? { ...g, stock: g.stock + units } : g)),
+        }))
+        return batch
+      },
+
       setGoodsStock: (goodsId, stock) =>
         set((s) => ({
           goods: s.goods.map((g) => (g.id === goodsId ? { ...g, stock: Math.max(0, Math.min(g.unique ? 1 : Infinity, Math.round(stock))) } : g)),
@@ -697,6 +768,8 @@ export const useRanchStore = create<RanchState>()(
         compliance,
         byproductRecoveries,
         wholesaleInquiries,
+        byproductSettings,
+        byproductBatches,
       }): RanchData => ({
         animals,
         lots,
@@ -719,6 +792,8 @@ export const useRanchStore = create<RanchState>()(
         compliance,
         byproductRecoveries,
         wholesaleInquiries,
+        byproductSettings,
+        byproductBatches,
       }),
     },
   ),

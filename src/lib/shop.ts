@@ -253,7 +253,10 @@ export const toOrderItems = (lines: ShopLine[]): OrderItem[] =>
           ? l.item.bundleId
           : l.item.kind === 'goods'
             ? l.item.goodsId
-            : undefined,
+            : // A Ranch Goods box subscription carries its box id (sales by channel)
+              l.item.kind === 'subscription'
+              ? l.item.box
+              : undefined,
   }))
 
 // ---------------------------------------------------------------------------

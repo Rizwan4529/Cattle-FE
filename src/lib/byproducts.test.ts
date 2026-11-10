@@ -1,9 +1,15 @@
 import { describe, expect, it } from 'vitest'
 import { byproductsConfig as config } from '@/config/byproducts'
 import { animals } from '@/data/animals'
-import { byproductRecoveries, goods } from '@/data/goods'
+import { byproductRecoveries, goods, RECIPES, seedBatches } from '@/data/goods'
 import {
   animalByproductValue,
+  batchUnits,
+  defaultSettings,
+  herdProjection,
+  isEstimate,
+  rawOnHand,
+  withSettings,
   complianceFor,
   expectedRaw,
   filterGoods,
@@ -183,5 +189,53 @@ describe('cut-sheet extras', () => {
 
   it('keeps everything for the ranch when no one asked for extras', () => {
     for (const p of ranchYield(config, steer, claims, [])) expect(p.toRanch).toBe(p.expected)
+  })
+})
+
+describe('owner numbers and inventory', () => {
+  it('starts from the placeholder estimates and applies the owner’s edits', () => {
+    const settings = defaultSettings(config)
+    expect(isEstimate(config, settings, 'fat', 'price')).toBe(true)
+    settings.parts.fat = { ...settings.parts.fat, price: 12 }
+    expect(isEstimate(config, settings, 'fat', 'price')).toBe(false)
+    expect(partById(withSettings(config, settings), 'fat')!.price).toBe(12)
+  })
+
+  it('counts raw byproducts on hand: recovered less what batches used', () => {
+    const onHand = rawOnHand(config, byproductRecoveries, seedBatches, goods)
+    // 45 + 52 lb fat recovered, 92 lb rendered or packed
+    expect(onHand.fat).toBe(5)
+    expect(onHand.bones).toBe(37)
+    expect(onHand.pizzle).toBe(3)
+    // 6 hides: 3 rugs, 1 raw salted hide, 1 made into rawhide; HCR-2695's is still at the tannery
+    expect(onHand.hide).toBe(1)
+    // 4 horns, all listed one of a kind
+    expect(onHand.horns).toBe(0)
+    for (const v of Object.values(onHand)) expect(v).toBeGreaterThanOrEqual(0)
+  })
+
+  it('makes whole units from a batch', () => {
+    expect(batchUnits(40, 0.75)).toBe(30)
+    expect(batchUnits(13, 0.75)).toBe(9)
+    expect(batchUnits(3, 0.15)).toBe(0)
+  })
+
+  it('has a recipe for real products and parts', () => {
+    for (const r of RECIPES) {
+      expect(
+        goods.some((g) => g.id === r.goodsId),
+        r.id,
+      ).toBe(true)
+      expect(partById(config, r.part), r.id).toBeDefined()
+    }
+  })
+
+  it('projects money left on the table across the herd', () => {
+    const p = herdProjection(config, 24, 1)
+    expect(p.leftOnTable).toBeGreaterThan(0)
+    expect(p.gain).toBe(p.leftOnTable)
+    expect(p.months).toHaveLength(12)
+    expect(p.months[11].target).toBe(p.yearTarget)
+    expect(herdProjection(config, 24, 0.5).gain).toBeLessThan(p.gain)
   })
 })

@@ -8,13 +8,13 @@ import { usePageTitle } from '@/lib/usePageTitle'
 import { useRanchStore } from '@/store/useRanchStore'
 
 /*
- * Four channels need four distinct colors. The brand's chart colors are too
+ * Five channels need five distinct colors. The brand's chart colors are too
  * close for that, so this chart has its own set, checked with the dataviz
  * palette validator for light and dark surfaces. Segments are separated by a
  * 2px gap, there's a legend, and the table view has every number.
  */
 const PALETTE =
-  '[--ch-shares:#A23B2A] [--ch-cuts:#3A6EA5] [--ch-subscriptions:#D08C1A] [--ch-live:#3F8F5A] dark:[--ch-shares:#C24E36] dark:[--ch-cuts:#3F7FC4] dark:[--ch-subscriptions:#B88418] dark:[--ch-live:#3E9A60]'
+  '[--ch-shares:#A23B2A] [--ch-cuts:#3A6EA5] [--ch-subscriptions:#D08C1A] [--ch-goods:#7A5BA8] [--ch-live:#3F8F5A] dark:[--ch-shares:#C24E36] dark:[--ch-cuts:#3F7FC4] dark:[--ch-subscriptions:#B88418] dark:[--ch-goods:#8F72C4] dark:[--ch-live:#3E9A60]'
 const color = (key: string) => `var(--ch-${key})`
 
 const monthShort = (m: string) => new Date(`${m}-15T12:00:00`).toLocaleDateString('en-US', { month: 'short' })
@@ -34,7 +34,7 @@ function ChannelTooltip({ active, payload }: TooltipContentProps) {
 }
 
 export default function BeefAnalyticsPage() {
-  usePageTitle('Beef sales')
+  usePageTitle('Sales by channel')
   const orders = useRanchStore((s) => s.orders)
   const products = useRanchStore((s) => s.products)
   const pools = useRanchStore((s) => s.pools)
@@ -49,14 +49,14 @@ export default function BeefAnalyticsPage() {
   return (
     <div className={`grid gap-6 ${PALETTE}`}>
       <div>
-        <h1 className="text-4xl font-bold">Beef sales</h1>
+        <h1 className="text-4xl font-bold">Beef and Ranch Goods sales</h1>
         <p className="mt-2 max-w-3xl text-lg text-muted-foreground">
-          Since June: {formatCurrency(beefTotal)} in beef across shares, the Butcher Shop, and the Ranch Box. Sample data, plus orders placed on this
-          site.
+          Since June: {formatCurrency(beefTotal)} from beef shares, the Butcher Shop, the Ranch Box, and Ranch Goods. Sample data, plus orders placed
+          on this site.
         </p>
       </div>
 
-      <dl className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <dl className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5">
         {totals.map((t) => (
           <div key={t.key} className="rounded-2xl border bg-card p-4">
             <dt className="flex items-center gap-2 text-sm text-muted-foreground">
