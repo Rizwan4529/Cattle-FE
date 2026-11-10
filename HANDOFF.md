@@ -1,10 +1,17 @@
 # Handoff: Heritage Creek Ranch cattle marketplace (frontend-only demo)
 
-You're continuing a build that's partway done. Read `reference/Spec.md` first (the full product spec), then this file. The project lives at `d:\Client Projects\Cattke website\Cattle-FE` (Windows, not a git repo). Work in the spec's phases, show a short plan before each phase, then build, then verify in a real browser before reporting.
+You're continuing a build that's partway done. Read `reference/Spec.md` first (the full product spec), then this file. The project lives at `d:\Client Projects\Cattke website\Cattle-FE` (Windows, a git repo; commit each phase with a `[FEAT]` or `[FIX]` prefix). Work in the spec's phases, show a short plan before each phase, then build, then verify in a real browser before reporting.
 
 ## Beef storefront (SPEC-BEEF)
 
 The Buy Beef side (`reference/spec-beef.md`) was built in phases B1–B7. The plan, the decisions made along the way, and a per-phase log of what was built and where it lives are in `reference/beef-build-plan.md`. Read that before changing anything on the beef side. The status below covers the original cattle marketplace.
+
+## Ranch Goods (SPEC-BYPRODUCTS)
+
+The byproduct store, nose-to-tail explorer, byproduct rights in the share flow, and the owner's Hidden revenue / Byproduct inventory / wholesale inbox / compliance pages (`reference/SPEC-BYPRODUCTS.md`) were built in phases P1–P5. The plan, decisions, and a per-phase log are in `reference/byproducts-build-plan.md`. Notes:
+- **Store:** persist version 3. Ranch Goods slices: `goods`, `compliance`, `byproductRecoveries`, `wholesaleInquiries`, `byproductSettings`, `byproductBatches`. Cart line `kind: 'goods'`; a goods subscription box is a normal subscription with `box` set.
+- **Estimates:** `src/config/byproducts.ts` holds placeholder yields and prices; pass `withSettings(config, byproductSettings)` anywhere the owner's own numbers should apply.
+- **Zustand 5:** never `.filter()` inside a selector (`useRanchStore((s) => s.goods.filter(...))`). It returns a new array every render and loops. Select the array, then filter.
 
 ## Status
 - **Done:** Phases 1 to 4. Home, Browse, Lot Detail, Animal Passport, Chute Scan (`/scan`), and the owner dashboard: one page per section in a sidebar layout (`src/components/layout/OwnerLayout.tsx`): `/dashboard`, `/dashboard/herd`, `/lots`, `/offers`, `/import`, `/settings`, `/syndicate`; old `?tab=` links redirect: overview stats and charts, herd table (search, filters, inline edit, bulk select, create lot, CSV download), lots list, offers inbox, CSV import, settings with Reset demo data. Lot builder at `/dashboard/lots/new` (accepts `?tags=HCR-1,HCR-2`) and `/dashboard/lots/:lotId/edit`.
