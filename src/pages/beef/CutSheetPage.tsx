@@ -50,6 +50,9 @@ import { usePageTitle } from '@/lib/usePageTitle'
 import { cn } from '@/lib/utils'
 import { availableShareSizes, SHARE_FRACTION, SHARE_LABELS, takeHomeWeight } from '@/lib/yield'
 import { useRanchStore } from '@/store/useRanchStore'
+import { WholeAnimalExplorer } from '@/components/goods/WholeAnimal'
+import { byproductsConfig } from '@/config/byproducts'
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 
 interface ClaimLink {
   pool: SharePool
@@ -179,6 +182,7 @@ function CutSheetEditor({ initial, isSaved, link }: { initial: CutSheet; isSaved
   const [sheet, setSheet] = useState(initial)
   const [savedVersion, setSavedVersion] = useState(isSaved ? JSON.stringify(initial) : '')
   const [selected, setSelected] = useState<Primal>('rib')
+  const [diagramMode, setDiagramMode] = useState<'cuts' | 'whole'>('cuts')
   usePageTitle(isSaved ? sheet.name : 'Cut sheet builder')
 
   const takeHomeLb = link
@@ -305,28 +309,59 @@ function CutSheetEditor({ initial, isSaved, link }: { initial: CutSheet; isSaved
 
         <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,24rem)] lg:gap-10">
           <div className="grid min-w-0 content-start gap-6">
-            <Card id={`${id}-diagram`} title="Choose a section" description="Click part of the animal, or use the buttons below the drawing.">
-              <CarcassDiagram primals={sheet.primals} selected={selected} onSelect={setSelected} />
-              <StyleLegend />
-              <div role="group" aria-label="Sections of the animal" className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-                {PRIMALS.map((p) => (
-                  <button
-                    key={p.id}
-                    type="button"
-                    aria-pressed={selected === p.id}
-                    onClick={() => setSelected(p.id)}
-                    className={cn(
-                      'grid min-h-12 content-center rounded-lg border px-3 py-2 text-left transition-colors hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none',
-                      selected === p.id && 'border-foreground bg-foreground text-background hover:bg-foreground',
-                    )}
-                  >
-                    <span className="font-semibold">{p.label}</span>
-                    <span className={cn('text-sm', selected === p.id ? 'text-background/80' : 'text-muted-foreground')}>
-                      {p.styles[sheet.primals[p.id].style]?.label ?? STYLE_NAMES[sheet.primals[p.id].style]}
-                    </span>
-                  </button>
-                ))}
-              </div>
+            <Card
+              id={`${id}-diagram`}
+              title={diagramMode === 'whole' ? 'Nose to tail' : 'Choose a section'}
+              description={
+                diagramMode === 'whole'
+                  ? 'Everything besides the beef, and what it becomes. Switch back to Beef cuts to keep filling out your sheet.'
+                  : 'Click part of the animal, or use the buttons below the drawing.'
+              }
+            >
+              {byproductsConfig.enabled && (
+                <ToggleGroup
+                  type="single"
+                  variant="outline"
+                  value={diagramMode}
+                  onValueChange={(v) => v && setDiagramMode(v as 'cuts' | 'whole')}
+                  aria-label="What the drawing shows"
+                  className="justify-self-start"
+                >
+                  <ToggleGroupItem value="cuts" className="h-10 px-4">
+                    Beef cuts
+                  </ToggleGroupItem>
+                  <ToggleGroupItem value="whole" className="h-10 px-4">
+                    Nose to tail
+                  </ToggleGroupItem>
+                </ToggleGroup>
+              )}
+              {diagramMode === 'whole' ? (
+                <WholeAnimalExplorer compact />
+              ) : (
+                <>
+                  <CarcassDiagram primals={sheet.primals} selected={selected} onSelect={setSelected} />
+                  <StyleLegend />
+                  <div role="group" aria-label="Sections of the animal" className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                    {PRIMALS.map((p) => (
+                      <button
+                        key={p.id}
+                        type="button"
+                        aria-pressed={selected === p.id}
+                        onClick={() => setSelected(p.id)}
+                        className={cn(
+                          'grid min-h-12 content-center rounded-lg border px-3 py-2 text-left transition-colors hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none',
+                          selected === p.id && 'border-foreground bg-foreground text-background hover:bg-foreground',
+                        )}
+                      >
+                        <span className="font-semibold">{p.label}</span>
+                        <span className={cn('text-sm', selected === p.id ? 'text-background/80' : 'text-muted-foreground')}>
+                          {p.styles[sheet.primals[p.id].style]?.label ?? STYLE_NAMES[sheet.primals[p.id].style]}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
             </Card>
 
             <Card id={`${id}-primal`} title={info.label} description={info.about}>
@@ -410,6 +445,10 @@ function CutSheetEditor({ initial, isSaved, link }: { initial: CutSheet; isSaved
               </Label>
               <fieldset className="grid gap-2">
                 <legend className="mb-1 font-semibold">Keep these extras</legend>
+                <p className="-mt-1 text-sm text-muted-foreground">
+                  Anything you don’t ask for here (the hide, horns, bones, fat, and organs) stays with the ranch and becomes Ranch Goods. Nothing goes
+                  to waste.
+                </p>
                 <div className="grid gap-2 sm:grid-cols-2">
                   {EXTRAS.map((e) => (
                     <Label

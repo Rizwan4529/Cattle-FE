@@ -15,10 +15,11 @@ import { beefTitle, claimLabel, useNow } from '@/lib/beef'
 import { downloadText } from '@/lib/chuteScan'
 import { formatDate, formatNumber } from '@/lib/format'
 import { nextStatus } from '@/lib/poolAdmin'
-import { processorCsv, processorFileName } from '@/lib/processorExport'
+import { processorCsv, processorFileName, ranchReturns } from '@/lib/processorExport'
 import { usePageTitle } from '@/lib/usePageTitle'
 import { agingDay, POOL_STATUS_LABELS, SHARE_LABELS } from '@/lib/yield'
 import { useRanchStore } from '@/store/useRanchStore'
+import { byproductsConfig } from '@/config/byproducts'
 
 const IN_PROCESS = ['harvest-scheduled', 'dry-aging', 'cut-wrap', 'ready'] as const
 const isoDay = (ms: number) => new Date(ms).toISOString().slice(0, 10)
@@ -184,6 +185,11 @@ export default function HarvestPage() {
                         Cut sheets in: {pool.claims.filter((c) => cutSheets.some((s) => s.claimId === c.id)).length} of {pool.claims.length}. Owners
                         without one get Butcher’s Choice.
                       </p>
+                      {byproductsConfig.enabled && (
+                        <p className="text-sm">
+                          <span className="font-semibold">Back to the ranch:</span> {ranchReturns(pool, animal, cutSheets)}.
+                        </p>
+                      )}
                     </div>
                     <div className="flex flex-wrap gap-2">
                       <Button variant="outline" onClick={() => download([{ pool, animal }], pool.tagId)}>

@@ -412,6 +412,7 @@ export const useRanchStore = create<RanchState>()(
           ...who,
           claimedAt: new Date(now).toISOString(),
           ifUnfilled: Math.random() < 0.5 ? 'roll-over' : 'refund',
+          byproductRightsAcceptedAt: new Date(now).toISOString(),
           deposit: quote?.deposit ?? 0,
         }
         set((st) => ({ pools: st.pools.map((p) => (p.id === pool.id ? { ...p, claims: [...p.claims, claim] } : p)) }))

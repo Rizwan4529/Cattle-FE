@@ -1,7 +1,10 @@
 import type { ByproductPart, ByproductsConfig, GoodsCategory, PriceTier } from '@/config/byproducts'
 import type { ByproductPartId, ByproductRecovery, ComplianceFlags, GoodsCategoryId, GoodsProduct } from '@/data/goodsTypes'
+import type { CutSheet, ShareClaim } from '@/data/beefTypes'
 import type { Animal } from '@/data/types'
+import { beefConfig } from '@/config/beef'
 import { formatCurrency } from './format'
+import { quoteShare } from './yield'
 
 /**
  * Ranch Goods math: tier prices, compliance, and what each part of an animal
@@ -188,6 +191,61 @@ export function recoveryReport(config: ByproductsConfig, record: ByproductRecove
 }
 
 // ---------------------------------------------------------------------------
+// Share buyers' cut-sheet extras
+// ---------------------------------------------------------------------------
+
+const FRACTION: Record<ShareClaim['size'], number> = { whole: 1, half: 0.5, quarter: 0.25, eighth: 0.125 }
+
+export interface RanchYieldPart {
+  part: ByproductPartId
+  /** Raw amount the animal has */
+  expected: number
+  /** Raw amount share buyers asked for on their cut sheets */
+  toBuyers: number
+  /** What's left for the ranch to sell as Ranch Goods */
+  toRanch: number
+}
+
+/**
+ * What one animal's byproducts split into: the extras share buyers asked for on
+ * their cut sheets (soup bones, organ meats, fat) come out of the ranch's
+ * yield, in proportion to each buyer's share. Everything else stays with the ranch.
+ */
+export function ranchYield(
+  config: ByproductsConfig,
+  animal: Pick<Animal, 'horned' | 'sex'> | undefined,
+  claims: Pick<ShareClaim, 'id' | 'size'>[],
+  sheets: Pick<CutSheet, 'claimId' | 'extras'>[],
+): RanchYieldPart[] {
+  return config.parts.map((p) => {
+    const expected = expectedRaw(p, animal)
+    let toBuyers = 0
+    if (p.cutSheetExtra) {
+      for (const c of claims) {
+        const sheet = sheets.find((s) => s.claimId === c.id)
+        if (sheet?.extras[p.cutSheetExtra]) toBuyers += expected * FRACTION[c.size]
+      }
+    }
+    toBuyers = round2(Math.min(expected, toBuyers))
+    return { part: p.id, expected, toBuyers, toRanch: round2(expected - toBuyers) }
+  })
+}
+
+/** "the hide, 4 hooves, about 38 lb of fat & suet…": what the processor sends back to the ranch. */
+export function ranchKeepsText(config: ByproductsConfig, parts: RanchYieldPart[]) {
+  const out: string[] = []
+  for (const y of parts) {
+    const p = partById(config, y.part)
+    if (!p || y.toRanch <= 0) continue
+    const name = p.name.toLowerCase()
+    if (p.rawUnit === 'lb') out.push(`about ${Math.round(y.toRanch)} lb of ${name}`)
+    else if (y.toRanch === 1) out.push(`the ${name.replace(/s$/, '')}`)
+    else out.push(`${Math.round(y.toRanch)} ${name}`)
+  }
+  return out.length ? out.join(', ') : 'nothing'
+}
+
+// ---------------------------------------------------------------------------
 // Storefront search, filter, and sort
 // ---------------------------------------------------------------------------
 
@@ -231,4 +289,15 @@ export function filterGoods(goods: GoodsProduct[], { q = '', category, use, pric
       if (sort === 'name') return a.name.localeCompare(b.name)
       return Number(Boolean(b.featured)) - Number(Boolean(a.featured))
     })
+}
+
+// ---------------------------------------------------------------------------
+// One animal: beef + ranch goods
+// ---------------------------------------------------------------------------
+
+/** "One animal = $X beef + $Y in ranch goods" for a typical finished steer, at retail. */
+export function wholeAnimalValue(config: ByproductsConfig, beef: typeof beefConfig = beefConfig) {
+  const quote = quoteShare({ liveLb: beef.typicalLiveWeight, size: 'whole', feedProgram: 'grain-finished', breed: 'Angus' }, beef)
+  const goods = animalByproductValue(config, { rates: fullRecoveryRates(config) })
+  return { beef: Math.round(quote.beef), goods: Math.round(goods.gross), goodsNet: Math.round(goods.net) }
 }

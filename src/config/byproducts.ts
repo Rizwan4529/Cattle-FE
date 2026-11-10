@@ -66,6 +66,15 @@ export const byproductsConfig = {
   estimatesConfirmed: false,
   placeholderNote: 'Estimate. Confirm with your processor and tannery before relying on it.',
 
+  /**
+   * Byproduct rights in the share agreement. Every share claim must accept it;
+   * the acceptance is stored with the claim.
+   */
+  rights: {
+    text: 'I understand the ranch keeps the hide, horns, bones, fat, and organs from this animal, except the extras I ask for on my cut sheet (soup bones, organ meats, fat and suet).',
+    short: 'Ranch keeps the hide, horns, bones, fat, and organs you don’t request on your cut sheet.',
+  },
+
   /** Shown to shoppers at the foot of Ranch Goods pages. No legal warnings here; those are owner-only. */
   consumerNote: 'Prices and availability vary with each harvest. One-of-a-kind items, like hides and horns, sell once.',
 
@@ -230,6 +239,7 @@ export const byproductsConfig = {
       price: 11,
       cost: 1,
       recoveryRate: 1,
+      cutSheetExtra: 'organs',
       basis: 'About 2½ lb of oxtail at $11/lb.',
     },
     {

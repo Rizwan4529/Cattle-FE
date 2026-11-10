@@ -3,12 +3,14 @@ import { CalendarClock, ShoppingCart } from 'lucide-react'
 import { useNavigate } from 'react-router'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { beefConfig, feedProgram } from '@/config/beef'
+import { byproductsConfig } from '@/config/byproducts'
 import type { SharePool, ShareSize, UnfilledChoice } from '@/data/beefTypes'
 import { US_STATES } from '@/data/geo'
 import type { Animal } from '@/data/types'
@@ -22,7 +24,7 @@ import { useRanchStore } from '@/store/useRanchStore'
 const pct = (n: number) => `${Math.round(n * 100)}%`
 const deadlineText = (iso: string) => new Date(iso).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })
 
-type Field = 'firstName' | 'city' | 'state'
+type Field = 'firstName' | 'city' | 'state' | 'rights'
 
 /**
  * Claiming a share: pick a size, see exactly what's paid today and what's
@@ -56,6 +58,7 @@ export function ClaimDialog({
   const [city, setCity] = useState(saved?.city ?? '')
   const [state, setState] = useState(saved?.state ?? 'MO')
   const [ifUnfilled, setIfUnfilled] = useState<UnfilledChoice>('roll-over')
+  const [rights, setRights] = useState(false)
   const [errors, setErrors] = useState<Partial<Record<Field, string>>>({})
 
   const quote = quotePool(pool, animal, size)
@@ -67,14 +70,15 @@ export function ClaimDialog({
     if (!firstName.trim()) found.firstName = 'Enter your first name. It shows on the fill meter.'
     if (!city.trim()) found.city = 'Enter your town.'
     if (!state) found.state = 'Choose a state.'
+    if (!rights) found.rights = 'Check the box to agree before claiming.'
     setErrors(found)
-    const first = (['firstName', 'city', 'state'] as Field[]).find((f) => found[f])
+    const first = (['firstName', 'city', 'state', 'rights'] as Field[]).find((f) => found[f])
     if (first) {
       document.getElementById(`${id}-${first}`)?.focus()
       return
     }
     const who = { firstName: firstName.trim().split(/\s+/)[0], city: city.trim(), state }
-    addShareToCart({ poolId: pool.id, size, ifUnfilled, ...who })
+    addShareToCart({ poolId: pool.id, size, ifUnfilled, byproductRightsAcceptedAt: new Date().toISOString(), ...who })
     setClaimant(who)
     onOpenChange(false)
     toast.success(`${SHARE_LABELS[size]} of ${animal.tagId} added to your cart`, {
@@ -251,6 +255,33 @@ export function ClaimDialog({
               ))}
             </RadioGroup>
           </fieldset>
+
+          <div className="grid gap-2">
+            <Label
+              htmlFor={`${id}-rights`}
+              className="flex cursor-pointer items-start gap-3 rounded-lg border p-3 font-normal has-data-[state=checked]:border-primary has-data-[state=checked]:bg-primary/5"
+            >
+              <Checkbox
+                id={`${id}-rights`}
+                checked={rights}
+                onCheckedChange={(v) => {
+                  setRights(v === true)
+                  if (v === true) setErrors((e) => ({ ...e, rights: undefined }))
+                }}
+                aria-invalid={Boolean(errors.rights)}
+                aria-describedby={[`${id}-rights-hint`, describedBy('rights')].filter(Boolean).join(' ')}
+                className="mt-0.5"
+              />
+              <span>
+                <span className="block font-semibold">{byproductsConfig.rights.text}</span>
+                <span id={`${id}-rights-hint`} className="text-sm text-muted-foreground">
+                  Nothing goes to waste: the rest becomes tallow, chews, and hides in Ranch Goods. You can ask for soup bones, organs, and fat on your
+                  cut sheet any time before cutting.
+                </span>
+              </span>
+            </Label>
+            {err('rights')}
+          </div>
 
           <DialogFooter className="gap-2 sm:justify-between">
             <Button type="button" variant="outline" size="lg" onClick={() => onOpenChange(false)}>

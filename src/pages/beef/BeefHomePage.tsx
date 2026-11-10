@@ -24,6 +24,8 @@ import { useClaimActivity } from '@/lib/useClaimActivity'
 import { usePageTitle } from '@/lib/usePageTitle'
 import { segmentsLeft } from '@/lib/yield'
 import { heldSegments, useRanchStore } from '@/store/useRanchStore'
+import { WholeAnimalExplorer } from '@/components/goods/WholeAnimal'
+import { byproductsConfig } from '@/config/byproducts'
 
 const STEPS = [
   { title: 'Pick your animal', body: 'Choose by feed program and breed. Every animal has an ear tag and a record you can read.' },
@@ -381,6 +383,25 @@ export default function BeefHomePage() {
           </div>
         </div>
       </section>
+
+      {byproductsConfig.enabled && (
+        <section aria-labelledby="whole-heading" className="container-page py-14 lg:py-20">
+          <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+            <div className="max-w-2xl">
+              <h2 id="whole-heading" className="text-3xl font-bold sm:text-4xl">
+                One animal, nothing wasted
+              </h2>
+              <p className="mt-3 text-lg text-muted-foreground">
+                Beef is most of it, but not all. Tap any part to see what it becomes and what’s in Ranch Goods from it now.
+              </p>
+            </div>
+            <Button asChild variant="outline" size="lg">
+              <Link to="/nothing-wasted">Nose to tail, explained</Link>
+            </Button>
+          </div>
+          <WholeAnimalExplorer />
+        </section>
+      )}
 
       <section aria-labelledby="rancher-heading" className="bg-leather py-14 text-leather-foreground lg:py-20">
         <div className="container-page grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">

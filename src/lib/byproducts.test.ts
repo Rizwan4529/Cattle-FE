@@ -12,6 +12,7 @@ import {
   lineTotal,
   maxQty,
   partById,
+  ranchYield,
   recoveryReport,
   tierFor,
   unitPrice,
@@ -154,5 +155,33 @@ describe('storefront filters', () => {
     expect(asc).toEqual([...asc].sort((a, b) => a - b))
     const withSold = goods.map((g) => (g.id === 'oxtail' ? { ...g, stock: 0 } : g))
     expect(filterGoods(withSold, {}).at(-1)?.id).toBe('oxtail')
+  })
+})
+
+describe('cut-sheet extras', () => {
+  const steer = { sex: 'steer' as const }
+  const claims = [
+    { id: 'c1', size: 'half' as const },
+    { id: 'c2', size: 'quarter' as const },
+    { id: 'c3', size: 'quarter' as const },
+  ]
+  const sheet = (claimId: string, extras: Partial<Record<'soupBones' | 'shortRibs' | 'organs' | 'fat', boolean>>) => ({
+    claimId,
+    extras: { soupBones: false, shortRibs: false, organs: false, fat: false, ...extras },
+  })
+
+  it('takes each buyer’s share of the parts they asked for out of the ranch’s yield', () => {
+    const y = ranchYield(config, steer, claims, [sheet('c1', { soupBones: true }), sheet('c2', { organs: true, fat: true })])
+    const part = (id: string) => y.find((p) => p.part === id)!
+    expect(part('bones')).toMatchObject({ expected: 35, toBuyers: 17.5, toRanch: 17.5 })
+    expect(part('organs')).toMatchObject({ toBuyers: 3.75, toRanch: 11.25 })
+    expect(part('tail')).toMatchObject({ toBuyers: 0.63, toRanch: 1.87 })
+    expect(part('fat')).toMatchObject({ toBuyers: 12.5, toRanch: 37.5 })
+    // Not on any cut sheet: all the ranch's
+    expect(part('hide')).toMatchObject({ toBuyers: 0, toRanch: 1 })
+  })
+
+  it('keeps everything for the ranch when no one asked for extras', () => {
+    for (const p of ranchYield(config, steer, claims, [])) expect(p.toRanch).toBe(p.expected)
   })
 })

@@ -165,6 +165,8 @@ export interface ShareCartItem {
   city: string
   state: string
   ifUnfilled: UnfilledChoice
+  /** When the buyer agreed the ranch keeps the byproducts they don't request (ISO) */
+  byproductRightsAcceptedAt?: string
   addedAt: string
 }
 

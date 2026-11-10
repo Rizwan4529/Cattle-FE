@@ -1,6 +1,8 @@
 import Papa from 'papaparse'
 import type { CutSheet, SharePool } from '@/data/beefTypes'
 import type { Animal } from '@/data/types'
+import { byproductsConfig } from '@/config/byproducts'
+import { ranchKeepsText, ranchYield } from './byproducts'
 import { cutSheetRows, newCutSheet, presetById } from './cutSheet'
 import { hangingWeight, SHARE_FRACTION, SHARE_LABELS } from './yield'
 
@@ -35,20 +37,36 @@ export function carcassShares(pool: SharePool, animal: Animal, sheets: CutSheet[
   })
 }
 
+/** What the processor returns to the ranch for one carcass: everything the share owners didn't ask for. */
+export function ranchReturns(pool: SharePool, animal: Animal, sheets: CutSheet[]) {
+  return ranchKeepsText(byproductsConfig, ranchYield(byproductsConfig, animal, pool.claims, sheets))
+}
+
 export function processorCsv(entries: { pool: SharePool; animal: Animal }[], sheets: CutSheet[]) {
   const rows = entries.flatMap(({ pool, animal }) =>
-    carcassShares(pool, animal, sheets).flatMap((s) =>
-      s.rows.map((r) => ({
+    carcassShares(pool, animal, sheets)
+      .flatMap((s) =>
+        s.rows.map((r) => ({
+          ear_tag: pool.tagId,
+          harvest_date: pool.harvestDate ?? '',
+          owner: s.owner,
+          share: s.size,
+          share_hanging_lb_est: s.hangingLb,
+          cut_sheet: s.sheetName,
+          section: r.section,
+          instructions: r.instructions,
+        })),
+      )
+      .concat({
         ear_tag: pool.tagId,
         harvest_date: pool.harvestDate ?? '',
-        owner: s.owner,
-        share: s.size,
-        share_hanging_lb_est: s.hangingLb,
-        cut_sheet: s.sheetName,
-        section: r.section,
-        instructions: r.instructions,
-      })),
-    ),
+        owner: 'Ranch (byproducts)',
+        share: '',
+        share_hanging_lb_est: 0,
+        cut_sheet: '',
+        section: 'Return to the ranch',
+        instructions: ranchReturns(pool, animal, sheets),
+      }),
   )
   return Papa.unparse(rows)
 }

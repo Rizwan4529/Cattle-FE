@@ -253,6 +253,7 @@ export default function CheckoutPage() {
           state: l.item.state,
           claimedAt: createdAt,
           ifUnfilled: l.item.ifUnfilled,
+          byproductRightsAcceptedAt: l.item.byproductRightsAcceptedAt,
           deposit: l.quote.deposit,
           fromThisDevice: true,
           orderId: order.id,

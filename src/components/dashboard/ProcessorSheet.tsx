@@ -5,7 +5,7 @@ import type { CutSheet, SharePool } from '@/data/beefTypes'
 import type { Animal } from '@/data/types'
 import { beefTitle } from '@/lib/beef'
 import { formatDate, formatNumber, formatToday } from '@/lib/format'
-import { carcassShares } from '@/lib/processorExport'
+import { carcassShares, ranchReturns } from '@/lib/processorExport'
 
 /** Printable processor packet: one page per carcass, with every owner's cut sheet. Hidden on screen. */
 export function ProcessorSheet({ entries, sheets }: { entries: { pool: SharePool; animal: Animal }[]; sheets: CutSheet[] }) {
@@ -57,6 +57,13 @@ export function ProcessorSheet({ entries, sheets }: { entries: { pool: SharePool
               </table>
             </section>
           ))}
+          <section className="mt-4 break-inside-avoid rounded border-2 border-leather p-3">
+            <h2 className="font-heading text-lg font-bold">Return to the ranch</h2>
+            <p className="text-sm">
+              Please keep and return {ranchReturns(pool, animal, sheets)}. Salt the hide. These are the ranch’s under the share agreement; the owners’
+              extras above come out of them.
+            </p>
+          </section>
         </article>
       ))}
     </div>

@@ -34,6 +34,8 @@ export interface ShareClaim {
   state: string
   claimedAt: string
   ifUnfilled: UnfilledChoice
+  /** When the buyer agreed the ranch keeps the byproducts they don't request on the cut sheet (ISO) */
+  byproductRightsAcceptedAt?: string
   /** Deposit actually paid (price locked at claim time) */
   deposit: number
   /** Claimed by the visitor on this device, at checkout */
