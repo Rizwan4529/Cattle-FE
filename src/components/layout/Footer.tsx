@@ -1,6 +1,7 @@
 import { Mail, MapPin, Phone } from 'lucide-react'
 import { Link } from 'react-router'
 import { beefConfig } from '@/config/beef'
+import { byproductsConfig } from '@/config/byproducts'
 import { ranch, ranchPhoneHref } from '@/config/ranch'
 import { BrandMark } from './RanchBrand'
 
@@ -10,6 +11,7 @@ const columns = [
     links: [
       { to: '/beef', label: 'Claim a share' },
       ...(beefConfig.sellByTheCut ? [{ to: '/shop', label: 'Butcher Shop' }] : []),
+      ...(byproductsConfig.enabled ? [{ to: '/ranch-goods', label: 'Ranch Goods' }] : []),
       { to: '/shop/ranch-box', label: 'Ranch Box' },
       { to: '/gifts', label: 'Gifts & gift cards' },
       { to: '/account', label: 'Your account' },

@@ -2,7 +2,8 @@ import { beefConfig } from '@/config/beef'
 import type { Animal, AnimalSex, CalfAtSide, CoatColor, HealthEvent, Pregnancy, ScanRecord, WeighIn } from './types'
 
 /**
- * Mock herd: 44 head across 10 lots plus a few unlisted animals.
+ * Mock herd: 44 head across 10 lots plus a few unlisted animals, then the
+ * animals raised for beef (some already harvested).
  *
  * Each group below describes a set of animals; individual values (weights,
  * dates, RFIDs, scan confidence) are generated from a fixed seed so the herd
@@ -68,6 +69,8 @@ export interface HerdGroup {
   pregnancy?: { bredTo: string; bred: [string, string] }
   calf?: { tags: number[]; born: [string, string]; weight: [number, number] }
   registry?: string
+  /** Has horns (most of the herd is polled or dehorned) */
+  horned?: boolean
   notes: string[]
 }
 
@@ -430,6 +433,54 @@ const groups: HerdGroup[] = [
     sires: ['Kumamoto Line 88 (Wagyu, AI)'],
     notes: ['Wagyu cross, grain-finished. Harvested in September; his beef is in the Butcher Shop.'],
   },
+  // Harvested in August: their hides and horns are back and sold as Ranch Goods.
+  {
+    tags: [2672],
+    breed: 'Hereford',
+    sex: 'steer',
+    coat: 'hereford',
+    born: ['2024-11-02', '2024-11-02'],
+    weight: [1310, 1310],
+    frame: [6, 6],
+    bcs: [7, 7],
+    program: 'yearling',
+    weanDate: '2025-06-02',
+    lastScan: '2026-07-28',
+    sires: COMMERCIAL_SIRES,
+    horned: true,
+    notes: ['Horned Hereford, grain-finished. Harvested in August; his hide is a rug and his horns are in Ranch Goods.'],
+  },
+  {
+    tags: [2678],
+    breed: 'Charolais cross',
+    sex: 'steer',
+    coat: 'charolais',
+    born: ['2024-10-20', '2024-10-20'],
+    weight: [1365, 1365],
+    frame: [7, 7],
+    bcs: [6, 6],
+    program: 'yearling',
+    weanDate: '2025-05-26',
+    lastScan: '2026-07-28',
+    sires: ['Harmon Boundary 708'],
+    horned: true,
+    notes: ['Horned Charolais cross, forage-fed with a grain finish. Harvested in August; his cream hide and horns are in Ranch Goods.'],
+  },
+  {
+    tags: [2683],
+    breed: 'Red Angus',
+    sex: 'heifer',
+    coat: 'red',
+    born: ['2024-12-14', '2024-12-14'],
+    weight: [1180, 1180],
+    frame: [5, 5],
+    bcs: [7, 7],
+    program: 'yearling',
+    weanDate: '2025-07-01',
+    lastScan: '2026-08-18',
+    sires: COMMERCIAL_SIRES,
+    notes: ['Grass-finished Red Angus heifer. Harvested in August; her red hide is a rug in Ranch Goods.'],
+  },
 ]
 
 /** Feed program, finish date, and (for harvested animals) the processor's record. */
@@ -447,6 +498,9 @@ const BEEF_ANIMALS: Record<string, Pick<Animal, 'feedProgram' | 'finishDate'> & 
     'HCR-2690': { feedProgram: 'grass-finished', finishDate: '2026-09-10', harvest: { date: '2026-09-15', agedDays: 21, dressing: 0.608 } },
     'HCR-2692': { feedProgram: 'grain-finished', finishDate: '2026-09-10', harvest: { date: '2026-09-15', agedDays: 18, dressing: 0.627 } },
     'HCR-2695': { feedProgram: 'grain-finished', finishDate: '2026-09-10', harvest: { date: '2026-09-16', agedDays: 21, dressing: 0.634 } },
+    'HCR-2672': { feedProgram: 'grain-finished', finishDate: '2026-07-30', harvest: { date: '2026-08-04', agedDays: 21, dressing: 0.621 } },
+    'HCR-2678': { feedProgram: 'forage-grain', finishDate: '2026-07-30', harvest: { date: '2026-08-04', agedDays: 18, dressing: 0.628 } },
+    'HCR-2683': { feedProgram: 'grass-finished', finishDate: '2026-08-20', harvest: { date: '2026-08-25', agedDays: 21, dressing: 0.603 } },
   }
 
 function withBeef(a: Animal): Animal {
@@ -666,6 +720,7 @@ export function buildAnimal(group: HerdGroup, index: number): Animal {
     preconditioned: group.weanDate ? weanDays >= 45 : false,
     ageSourceVerified: true,
     notes: group.notes[index % group.notes.length],
+    horned: group.horned || undefined,
     photos: [],
     scanDate: group.lastScan,
     scanConfidence: growth.scanConfidence,

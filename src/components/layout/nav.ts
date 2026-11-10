@@ -1,5 +1,6 @@
 import {
   Beef,
+  Bone,
   CircleHelp,
   ClipboardList,
   Gauge,
@@ -16,6 +17,7 @@ import {
   Wheat,
 } from 'lucide-react'
 import { beefConfig } from '@/config/beef'
+import { byproductsConfig } from '@/config/byproducts'
 
 export interface NavItem {
   to: string
@@ -39,7 +41,7 @@ export const SIDES: Record<Side, { label: string; to: string; description: strin
   cattle: { label: 'Buy Cattle', to: '/livestock', description: 'Live cattle for ranchers, buyers, and sale barns.' },
 }
 
-const BEEF_PATHS = ['/beef', '/shop', '/gifts', '/account']
+const BEEF_PATHS = ['/beef', '/shop', '/gifts', '/account', '/ranch-goods', '/nothing-wasted']
 const CATTLE_PATHS = ['/livestock', '/cattle', '/lots', '/scan', '/how-it-works', '/dashboard']
 
 const under = (pathname: string, base: string) => pathname === base || pathname.startsWith(`${base}/`)
@@ -60,8 +62,11 @@ export const primaryNav: Record<Side, NavItem[]> = {
     { to: '/beef', label: 'Claim your beef', icon: Beef },
     // The Butcher Shop only shows when the ranch sells by the cut (config flag).
     ...(beefConfig.sellByTheCut ? [{ to: '/shop', label: 'Butcher Shop', icon: Store }] : []),
+    // Ranch Goods (hides, tallow, chews…) only shows when the byproduct store is switched on.
+    ...(byproductsConfig.enabled ? [{ to: '/ranch-goods', label: 'Ranch Goods', icon: Bone }] : []),
     { to: '/gifts', label: 'Gifts', icon: Gift },
-    { to: '/beef/cut-sheet', label: 'Cut sheet builder', short: 'Cut sheet', icon: ClipboardList },
+    // Reached from claims, orders, and the account; the menu keeps it one tap away.
+    { to: '/beef/cut-sheet', label: 'Cut sheet builder', short: 'Cut sheet', icon: ClipboardList, menuOnly: true },
     ABOUT,
     CONTACT,
   ],

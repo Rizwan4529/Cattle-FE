@@ -9,9 +9,9 @@ const now = Date.parse('2026-11-10T12:00:00Z')
 const pools = buildSeedPools(animals, now)
 
 describe('beef animals', () => {
-  it('keeps the original 44 head and adds 12 raised for beef', () => {
-    expect(animals).toHaveLength(56)
-    expect(animals.filter((a) => a.feedProgram)).toHaveLength(12)
+  it('keeps the original 44 head and adds 15 raised for beef', () => {
+    expect(animals).toHaveLength(59)
+    expect(animals.filter((a) => a.feedProgram)).toHaveLength(15)
   })
 
   it('has unique ear tags', () => {

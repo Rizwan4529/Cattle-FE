@@ -33,6 +33,7 @@ export const router = createBrowserRouter([
           { path: 'shop/ranch-box', ...page(() => import('@/pages/shop/RanchBoxPage')) },
           { path: 'shop/:productId', ...page(() => import('@/pages/shop/ProductPage')) },
           { path: 'gifts', ...page(() => import('@/pages/shop/GiftsPage')) },
+          { path: 'ranch-goods', ...page(() => import('@/pages/goods/RanchGoodsPage')) },
           { path: 'account/sign-in', ...page(() => import('@/pages/account/SignInPage')) },
           {
             path: 'account',

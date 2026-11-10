@@ -93,6 +93,8 @@ export interface Animal {
   feedProgram?: FeedProgramId
   /** When the animal reaches its finished weight (ISO date) */
   finishDate?: string
+  /** Has horns. Most of the herd is polled (Angus) or dehorned; horns become Ranch Goods. */
+  horned?: boolean
   /** Processed for beef */
   harvest?: { date: string; hangingWeight: number; agedDays: number; processor: string }
 }

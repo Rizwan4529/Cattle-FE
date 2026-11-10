@@ -18,6 +18,8 @@ import type {
 import { lots as seedLots } from '@/data/lots'
 import { seedOffers } from '@/data/offers'
 import { buildSeedPools, CLAIMANTS } from '@/data/pools'
+import { byproductRecoveries as seedRecoveries, goods as seedGoods, seedCompliance } from '@/data/goods'
+import type { ByproductRecovery, ComplianceStatus, GoodsCategoryId, GoodsProduct } from '@/data/goodsTypes'
 import { products as seedProducts } from '@/data/products'
 import type { Animal, CartItem, GiftCardCartItem, Lot, Offer, Order, SendRecord, ShareCartItem, SubscriptionCartItem } from '@/data/types'
 import { advancePool as stepPool, type NewPoolInput, newPool, scheduleHarvest as bookHarvest } from '@/lib/poolAdmin'
@@ -56,6 +58,12 @@ interface RanchData {
   favorites: string[]
   /** Emails signed up for the ranch newsletter */
   newsletter: string[]
+  /** Ranch Goods stock (one-of-a-kind items drop to 0 when sold) */
+  goods: GoodsProduct[]
+  /** Owner's paperwork progress per Ranch Goods category */
+  compliance: Record<GoodsCategoryId, ComplianceStatus>
+  /** What came back from the processor for each harvested animal */
+  byproductRecoveries: ByproductRecovery[]
 }
 
 /** What else an order creates besides the order itself. */
@@ -156,6 +164,10 @@ interface RanchActions {
   declineOffer: (offerId: string) => void
   /** Makes a draft lot public. */
   publishLot: (lotId: string) => void
+  /** Owner: sets a Ranch Goods item's stock. */
+  setGoodsStock: (goodsId: string, stock: number) => void
+  /** Owner: updates a category's compliance progress. */
+  setComplianceStatus: (category: GoodsCategoryId, patch: Partial<Omit<ComplianceStatus, 'updatedAt'>>) => void
   resetDemo: () => void
 }
 
@@ -191,6 +203,9 @@ function seed(): RanchData {
     addresses: [],
     favorites: [],
     newsletter: [],
+    goods: structuredClone(seedGoods),
+    compliance: structuredClone(seedCompliance),
+    byproductRecoveries: structuredClone(seedRecoveries),
   }
 }
 
@@ -604,11 +619,19 @@ export const useRanchStore = create<RanchState>()(
           lots: s.lots.map((l) => (l.id === lotId ? { ...l, draft: false, listedAt: DEMO_TODAY } : l)),
         })),
 
+      setGoodsStock: (goodsId, stock) =>
+        set((s) => ({
+          goods: s.goods.map((g) => (g.id === goodsId ? { ...g, stock: Math.max(0, Math.min(g.unique ? 1 : Infinity, Math.round(stock))) } : g)),
+        })),
+
+      setComplianceStatus: (category, patch) =>
+        set((s) => ({ compliance: { ...s.compliance, [category]: { ...s.compliance[category], ...patch, updatedAt: new Date().toISOString() } } })),
+
       resetDemo: () => set(seed()),
     }),
     {
       name: 'ranch-demo-data',
-      version: 2,
+      version: 3,
       // A changed data shape starts fresh from the seed data.
       migrate: () => seed(),
       partialize: ({
@@ -629,6 +652,9 @@ export const useRanchStore = create<RanchState>()(
         addresses,
         favorites,
         newsletter,
+        goods,
+        compliance,
+        byproductRecoveries,
       }): RanchData => ({
         animals,
         lots,
@@ -647,6 +673,9 @@ export const useRanchStore = create<RanchState>()(
         addresses,
         favorites,
         newsletter,
+        goods,
+        compliance,
+        byproductRecoveries,
       }),
     },
   ),
