@@ -33,7 +33,10 @@ export function SideSwitch() {
             )
           })}
         </nav>
-        <p className="hidden pb-2.5 text-sm text-leather-foreground/80 md:block">{SIDES[side].description}</p>
+        {/* A tagline that repeats the tab names; hidden from screen readers so it doesn't sit outside a landmark */}
+        <p aria-hidden className="hidden pb-2.5 text-sm text-leather-foreground/80 md:block">
+          {SIDES[side].description}
+        </p>
       </div>
     </div>
   )

@@ -48,16 +48,12 @@ export function GoodsBuyControl({ product, className, size = 'default' }: { prod
   const add = useRanchStore((s) => s.addGoodsToCart)
   const setQty = useRanchStore((s) => s.setCartQty)
   const max = maxQty(product)
+  // One-of-a-kind items can share a name ("Polished drinking horn"), so their buttons name the animal too.
+  const name = product.unique && product.sourceTagIds[0] ? `${product.name} from ${product.sourceTagIds[0]}` : product.name
 
   if (max <= 0) {
     return (
-      <Button
-        disabled
-        variant="secondary"
-        size={size}
-        className={className}
-        aria-label={`${product.name} is ${product.unique ? 'sold' : 'sold out'}`}
-      >
+      <Button disabled variant="secondary" size={size} className={className} aria-label={`${name} is ${product.unique ? 'sold' : 'sold out'}`}>
         {product.unique ? 'Sold' : 'Sold out'}
       </Button>
     )
@@ -72,9 +68,9 @@ export function GoodsBuyControl({ product, className, size = 'default' }: { prod
           className={className}
           onClick={() => {
             setQty(line.id, 0)
-            toast(`${product.name} removed from your cart`)
+            toast(`${name} removed from your cart`)
           }}
-          aria-label={`${product.name} is in your cart. Remove it`}
+          aria-label={`${name} is in your cart. Remove it`}
         >
           <Check aria-hidden />
           In cart
@@ -99,14 +95,14 @@ export function GoodsBuyControl({ product, className, size = 'default' }: { prod
       className={className}
       onClick={() => {
         add(product.id, 1)
-        toast.success(`${product.name} added to your cart`, {
+        toast.success(`${name} added to your cart`, {
           description: product.unique
             ? 'One of a kind. It’s held in your cart until you check out.'
             : `${formatCurrency(product.price, true)} / ${product.unit}`,
           action: { label: 'View cart', onClick: () => navigate('/cart') },
         })
       }}
-      aria-label={`Add ${product.name} to cart`}
+      aria-label={`Add ${name} to cart`}
     >
       <ShoppingCart aria-hidden />
       Add

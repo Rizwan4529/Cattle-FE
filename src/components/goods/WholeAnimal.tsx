@@ -179,7 +179,17 @@ function amount(raw: number, unit: 'lb' | 'each', name: string) {
  * Diagram + part buttons + what the chosen part becomes, what's for sale from
  * it, and the "one animal = $X beef + $Y ranch goods" total.
  */
-export function WholeAnimalExplorer({ compact = false, className }: { compact?: boolean; className?: string }) {
+export function WholeAnimalExplorer({
+  compact = false,
+  headingLevel = 3,
+  className,
+}: {
+  compact?: boolean
+  /** Level of the part-name heading: 2 when the explorer sits right under the page title */
+  headingLevel?: 2 | 3
+  className?: string
+}) {
+  const Heading = headingLevel === 2 ? 'h2' : 'h3'
   const id = useId()
   const goods = useRanchStore((s) => s.goods)
   const [selected, setSelected] = useState<ByproductPartId>('hide')
@@ -223,9 +233,9 @@ export function WholeAnimalExplorer({ compact = false, className }: { compact?: 
 
       <div className="grid content-start gap-4">
         <section id={`${id}-detail`} aria-live="polite" aria-labelledby={`${id}-name`} className="grid gap-3 rounded-2xl border bg-card p-5">
-          <h3 id={`${id}-name`} className="text-2xl font-bold">
+          <Heading id={`${id}-name`} className="text-2xl font-bold">
             {part.name}
-          </h3>
+          </Heading>
           <p className="text-lg">Becomes: {part.becomes.toLowerCase()}.</p>
           <dl className="grid grid-cols-2 gap-3">
             <div>

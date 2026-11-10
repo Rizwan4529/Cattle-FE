@@ -21,7 +21,7 @@ export default function NothingWastedPage() {
         description={`Most of a steer leaves the processor as beef. The rest (about ${formatCurrency(total.goods)} worth of hide, horns, bones, fat, and more) usually gets thrown out or sold for pennies. We bring it home and put it to use.`}
       />
 
-      <WholeAnimalExplorer />
+      <WholeAnimalExplorer headingLevel={2} />
 
       <section aria-labelledby="how-heading" className="mt-14 grid gap-5">
         <h2 id="how-heading" className="text-3xl font-bold">

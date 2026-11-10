@@ -72,7 +72,11 @@ function BoxSection({ plan, dates }: { plan: GoodsBoxPlan; dates: string[] }) {
           />
         </div>
 
-        <aside aria-label={`Your ${plan.name}`} className="grid content-start gap-4 rounded-2xl border bg-card p-5 lg:sticky lg:top-28 lg:self-start">
+        <div
+          aria-label={`Your ${plan.name}`}
+          role="group"
+          className="grid content-start gap-4 rounded-2xl border bg-card p-5 lg:sticky lg:top-28 lg:self-start"
+        >
           <div className="aspect-video overflow-hidden rounded-xl">
             <GoodsImage art={plan.art} seed={`${plan.id}-${size}`} alt="" />
           </div>
@@ -109,7 +113,7 @@ function BoxSection({ plan, dates }: { plan: GoodsBoxPlan; dates: string[] }) {
               ))}
             </ul>
           </div>
-        </aside>
+        </div>
       </div>
     </section>
   )
