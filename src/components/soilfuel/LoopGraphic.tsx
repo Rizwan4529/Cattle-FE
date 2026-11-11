@@ -1,5 +1,5 @@
 import type { CSSProperties, ReactNode } from 'react'
-import type { LucideIcon } from 'lucide-react'
+import { type LucideIcon, RotateCcw } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 export interface LoopStep {
@@ -86,6 +86,11 @@ export function LoopGraphic({
             )
           })}
         </ol>
+        {/* On phones the ring is a list; say where it loops back to */}
+        <p aria-hidden className="mt-2 flex items-center gap-2 pl-4 text-sm font-medium text-muted-foreground sm:hidden">
+          <RotateCcw className="size-4 text-primary" />
+          Back to {steps[0].label.toLowerCase()}
+        </p>
 
         {(branch || center) && (
           <div className="mt-3 sm:absolute sm:top-1/2 sm:left-1/2 sm:mt-0 sm:w-40 sm:-translate-x-1/2 sm:-translate-y-1/2">

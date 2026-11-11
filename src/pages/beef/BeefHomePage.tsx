@@ -26,6 +26,7 @@ import { usePageTitle } from '@/lib/usePageTitle'
 import { segmentsLeft } from '@/lib/yield'
 import { heldSegments, useRanchStore } from '@/store/useRanchStore'
 import { WholeAnimalExplorer } from '@/components/goods/WholeAnimal'
+import { FourWaysSection } from '@/components/home/FourWaysSection'
 import { byproductsConfig } from '@/config/byproducts'
 
 const STEPS = [
@@ -403,6 +404,8 @@ export default function BeefHomePage() {
           <WholeAnimalExplorer />
         </section>
       )}
+
+      <FourWaysSection />
 
       <section aria-labelledby="rancher-heading" className="bg-leather py-14 text-leather-foreground lg:py-20">
         <div className="container-page grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
