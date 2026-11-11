@@ -65,7 +65,9 @@ export default function OrderConfirmationPage() {
     return d.toISOString().slice(0, 10)
   }
   const zone = zoneForZip(order.buyer.address.match(/(\d{5})$/)?.[1] ?? '')
-  const shopSteps =
+  const farm = items.filter((i) => i.farm)
+  const farmDelivery = order.farmDelivery
+  const beefShopSteps =
     beefDelivery && physical.length
       ? [
           { title: 'Order placed', body: 'Paid in full. Your receipt is on its way by email.', when: formatShortDate(order.createdAt) },
@@ -92,6 +94,27 @@ export default function OrderConfirmationPage() {
             : []),
         ]
       : []
+  // Soil & Fuel: loaded at the ranch, or one trip on the ranch truck
+  const farmSteps =
+    farm.length && farmDelivery
+      ? [
+          ...(beefShopSteps.length
+            ? []
+            : [{ title: 'Order placed', body: 'Paid in full. Your receipt is on its way by email.', when: formatShortDate(order.createdAt) }]),
+          farmDelivery.method === 'truck'
+            ? {
+                title: 'Soil & Fuel on the ranch truck',
+                body: `${ranch.owner} calls to set a delivery day${farmDelivery.miles ? ` for the ${farmDelivery.miles}-mile trip` : ''}. Show us where to dump bulk and stack bags.`,
+                when: 'Within a week',
+              }
+            : {
+                title: 'Soil & Fuel ready to load',
+                body: `At the ranch, ${ranch.location.address}. We load bulk with the tractor; bring a trailer or truck that can take the weight.`,
+                when: 'We call to set a time',
+              },
+        ]
+      : []
+  const shopSteps = [...beefShopSteps, ...farmSteps]
   const allFull = orderShares.length > 0 && orderShares.every((s) => s.pool.status !== 'open')
   const firstName = order.buyer.name.split(' ')[0]
   const earliest = orderLots.map((l) => l.pickupWindow.start).sort()[0]
@@ -160,7 +183,11 @@ export default function OrderConfirmationPage() {
                   ? 'Your deposit holds the cattle.'
                   : orderShares.length
                     ? 'Your deposit holds your share.'
-                    : 'Your beef is being packed.'}{' '}
+                    : physical.length
+                      ? 'Your order is being packed.'
+                      : farm.length
+                        ? 'Your Soil & Fuel order is set.'
+                        : 'Your order is set.'}{' '}
               A receipt goes to {order.buyer.email}.
             </p>
             <p className="mt-1 text-sm text-muted-foreground">Placed {placedOn(order.createdAt)}. Demo order: no card was charged.</p>
@@ -231,13 +258,21 @@ export default function OrderConfirmationPage() {
             {[
               ...(orderShares.length ? [['Beef shares, estimated', formatCurrency(sharesTotal, true)]] : []),
               ...(items.length
-                ? [[items.some((i) => i.kind === 'goods') ? 'Shop items' : 'Butcher Shop and gifts', formatCurrency(itemsTotal, true)]]
+                ? [[items.some((i) => i.kind === 'goods' || i.farm) ? 'Shop items' : 'Butcher Shop and gifts', formatCurrency(itemsTotal, true)]]
                 : []),
               ...(beefDelivery
                 ? [
                     [
                       beefDelivery.method === 'pickup' ? 'Ranch pickup' : beefDelivery.method === 'local' ? 'Local delivery' : 'Frozen shipping',
                       beefDelivery.cost ? formatCurrency(beefDelivery.cost, true) : 'Free',
+                    ],
+                  ]
+                : []),
+              ...(farmDelivery
+                ? [
+                    [
+                      farmDelivery.method === 'truck' ? 'Soil & Fuel, ranch truck' : 'Soil & Fuel, pickup',
+                      farmDelivery.cost ? formatCurrency(farmDelivery.cost, true) : 'Free',
                     ],
                   ]
                 : []),
@@ -255,7 +290,13 @@ export default function OrderConfirmationPage() {
                     [delivery ? 'Estimated freight' : 'Freight (you haul)', formatCurrency(order.freight)],
                   ]
                 : []),
-              ['Order total', formatCurrency(order.subtotal + order.freight + sharesTotal + itemsTotal + (beefDelivery?.cost ?? 0) - discount, true)],
+              [
+                'Order total',
+                formatCurrency(
+                  order.subtotal + order.freight + sharesTotal + itemsTotal + (beefDelivery?.cost ?? 0) + (farmDelivery?.cost ?? 0) - discount,
+                  true,
+                ),
+              ],
               [paysToday ? 'Paid today' : `Deposit paid (${depositPercent})`, formatCurrency(order.deposit, true)],
             ].map(([label, value]) => (
               <div key={label} className="flex justify-between gap-4">
@@ -402,6 +443,8 @@ export default function OrderConfirmationPage() {
               <Link to="/cattle">Browse more cattle</Link>
             ) : orderShares.length ? (
               <Link to="/beef">See more animals</Link>
+            ) : farm.length && !physical.length ? (
+              <Link to={farm.some((i) => i.farm?.division === 'fuel') ? '/fuel' : '/soil'}>Keep shopping Soil & Fuel</Link>
             ) : (
               <Link to="/shop">Back to the Butcher Shop</Link>
             )}

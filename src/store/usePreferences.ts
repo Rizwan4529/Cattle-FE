@@ -40,6 +40,9 @@ interface PreferencesState {
   /** How claimed shares are handed over once ready */
   shareHandoff: 'pickup' | 'local'
   setShareHandoff: (handoff: 'pickup' | 'local') => void
+  /** Soil & Fuel: picked up at the ranch, or delivered on the ranch truck */
+  farmDelivery: 'pickup' | 'truck'
+  setFarmDelivery: (method: 'pickup' | 'truck') => void
 }
 
 export interface Claimant {
@@ -78,6 +81,8 @@ export const usePreferences = create<PreferencesState>()(
       setPickupSlot: (pickupSlot) => set({ pickupSlot }),
       shareHandoff: 'pickup',
       setShareHandoff: (shareHandoff) => set({ shareHandoff }),
+      farmDelivery: 'pickup',
+      setFarmDelivery: (farmDelivery) => set({ farmDelivery }),
     }),
     { name: 'ranch-preferences' },
   ),

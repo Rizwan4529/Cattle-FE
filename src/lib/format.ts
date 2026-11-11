@@ -42,3 +42,6 @@ export const pricePerCwt = (pricePerHead: number, weightLb: number) => (weightLb
 
 /** Whole days from a date to the demo's "today" */
 export const daysSince = (iso: string, asOf = DEMO_TODAY) => Math.round((toDate(asOf).getTime() - toDate(iso).getTime()) / 86_400_000)
+
+/** A unit price: whole dollars when it's whole ($46), cents when it isn't ($7.50). */
+export const formatPrice = (value: number) => formatCurrency(value, !Number.isInteger(Math.round(value * 100) / 100))

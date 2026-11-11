@@ -7,7 +7,7 @@ Phases follow the user's S1–S6 list; each is finished and committed (`[FEAT]` 
 | S1 | Part 1 rebrand: CROWDER, owner Farrell, About Farrell story | Done (`1d70eef`) |
 | S2 | Data model + config for Soil and Fuel, nav entry | Done |
 | S3 | Part 4: Manure Revenue Planner + Whole Ranch summary card | Done |
-| S4 | Part 2: Soil storefront, unit switcher, coverage calculator, truckload quotes, pro accounts, dealer locator, waitlist, trust | |
+| S4 | Part 2: Soil storefront, unit switcher, coverage calculator, truckload quotes, pro accounts, dealer locator, waitlist, trust | Done |
 | S5 | Part 3 Fuel storefront + wholesale inquiry; Part 5 Production Tracker | |
 | S6 | "One ranch, four ways it pays" home section + full QA + README | |
 
@@ -79,3 +79,13 @@ Phases follow the user's S1–S6 list; each is finished and committed (`[FEAT]` 
   - **Whole Ranch** (Beef, Ranch Goods, Soil, Fuel, Live cattle) is a stacked bar of today vs. with Soil & Fuel. The palette is validated in both modes.
   - **Persist:** the store merges saved planner settings over the defaults, so new planner fields never show NaN.
   - The math is in `lib/manurePlanner.ts` (9 tests); the colors are in `lib/divisionColors.ts`.
+- **S4:** the Soil storefront.
+  - **Product pages** (`/soil`, `/soil/:id`) have a Bag / Cubic yard / Ton / Truckload switcher, a quantity stepper, live totals, stock, application rates, and a coverage calculator on both pages. Small jobs default to bags.
+  - **Truckload quotes** (`/soil/truckload`): a live delivered estimate (product + base + per mile from the ZIP); requests are saved to `truckloadQuotes`. The inbox UI comes in S5.
+  - **Pro accounts** (`/soil/pro`): a tier price table with a per bag / yard / ton toggle, plus an application form.
+  - **Find a store** (`/soil/stores`): ZIP, store-type, and product filters; nearest stores first; a map placeholder with clickable pins; and a Become a dealer form.
+  - **Trust:** what's in it and what's not, a loop graphic (reusable `LoopGraphic`), and the lab-tested badge, off by default. There's also a waitlist.
+  - **Owner:** a Soil & Fuel compliance checklist with per-product on/off switches.
+  - **Cart:** soil and fuel lines are now in the cart union, with stock checks and stock that drops on order.
+  - **Decision:** Soil & Fuel get their own delivery choice. Pickup at the ranch is free; otherwise it's one ranch-truck trip, base + per mile from the ZIP, shown in the cart, checkout, and confirmation.
+  - New `formatPrice` keeps cents on unit prices, and shared form helpers live in `lib/forms.ts`.

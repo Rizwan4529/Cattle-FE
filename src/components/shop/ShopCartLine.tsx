@@ -2,6 +2,8 @@ import { CreditCard, Repeat, Trash2, TriangleAlert } from 'lucide-react'
 import { Link } from 'react-router'
 import { CutImage } from '@/components/beef/CutImage'
 import { GoodsImage } from '@/components/goods/GoodsImage'
+import { SoilFuelImage } from '@/components/soilfuel/SoilFuelImage'
+import { soilFuelConfig } from '@/config/soilFuel'
 import { Button } from '@/components/ui/button'
 import type { BeefProduct } from '@/data/beefTypes'
 import { GOODS_BOXES } from '@/data/goods'
@@ -29,6 +31,12 @@ export function ShopCartLine({
   const first = line.packs[0] && products.find((p) => p.id === line.packs[0].productId)
   const goodsItem = item.kind === 'goods' ? goods.find((g) => g.id === item.goodsId) : undefined
   const box = item.kind === 'subscription' && item.box ? GOODS_BOXES.find((b) => b.id === item.box) : undefined
+  const farmArt =
+    item.kind === 'soil'
+      ? soilFuelConfig.soil.products.find((p) => p.id === item.productId)?.art
+      : item.kind === 'fuel'
+        ? soilFuelConfig.fuel.products.find((p) => p.id === item.productId)?.art
+        : undefined
   const stockMax = item.kind === 'product' ? (products.find((p) => p.id === item.productId)?.stock ?? 99) : goodsItem ? maxQty(goodsItem) : 20
 
   return (
@@ -38,6 +46,8 @@ export function ShopCartLine({
           <CutImage cut={first.cut} seed={item.id} photos={first.photos} alt="" />
         ) : goodsItem ? (
           <GoodsImage art={goodsItem.art} coat={goodsItem.coat} seed={goodsItem.id} alt="" />
+        ) : farmArt ? (
+          <SoilFuelImage art={farmArt} seed={item.id} alt="" />
         ) : box ? (
           <GoodsImage art={box.art} seed={box.id} alt="" />
         ) : item.kind === 'gift-card' ? (
@@ -70,8 +80,18 @@ export function ShopCartLine({
           </p>
         )}
         <div className="flex flex-wrap items-center gap-3">
-          {(item.kind === 'product' || item.kind === 'bundle' || (item.kind === 'goods' && !goodsItem?.unique)) && (
-            <QtyStepper value={line.qty} onChange={onQty} min={1} max={Math.max(1, stockMax)} label={`Quantity of ${line.title}`} />
+          {(item.kind === 'product' ||
+            item.kind === 'bundle' ||
+            item.kind === 'soil' ||
+            item.kind === 'fuel' ||
+            (item.kind === 'goods' && !goodsItem?.unique)) && (
+            <QtyStepper
+              value={line.qty}
+              onChange={onQty}
+              min={1}
+              max={item.kind === 'soil' || item.kind === 'fuel' ? 999 : Math.max(1, stockMax)}
+              label={`Quantity of ${line.title}`}
+            />
           )}
           <Button variant="ghost" size="sm" onClick={onRemove} className="text-destructive hover:text-destructive">
             <Trash2 aria-hidden />

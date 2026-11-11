@@ -25,6 +25,7 @@ export function revenueByChannel(orders: Order[]): ChannelMonth[] {
     row.shares += (o.shares ?? []).reduce((n, s) => n + s.estimatedTotal, 0)
     for (const i of o.items ?? []) {
       // Ranch Goods, and the dog chew / bone broth boxes (subscriptions that carry a goods box id)
+      if (i.kind === 'soil' || i.kind === 'fuel') continue
       if (i.kind === 'goods' || (i.kind === 'subscription' && i.ref)) row.goods += i.total
       else if (i.kind === 'subscription') row.subscriptions += i.total
       else if (i.kind !== 'gift-card') row.cuts += i.total

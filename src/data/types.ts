@@ -1,5 +1,6 @@
 /** Shared domain types. The ear tag ID (`tagId`) is the primary key for every animal. */
 
+import type { FuelCartItem, FuelProductId, FuelUnit, SoilCartItem, SoilProductId } from './soilFuelTypes'
 import type { BoxItem, FeedProgramId, ShareSize, SubscriptionFrequency, SubscriptionSize, UnfilledChoice } from './beefTypes'
 import type { GoodsBoxId } from './goodsTypes'
 
@@ -230,8 +231,9 @@ export interface GiftCardCartItem {
   addedAt: string
 }
 
-/** Everything sold in the Butcher Shop and Gifts pages */
-export type ShopCartItem = ProductCartItem | BundleCartItem | BoxCartItem | SubscriptionCartItem | GiftCardCartItem | GoodsCartItem
+/** Everything paid in full today: Butcher Shop, gifts, Ranch Goods, and Soil & Fuel */
+export type ShopCartItem =
+  ProductCartItem | BundleCartItem | BoxCartItem | SubscriptionCartItem | GiftCardCartItem | GoodsCartItem | SoilCartItem | FuelCartItem
 
 /** One cart for both sides of the site, with a line type per kind of purchase. */
 export type CartItem = LotCartItem | ShareCartItem | ShopCartItem
@@ -247,8 +249,22 @@ export interface OrderItem {
   packs?: BoxItem[]
   /** Ranch Goods units it took from stock */
   goods?: { goodsId: string; qty: number }[]
+  /** Soil or Fuel it took from stock */
+  farm?: FarmLine
   /** Product or bundle id, for one-click reorder */
   ref?: string
+}
+
+/** Soil (bag, yard, ton) or Fuel (bundle, case, pallet) in a cart line or order */
+export type FarmLine =
+  | { division: 'soil'; productId: SoilProductId; unit: SoilCartItem['unit']; qty: number }
+  | { division: 'fuel'; productId: FuelProductId; unit: FuelUnit; qty: number }
+
+/** How Soil & Fuel in an order gets to the customer: picked up at the ranch, or one trip on the ranch truck. */
+export interface FarmDelivery {
+  method: 'pickup' | 'truck'
+  cost: number
+  miles?: number
 }
 
 /** How Butcher Shop beef in an order gets to the customer. */
@@ -288,6 +304,8 @@ export interface Order {
   /** Butcher Shop items, gift cards, and subscriptions (paid in full) */
   items?: OrderItem[]
   beefDelivery?: BeefDelivery
+  /** How Soil & Fuel items get to the customer */
+  farmDelivery?: FarmDelivery
   /** How claimed shares are handed over once the beef is ready */
   shareHandoff?: 'pickup' | 'local'
   /** Promo code or gift card applied */

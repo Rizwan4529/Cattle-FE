@@ -3,6 +3,8 @@ import { ChevronLeft, CreditCard, Gift, LoaderCircle, Lock, ShieldCheck, Tag, X 
 import { Link, useNavigate } from 'react-router'
 import { toast } from 'sonner'
 import { BeefDeliveryChoice, ShareHandoffChoice, ZipChecker } from '@/components/beef/BeefDelivery'
+import { FarmDeliveryChoice } from '@/components/soilfuel/FarmDelivery'
+import { bulkTripCost } from '@/lib/soilFuel'
 import { ShareTotals } from '@/components/beef/ShareCart'
 import { FulfillmentChoice, OrderTotals } from '@/components/cart/OrderSummary'
 import { Button } from '@/components/ui/button'
@@ -88,7 +90,8 @@ export default function CheckoutPage() {
   const [code, setCode] = useState('')
   const t = useCheckoutSummary(code)
   const { cattle, shares, shop, hasLots, hasShares, hasShop, hasShopBeef } = t
-  const hasGoods = shop.lines.some((l) => l.item.kind === 'goods')
+  const hasGoods = shop.lines.some((l) => ['goods', 'soil', 'fuel'].includes(l.item.kind))
+  const { hasFarm, farmDelivery } = t
   const paysToday = hasShares || hasShop
 
   const home = addresses.find((a) => a.isDefault)
@@ -123,7 +126,8 @@ export default function CheckoutPage() {
   const cattleDelivery = hasLots && fulfillment === 'delivery'
   const beefDelivered = hasShopBeef && t.delivery.method !== 'pickup'
   const shareDelivered = hasShares && shareHandoff === 'local' && Boolean(t.zone)
-  const needsAddress = cattleDelivery || beefDelivered || shareDelivered
+  const farmTruck = hasFarm && farmDelivery.method === 'truck'
+  const needsAddress = cattleDelivery || beefDelivered || shareDelivered || farmTruck
 
   const validate = (): Errors => {
     const e: Errors = {}
@@ -140,6 +144,7 @@ export default function CheckoutPage() {
       else if (form.state && stateForZip(form.zip)?.abbr !== form.state) e.zip = `That ZIP isn't in ${form.state}. Check the ZIP or the state.`
       else if (hasShopBeef && t.delivery.method === 'local' && !zoneForZip(form.zip))
         e.zip = 'Local delivery doesn’t reach this ZIP. Choose shipping or pickup.'
+      else if (farmTruck && bulkTripCost(form.zip) === null) e.zip = 'The ranch truck doesn’t reach this ZIP. Choose pickup for Soil & Fuel.'
     }
     if (form.isGift && !form.giftTo.trim()) e.giftTo = 'Who is the gift for?'
     // No card needed when a gift card covers everything due today.
@@ -200,6 +205,7 @@ export default function CheckoutPage() {
           ? { method: t.delivery.method, cost: t.deliveryCost, pickup: t.delivery.method === 'pickup' && pickupSlot ? pickupSlot : undefined }
           : undefined,
         shareHandoff: hasShares ? (shareDelivered ? 'local' : 'pickup') : undefined,
+        farmDelivery: hasFarm ? { method: farmDelivery.method, cost: farmDelivery.cost, miles: farmDelivery.miles } : undefined,
         discount:
           t.promo?.ok && (t.promoDiscount || t.giftCardAmount || t.promo.freeShipping)
             ? { code: t.promo.code, amount: t.promo.kind === 'gift-card' ? t.giftCardAmount : t.promoDiscount, kind: t.promo.kind }
@@ -375,14 +381,20 @@ export default function CheckoutPage() {
             </div>
           </Section>
 
-          {(hasShopBeef || hasShares) && (
-            <Section id={`${id}-beef`} title={`${next()}. Getting your beef`}>
+          {(hasShopBeef || hasShares || hasFarm) && (
+            <Section id={`${id}-beef`} title={`${next()}. ${hasShopBeef || hasShares ? 'Getting your order' : 'Getting your Soil & Fuel'}`}>
               <ZipChecker summary={t} />
               {hasShopBeef && (
                 <div className="grid gap-3" id={`${id}-slot`} tabIndex={-1}>
                   <h3 className="text-lg font-bold">{hasGoods ? 'Shop order' : 'Butcher Shop order'}</h3>
                   <BeefDeliveryChoice summary={t} />
                   {err('slot')}
+                </div>
+              )}
+              {hasFarm && (
+                <div className="grid gap-3">
+                  <h3 className="text-lg font-bold">Soil & Fuel</h3>
+                  <FarmDeliveryChoice summary={t} />
                 </div>
               )}
               {hasShares && (
@@ -643,6 +655,12 @@ export default function CheckoutPage() {
                 <div className="flex items-baseline justify-between gap-4">
                   <dt className="text-muted-foreground">{t.delivery.label}</dt>
                   <dd className="font-semibold">{t.deliveryCost ? formatCurrency(t.deliveryCost, true) : 'Free'}</dd>
+                </div>
+              )}
+              {hasFarm && (
+                <div className="flex items-baseline justify-between gap-4">
+                  <dt className="text-muted-foreground">{farmDelivery.method === 'truck' ? 'Soil & Fuel, ranch truck' : 'Soil & Fuel, pickup'}</dt>
+                  <dd className="font-semibold">{farmDelivery.cost ? formatCurrency(farmDelivery.cost, true) : 'Free'}</dd>
                 </div>
               )}
             </dl>

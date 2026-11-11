@@ -34,6 +34,8 @@ import { byproductsConfig } from '@/config/byproducts'
 import { batchUnits, defaultSettings } from '@/lib/byproducts'
 import { products as seedProducts } from '@/data/products'
 import { plannerDefaults } from '@/config/manurePlanner'
+import { soilFuelConfig } from '@/config/soilFuel'
+import { fuelBundles, tonsPerYard } from '@/lib/soilFuel'
 import {
   seedCompostBatches,
   seedDealerApplications,
@@ -55,8 +57,10 @@ import type {
   FuelInquiry,
   FuelProductId,
   FuelStock,
+  FuelUnit,
   PlannerSettings,
   ProApplication,
+  SoilCartItem,
   SoilFuelCompliance,
   SoilProductId,
   SoilStock,
@@ -162,6 +166,10 @@ interface RanchActions {
   addGiftCardToCart: (input: Omit<GiftCardCartItem, 'kind' | 'id' | 'addedAt'>) => void
   /** Adds units of a Ranch Goods item (merging with the same item already in the cart; one-of-a-kind stays at 1). */
   addGoodsToCart: (goodsId: string, qty?: number) => void
+  /** Soil by the bag, yard, or ton (truckloads are quoted). Adds to a matching line. */
+  addSoilToCart: (productId: SoilProductId, unit: SoilCartItem['unit'], qty?: number) => void
+  /** Fuel by the bundle, case, or pallet. */
+  addFuelToCart: (productId: FuelProductId, unit: FuelUnit, qty?: number) => void
   /** Sets the quantity of a product, bundle, or Ranch Goods line (0 removes it). */
   setCartQty: (lineId: string, qty: number) => void
   /** Removes any line that has an id (everything but cattle lots). */
@@ -250,6 +258,12 @@ interface RanchActions {
   setSoilFuelEnabled: (productId: SoilProductId | FuelProductId, enabled: boolean) => void
   /** Owner: updates a Soil & Fuel compliance requirement's progress. */
   setSoilFuelCompliance: (id: ComplianceRequirementId, patch: Partial<Omit<ComplianceStatus, 'updatedAt'>>) => void
+  /** Soil: a truckload quote request (lands in the owner's quote inbox). */
+  submitTruckloadQuote: (q: Omit<TruckloadQuote, 'id' | 'createdAt' | 'status' | 'quoted'>) => TruckloadQuote
+  submitProApplication: (a: Omit<ProApplication, 'id' | 'createdAt' | 'status'>) => ProApplication
+  submitDealerApplication: (a: Omit<DealerApplication, 'id' | 'createdAt' | 'status'>) => DealerApplication
+  /** Launch-season waitlist. Returns false if that email is already on the list. */
+  joinWaitlist: (w: Omit<WaitlistSignup, 'id' | 'createdAt'>) => boolean
   /** Owner: changes Manure Revenue Planner inputs. */
   updatePlanner: (patch: Partial<PlannerSettings>) => void
   /** Owner: back to the planner's placeholder defaults. */
@@ -402,11 +416,25 @@ export const useRanchStore = create<RanchState>()(
           return { cart: [...s.cart, { kind: 'goods', id: uid('goods'), goodsId, qty: Math.min(cap, qty), addedAt: new Date().toISOString() }] }
         }),
 
+      addSoilToCart: (productId, unit, qty = 1) =>
+        set((s) => {
+          const existing = s.cart.find((i) => i.kind === 'soil' && i.productId === productId && i.unit === unit)
+          if (existing) return { cart: s.cart.map((i) => (i === existing && i.kind === 'soil' ? { ...i, qty: Math.min(999, i.qty + qty) } : i)) }
+          return { cart: [...s.cart, { kind: 'soil', id: uid('soil'), productId, unit, qty: Math.min(999, qty), addedAt: new Date().toISOString() }] }
+        }),
+
+      addFuelToCart: (productId, unit, qty = 1) =>
+        set((s) => {
+          const existing = s.cart.find((i) => i.kind === 'fuel' && i.productId === productId && i.unit === unit)
+          if (existing) return { cart: s.cart.map((i) => (i === existing && i.kind === 'fuel' ? { ...i, qty: Math.min(999, i.qty + qty) } : i)) }
+          return { cart: [...s.cart, { kind: 'fuel', id: uid('fuel'), productId, unit, qty: Math.min(999, qty), addedAt: new Date().toISOString() }] }
+        }),
+
       setCartQty: (lineId, qty) =>
         set((s) => ({
           cart: s.cart.flatMap((i) => {
-            if (!('id' in i) || i.id !== lineId || (i.kind !== 'product' && i.kind !== 'bundle' && i.kind !== 'goods')) return [i]
-            const cap = i.kind === 'goods' && s.goods.find((g) => g.id === i.goodsId)?.unique ? 1 : 99
+            if (!('id' in i) || i.id !== lineId || !['product', 'bundle', 'goods', 'soil', 'fuel'].includes(i.kind)) return [i]
+            const cap = i.kind === 'goods' && s.goods.find((g) => g.id === i.goodsId)?.unique ? 1 : i.kind === 'soil' || i.kind === 'fuel' ? 999 : 99
             return qty > 0 ? [{ ...i, qty: Math.min(cap, Math.round(qty)) }] : []
           }),
         })),
@@ -441,7 +469,24 @@ export const useRanchStore = create<RanchState>()(
           // Ranch Goods too: a one-of-a-kind hide or horn drops to 0 and shows as sold.
           const goodsTaken = new Map<string, number>()
           for (const item of order.items ?? []) for (const g of item.goods ?? []) goodsTaken.set(g.goodsId, (goodsTaken.get(g.goodsId) ?? 0) + g.qty)
+          // Soil and Fuel leave stock too: bags or bulk yards (a ton is drawn from the yards), and fuel bundles.
+          const soilStock = structuredClone(s.soilStock)
+          const fuelStock = { ...s.fuelStock }
+          for (const item of order.items ?? []) {
+            const f = item.farm
+            if (f?.division === 'soil') {
+              const p = soilFuelConfig.soil.products.find((x) => x.id === f.productId)
+              const stock = soilStock[f.productId]
+              if (f.unit === 'bag') stock.bags = Math.max(0, stock.bags - f.qty)
+              else stock.yards = Math.max(0, Math.round((stock.yards - (f.unit === 'yard' ? f.qty : p ? f.qty / tonsPerYard(p) : f.qty)) * 10) / 10)
+            } else if (f?.division === 'fuel') {
+              const p = soilFuelConfig.fuel.products.find((x) => x.id === f.productId)
+              fuelStock[f.productId] = Math.max(0, fuelStock[f.productId] - (p ? fuelBundles(p, f.unit) : 1) * f.qty)
+            }
+          }
           return {
+            soilStock,
+            fuelStock,
             goods: goodsTaken.size
               ? s.goods.map((g) => (goodsTaken.has(g.id) ? { ...g, stock: Math.max(0, g.stock - goodsTaken.get(g.id)!) } : g))
               : s.goods,
@@ -566,6 +611,12 @@ export const useRanchStore = create<RanchState>()(
             added++
           } else if (item.kind === 'box' && item.packs) {
             get().addBoxToCart(item.packs)
+            added++
+          } else if (item.farm?.division === 'soil') {
+            get().addSoilToCart(item.farm.productId, item.farm.unit, item.qty)
+            added++
+          } else if (item.farm?.division === 'fuel') {
+            get().addFuelToCart(item.farm.productId, item.farm.unit, item.qty)
             added++
           } else if (item.kind === 'goods' && item.ref) {
             const g = get().goods.find((x) => x.id === item.ref)
@@ -811,6 +862,31 @@ export const useRanchStore = create<RanchState>()(
         set((s) => ({
           soilFuelCompliance: { ...s.soilFuelCompliance, [id]: { ...s.soilFuelCompliance[id], ...patch, updatedAt: new Date().toISOString() } },
         })),
+
+      submitTruckloadQuote: (q) => {
+        const quote: TruckloadQuote = { ...q, id: uid('quote'), status: 'new', createdAt: new Date().toISOString() }
+        set((s) => ({ truckloadQuotes: [quote, ...s.truckloadQuotes] }))
+        return quote
+      },
+
+      submitProApplication: (a) => {
+        const app: ProApplication = { ...a, id: uid('pro'), status: 'new', createdAt: new Date().toISOString() }
+        set((s) => ({ proApplications: [app, ...s.proApplications] }))
+        return app
+      },
+
+      submitDealerApplication: (a) => {
+        const app: DealerApplication = { ...a, id: uid('dealer-app'), status: 'new', createdAt: new Date().toISOString() }
+        set((s) => ({ dealerApplications: [app, ...s.dealerApplications] }))
+        return app
+      },
+
+      joinWaitlist: (w) => {
+        const email = w.email.trim().toLowerCase()
+        if (get().waitlist.some((x) => x.email.toLowerCase() === email)) return false
+        set((s) => ({ waitlist: [{ ...w, email, id: uid('wait'), createdAt: new Date().toISOString() }, ...s.waitlist] }))
+        return true
+      },
 
       updatePlanner: (patch) => set((s) => ({ plannerSettings: { ...s.plannerSettings, ...patch } })),
 

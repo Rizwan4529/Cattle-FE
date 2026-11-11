@@ -78,7 +78,10 @@ const GROUPS: { label: string; links: OwnerLink[] }[] = [
     ? [
         {
           label: 'Soil & Fuel',
-          links: [{ to: '/dashboard/manure-planner', label: 'Manure revenue planner', icon: Sprout }],
+          links: [
+            { to: '/dashboard/manure-planner', label: 'Manure revenue planner', icon: Sprout },
+            { to: '/dashboard/soil-fuel-compliance', label: 'Soil & Fuel compliance', icon: ShieldCheck },
+          ],
         },
       ]
     : []),

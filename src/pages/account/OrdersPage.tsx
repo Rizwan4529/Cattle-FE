@@ -45,7 +45,9 @@ export default function OrdersPage() {
       ) : (
         <ul className="grid gap-3">
           {orders.map((o) => {
-            const canReorder = (o.items ?? []).some((i) => i.kind === 'product' || i.kind === 'bundle' || i.kind === 'box' || i.kind === 'goods')
+            const canReorder = (o.items ?? []).some(
+              (i) => i.kind === 'product' || i.kind === 'bundle' || i.kind === 'box' || i.kind === 'goods' || Boolean(i.farm),
+            )
             return (
               <li key={o.id} className="grid gap-3 rounded-2xl border bg-card p-5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
                 <div className="min-w-0">

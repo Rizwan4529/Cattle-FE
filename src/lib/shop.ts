@@ -4,9 +4,12 @@ import type { BeefProduct, BoxItem, Bundle, ProductReview, SubscriptionFrequency
 import { GOODS_BOXES } from '@/data/goods'
 import type { GoodsBoxId, GoodsProduct } from '@/data/goodsTypes'
 import { cutLabel, SUBSCRIPTION_PLANS } from '@/data/shop'
-import type { CartItem, OrderItem, ShopCartItem } from '@/data/types'
+import type { CartItem, FarmLine, OrderItem, ShopCartItem } from '@/data/types'
 import { goodsDetail, goodsLb, unitPrice } from './byproducts'
-import { formatShortDate } from './format'
+import { bagLb, fuelBundles, soilUnitPrice, tonsPerYard, unitAmount } from './soilFuel'
+import { soilFuelConfig } from '@/config/soilFuel'
+import type { FuelStock, SoilStock } from '@/data/soilFuelTypes'
+import { formatNumber, formatShortDate } from './format'
 
 /** Butcher Shop prices, boxes, and the shop part of the cart. Pure functions, tested in shop.test.ts. */
 
@@ -117,6 +120,8 @@ export interface ShopLine {
   href: string
   /** Ranch Goods units it takes from stock */
   goods: { goodsId: string; qty: number }[]
+  /** Soil or Fuel it takes from stock */
+  farm?: FarmLine
 }
 
 export interface ShopSummary {
@@ -127,7 +132,20 @@ export interface ShopSummary {
   problems: ShopLine[]
 }
 
-export function summarizeShop(cart: CartItem[], products: BeefProduct[], bundles: Bundle[], goods: GoodsProduct[] = []): ShopSummary {
+/** Soil and Fuel stock (and the owner's on/off switches) for cart checks */
+export interface FarmStock {
+  soil: SoilStock
+  fuel: FuelStock
+  enabled?: Partial<Record<string, boolean>>
+}
+
+export function summarizeShop(
+  cart: CartItem[],
+  products: BeefProduct[],
+  bundles: Bundle[],
+  goods: GoodsProduct[] = [],
+  farm?: FarmStock,
+): ShopSummary {
   const byId = new Map(products.map((p) => [p.id, p]))
   const goodsById = new Map(goods.map((g) => [g.id, g]))
   const lines: ShopLine[] = []
@@ -215,6 +233,65 @@ export function summarizeShop(cart: CartItem[], products: BeefProduct[], bundles
         problem: g.stock <= 0 ? (g.unique ? 'Already sold' : 'Sold out') : g.stock < item.qty ? `Only ${g.stock} left` : undefined,
         href: `/ranch-goods/${g.id}`,
       })
+    } else if (item.kind === 'soil') {
+      const p = soilFuelConfig.soil.products.find((x) => x.id === item.productId)
+      if (!p) continue
+      const unit = soilUnitPrice(p, item.unit)
+      const amount = unitAmount(p, item.unit)
+      const stock = farm?.soil[p.id]
+      const have = !stock ? Infinity : item.unit === 'bag' ? stock.bags : item.unit === 'yard' ? stock.yards : stock.yards * tonsPerYard(p)
+      const off = farm?.enabled && farm.enabled[p.id] === false
+      const u = soilFuelConfig.soil.units[item.unit]
+      push({
+        item,
+        title: `${p.name}, by the ${u.label.toLowerCase()}`,
+        detail:
+          item.unit === 'bag'
+            ? `${p.bagCuFt} cu ft bags, about ${bagLb(p)} lb each.`
+            : `${formatNumber(Math.round(amount.yards * item.qty * 10) / 10)} cubic yards, about ${formatNumber(Math.round(amount.tons * item.qty * 10) / 10)} tons. Loaded at the ranch or delivered.`,
+        qty: item.qty,
+        unitPrice: unit,
+        total: round2(unit * item.qty),
+        lb: 0,
+        packs: [],
+        farm: { division: 'soil', productId: p.id, unit: item.unit, qty: item.qty },
+        problem: off
+          ? 'Not for sale right now'
+          : have <= 0
+            ? 'Sold out'
+            : have < item.qty
+              ? `Only ${Math.floor(have)} ${have === 1 ? item.unit : u.plural} left`
+              : undefined,
+        href: `/soil/${p.id}`,
+      })
+    } else if (item.kind === 'fuel') {
+      const p = soilFuelConfig.fuel.products.find((x) => x.id === item.productId)
+      if (!p) continue
+      const bundles = fuelBundles(p, item.unit)
+      const have = farm ? farm.fuel[p.id] : Infinity
+      const off = farm?.enabled && farm.enabled[p.id] === false
+      const u = soilFuelConfig.fuel.units[item.unit]
+      const units = Math.floor(have / bundles)
+      push({
+        item,
+        title: `${p.name}, by the ${u.label.toLowerCase()}`,
+        detail:
+          item.unit === 'bundle' ? `${p.bundleContents}. Outdoor use only.` : `${bundles} bundles (${p.bundleContents} each). Outdoor use only.`,
+        qty: item.qty,
+        unitPrice: p.price[item.unit],
+        total: round2(p.price[item.unit] * item.qty),
+        lb: 0,
+        packs: [],
+        farm: { division: 'fuel', productId: p.id, unit: item.unit, qty: item.qty },
+        problem: off
+          ? 'Not for sale right now'
+          : units <= 0
+            ? 'Sold out'
+            : units < item.qty
+              ? `Only ${units} ${units === 1 ? item.unit : u.plural} left`
+              : undefined,
+        href: `/fuel/${p.id}`,
+      })
     } else if (item.kind === 'gift-card') {
       push({
         item,
@@ -246,6 +323,7 @@ export const toOrderItems = (lines: ShopLine[]): OrderItem[] =>
     total: l.total,
     packs: l.packs.length ? l.packs : undefined,
     goods: l.goods.length ? l.goods : undefined,
+    farm: l.farm,
     ref:
       l.item.kind === 'product'
         ? l.item.productId
@@ -253,10 +331,12 @@ export const toOrderItems = (lines: ShopLine[]): OrderItem[] =>
           ? l.item.bundleId
           : l.item.kind === 'goods'
             ? l.item.goodsId
-            : // A Ranch Goods box subscription carries its box id (sales by channel)
-              l.item.kind === 'subscription'
-              ? l.item.box
-              : undefined,
+            : l.item.kind === 'soil' || l.item.kind === 'fuel'
+              ? l.item.productId
+              : // A Ranch Goods box subscription carries its box id (sales by channel)
+                l.item.kind === 'subscription'
+                ? l.item.box
+                : undefined,
   }))
 
 // ---------------------------------------------------------------------------

@@ -3,6 +3,7 @@ import { Link } from 'react-router'
 import { toast } from 'sonner'
 import { FreezerCalculator } from '@/components/beef/FreezerCalculator'
 import { BeefDeliveryChoice, ShareHandoffChoice, ZipChecker } from '@/components/beef/BeefDelivery'
+import { FarmDeliveryChoice } from '@/components/soilfuel/FarmDelivery'
 import { ShareCartLine, ShareTotals, UnavailableShare } from '@/components/beef/ShareCart'
 import { WholeAnimalExtras } from '@/components/goods/GoodsCrossSell'
 import { ShopCartLine } from '@/components/shop/ShopCartLine'
@@ -47,7 +48,7 @@ export default function CartPage() {
   const hasShares = shares.lines.length > 0 || shares.unavailable.length > 0
   const shop = summarizeShop(cart, products, BUNDLES, goods)
   const hasShop = shop.lines.length > 0
-  const hasGoods = shop.lines.some((l) => l.item.kind === 'goods')
+  const hasGoods = shop.lines.some((l) => ['goods', 'soil', 'fuel'].includes(l.item.kind))
   // Show section headings only when the cart mixes kinds of purchase.
   const mixed = [hasShares, hasShop, hasLots].filter(Boolean).length > 1
   // Same numbers as checkout, including Butcher Shop delivery.
@@ -222,11 +223,11 @@ export default function CartPage() {
             </section>
           )}
 
-          {(totals.hasShopBeef || totals.hasShares) && (
+          {(totals.hasShopBeef || totals.hasShares || totals.hasFarm) && (
             <section aria-labelledby="cart-delivery" className="grid gap-5 rounded-2xl border bg-card p-5 sm:p-6">
               <div>
                 <h2 id="cart-delivery" className="text-2xl font-bold">
-                  Getting your beef
+                  {totals.hasShopBeef || totals.hasShares ? 'Getting your order' : 'Getting your Soil & Fuel'}
                 </h2>
                 <p className="mt-1 text-muted-foreground">Check your ZIP for local delivery and shipping. You can change this at checkout.</p>
               </div>
@@ -235,6 +236,12 @@ export default function CartPage() {
                 <div className="grid gap-3">
                   <h3 className="text-lg font-bold">{hasGoods ? 'Shop order' : 'Butcher Shop order'}</h3>
                   <BeefDeliveryChoice summary={totals} />
+                </div>
+              )}
+              {totals.hasFarm && (
+                <div className="grid gap-3">
+                  <h3 className="text-lg font-bold">Soil & Fuel</h3>
+                  <FarmDeliveryChoice summary={totals} />
                 </div>
               )}
               {totals.hasShares && (
@@ -288,6 +295,14 @@ export default function CartPage() {
                   <dd className="font-semibold tabular-nums">{totals.deliveryCost ? formatCurrency(totals.deliveryCost, true) : 'Free'}</dd>
                 </div>
               )}
+              {totals.hasFarm && (
+                <div className="mt-2 flex items-baseline justify-between gap-4">
+                  <dt className="text-muted-foreground">
+                    {totals.farmDelivery.method === 'truck' ? 'Soil & Fuel, ranch truck' : 'Soil & Fuel, pickup'}
+                  </dt>
+                  <dd className="font-semibold tabular-nums">{totals.farmDelivery.cost ? formatCurrency(totals.farmDelivery.cost, true) : 'Free'}</dd>
+                </div>
+              )}
             </dl>
           )}
           {summary.lines.length > 0 && (
@@ -327,9 +342,13 @@ export default function CartPage() {
           <p className="text-sm text-muted-foreground">
             {shares.lines.length
               ? 'Shares in your cart are held for you. Nothing is harvested until the animal is fully claimed.'
-              : hasShop
+              : totals.hasShopBeef
                 ? 'Frozen beef ships Monday to Wednesday, or pick it up at the ranch store.'
-                : 'Nothing is final until the ranch calls you. Come see the cattle before they load if you like.'}
+                : totals.hasFarm
+                  ? 'Soil & Fuel load at the ranch, or ride the ranch truck to you.'
+                  : hasShop
+                    ? 'Gift cards are emailed on the day you pick; subscriptions ship on their schedule.'
+                    : 'Nothing is final until the ranch calls you. Come see the cattle before they load if you like.'}
           </p>
         </aside>
       </div>
