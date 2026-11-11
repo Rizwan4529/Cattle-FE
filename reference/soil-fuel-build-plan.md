@@ -9,7 +9,7 @@ Phases follow the user's S1–S6 list; each is finished and committed (`[FEAT]` 
 | S3 | Part 4: Manure Revenue Planner + Whole Ranch summary card | Done |
 | S4 | Part 2: Soil storefront, unit switcher, coverage calculator, truckload quotes, pro accounts, dealer locator, waitlist, trust | Done |
 | S5 | Part 3 Fuel storefront + wholesale inquiry; Part 5 Production Tracker | Done |
-| S6 | "One ranch, four ways it pays" home section + full QA + README | |
+| S6 | "One ranch, four ways it pays" home section + full QA + README | Done |
 
 ## S2 plan
 
@@ -99,3 +99,17 @@ Phases follow the user's S1–S6 list; each is finished and committed (`[FEAT]` 
   - **Analytics:** Soil and Fuel are their own channels in Sales by channel (with sample sales).
     - **Decision:** soil is rust and fuel is magenta. Seven channels only pass the palette checks with these, in this order. The Whole Ranch card uses the same colors, and all five pass at 3:1.
   - **Accessibility:** per-card buttons carry their windrow or batch name for screen readers.
+- **S6:** the "One ranch, four ways it pays" home section, then full QA. All phases S1–S6 are done.
+  - **Home section:** cards for Beef, Ranch Goods, Soil, and Fuel next to the loop graphic, with fuel branching off manure + hay.
+  - **QA results:**
+    - **Crawl:** 227 pages at 375px with no 404s (the not-found check was verified), no horizontal overflow, and no runtime errors.
+    - **axe:** clean in light and dark at 1280 and 375 on 24 pages (home, About, both storefronts, cart, checkout, and every new owner page).
+    - **Mixed cart:** a beef quarter share, Ranch Goods tallow, 3 bags of Garden Blend, and a case of fuel logs, delivered by ranch truck. Checkout succeeded, every stock count dropped, and the confirmation lists every part.
+    - **Reset demo data** restores every Soil & Fuel slice and the planner.
+    - **Product switch:** a product switched off disappears from the store, its page 404s, and it blocks a cart line.
+    - `npm run build`, `tsc`, `eslint`, and 148 tests pass.
+  - **Fixes:**
+    - The cart page now uses the shared checkout summary, so switched-off products and stock levels are checked.
+    - The mail-order table on home is a focusable region.
+    - The wholesale inbox no longer overflows with a long email.
+    - The reset text now covers the new data.

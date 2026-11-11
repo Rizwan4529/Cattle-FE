@@ -1,12 +1,16 @@
 # CROWDER — every part of the ranch, put to work (demo)
 
-A frontend-only sales demo for **CROWDER**, the Farrell family's cattle ranch in Colorado. Every animal has an ear tag, a camera-chute scan record, and a page of its own. The site has two sides, switched with the **Buy Beef | Buy Cattle** tabs at the top of every page:
+A frontend-only sales demo for **CROWDER**, the Farrell family's cattle ranch in Colorado. Every animal has an ear tag, a camera-chute scan record, and a page of its own. The site has three sides, switched with the **Buy Beef | Soil & Fuel | Buy Cattle** tabs at the top of every page:
 
 - **Buy Beef** (the home page): families claim a share of one animal they choose, fill out a cut sheet, or buy steaks, boxes, a Ranch Box subscription, and gifts in the Butcher Shop. Every share and pack traces back to an ear tag.
 - **Ranch Goods** (`/ranch-goods`, under Buy Beef): everything else from the animal (tallow, bones, dog chews, hides, horn, garden meal). One-of-a-kind hides and horns link to the exact animal they came from. The owner dashboard shows the money currently left with the processor.
+- **Soil & Fuel** (`/soil`, `/fuel`): what the herd leaves behind, put to work.
+  - **CROWDER Soil:** compost made from the herd's manure and the ranch's own alfalfa, sold by the bag, cubic yard, ton, or truckload.
+  - **CROWDER Fuel:** pressed, sun-dried fire logs and briquettes, sold by the bundle, case, or pallet.
+  - **For the owner:** a manure revenue planner, a production tracker, and the inboxes.
 - **Buy Cattle** (`/livestock`): the livestock marketplace. Lots of cattle to buy outright or make an offer on, and tools for the owner to send lots to auction partners.
 
-There is **no backend**. All data is mock data, and everything a visitor does (cart, orders, claims, cut sheets, offers, herd edits, imports, new lots, sends, account details, wholesale inquiries, byproduct records) is saved in the browser's localStorage.
+There is **no backend**. All data is mock data, and everything a visitor does (cart, orders, claims, cut sheets, offers, herd edits, imports, new lots, sends, account details, wholesale inquiries, byproduct records, soil and fuel stock, batches, quotes, applications, the manure planner) is saved in the browser's localStorage.
 
 ## Run it
 
@@ -18,7 +22,7 @@ npm run dev      # http://localhost:5173
 npm run build    # type-check and production build into dist/
 npm run preview  # serve the production build
 npm run lint
-npm test         # unit tests (Vitest): beef math, cut sheets, shop, delivery, profit calculator, mock data
+npm test         # unit tests (Vitest): beef math, cut sheets, shop, delivery, profit, Ranch Goods, Soil & Fuel, manure planner, mock data
 ```
 
 ### Deploying
@@ -48,6 +52,27 @@ npm test         # unit tests (Vitest): beef math, cut sheets, shop, delivery, p
    - **Byproduct inventory:** record what came back per animal (what's missing shows in red), then turn raw fat or bones into stock.
    - **Wholesale inquiries:** reply to inquiries or mark them handled.
    - **Compliance checklist:** visible to the owner only.
+
+## A five-minute demo: Soil & Fuel
+
+1. **Home** (`/`). **One ranch, four ways it pays** shows Beef, Ranch Goods, Soil, and Fuel beside the loop: pasture, cattle, beef, manure and hay, compost, and back to pasture, with fuel logs branching off.
+2. **Soil & Fuel → Soil** (`/soil`).
+   - Open a product and switch **Bag / Cubic yard / Ton / Truckload**: the price, amount, and price per yard update.
+   - Try the **coverage calculator**: 5,000 sq ft of topdress works out to about 4 yards. Small jobs point to bags, and big fields to truckloads.
+   - Add something to the cart in one click.
+3. **Truckload quote** (`/soil/truckload`). Enter a ZIP like `80134` to see a mock delivered price (base + per mile from the ranch), then request it.
+4. **Pro accounts** (`/soil/pro`): tier prices and an application form. **Find a store** (`/soil/stores`): filter by ZIP, store type, or product, tap a map pin, or apply to become a dealer. The waitlist is at the bottom of the Soil and Fuel pages.
+5. **Fuel** (`/fuel`): logs, briquettes, campfire bundles, and the cow-chip gift pack.
+   - Buy by the bundle, the case, or the pallet.
+   - Product pages give burn times, how it's made, storage tips, and an outdoor-use note.
+   - **Wholesale** (`/fuel/wholesale`) is for campgrounds, stores, and institutions.
+6. **Mixed cart.** Put a beef share, a Ranch Goods item, soil bags, and a case of fuel in the cart. Soil & Fuel have their own delivery choice: free pickup at the ranch, or one trip on the ranch truck priced from your ZIP.
+7. **Owner → Soil & Fuel** in the dashboard sidebar:
+   - **Manure revenue planner:** every input is editable, with a compost / fuel / pasture slider, "what one ton of manure earns" side by side, equipment payback, and a 12-month chart (by season or evenly).
+   - **Production tracker:** compost windrows with temperature logs against the 131–160 °F band, turns, and stages through to bagged stock; fuel batches with moisture readings, stages, and packing; editable inventory with low-stock alerts.
+   - **Soil & Fuel inbox:** quote requests, pro and dealer applications, fuel inquiries, and the waitlist.
+   - **Compliance:** requirement status and a switch for each product.
+   - The **Overview** opens with the **Whole ranch** card (all five ways the ranch earns, a year ahead), and **Sales by channel** now includes Soil and Fuel.
 
 ## A five-minute demo: Buy Cattle
 
@@ -90,6 +115,28 @@ Everything about byproducts is in **`src/config/byproducts.ts`**:
 
 The catalog (seeded from the mockup), subscription boxes, cross-sell lists, and conversion recipes are in `src/data/goods.ts`.
 
+## Soil & Fuel settings
+
+Everything for the two divisions is in **`src/config/soilFuel.ts`**:
+
+- **Switches:** `soilEnabled` and `fuelEnabled` hide a whole division, and the owner's compliance page can also switch off any single product.
+- **Soil products** (Garden Blend, Lawn & Turf Topdress, Ag-Grade Bulk Compost, Potting & Raised Bed Mix):
+  - What each is made of, best uses, and application rates per use (depth, or tons per acre).
+  - Weight per cubic yard, bag size, and prices per bag, yard, and ton.
+  - The compliance requirements each needs.
+- **Truckloads and delivery:** yards and maximum tons per load, the truckload discount, delivery base + per mile (ZIP → miles uses rough Colorado ZIP centers in `src/data/coloradoZips.ts`), the farthest delivery, and delivery windows.
+- **Pro tiers** (Retail, Pro, Contractor, Wholesale & ag) and the buyer kinds.
+- **Fuel products:** the four types from the research spreadsheet, with burn times, bundle contents, bundles per case, cases per pallet, and prices per bundle / case / pallet. Also here: the six process steps, storage tips, and the outdoor-use note.
+- **Trust:** `labTested` stays **off** until batches are tested by an outside lab. Also the "what's in it / what's not" lists.
+- **Owner-only compliance requirements** (registration, labels, lab testing, compost permit, air quality, fuel labels, fire safety), production targets (temperature band, hot days, turns, curing days, fuel moisture), and low-stock levels.
+- **⚠ Every number is a placeholder.** Prices, densities, rates, burn times, delivery rates, and production targets are rough figures, labeled "Estimate" on the site. Confirm them, then set `estimatesConfirmed: true`.
+
+**Manure Revenue Planner** defaults (head count, manure per head, collection rate, moisture loss, hay blend and cost, allocation, prices, labor, equipment, packaging, delivery, and monthly seasonality) are in **`src/config/manurePlanner.ts`**, marked "confirm with your own numbers".
+- The owner's edits are saved in the browser, and **Back to the defaults** restores them.
+- "Bundles you can sell a year" caps fuel sales, because the research sheet warns manure fuel is a small market.
+
+Mock stores are in `src/data/dealers.ts`; seed stock, batches, quotes, and applications are in `src/data/soilFuel.ts`.
+
 ## Rebrand the site
 
 Everything brand-related is in **`src/config/ranch.ts`**:
@@ -109,14 +156,15 @@ The browser-tab icon is a static file at `public/favicon.svg`. Update its letter
 
 | Folder | What's in it |
 | --- | --- |
-| `src/config/` | `ranch.ts`: branding, contact, and colors. `beef.ts`: beef prices, policies, delivery, promo codes |
+| `src/config/` | `ranch.ts`: branding, contact, colors, and the About Farrell story. `beef.ts`: beef prices, policies, delivery, promo codes. `byproducts.ts`: Ranch Goods. `soilFuel.ts` and `manurePlanner.ts`: Soil & Fuel |
 | `src/data/` | Typed mock data: `animals.ts` (44 head), `lots.ts` (10 lots), `partners.ts` (28 sale barns from the PDF, plus marketplace channels), `market.ts` (sample prices and sales history), `offers.ts`, `geo.ts`, `types.ts` |
 | `src/data/` (beef) | `beefTypes.ts`, `pools.ts` (share pools at every stage), `products.ts` (Butcher Shop packs, each tied to a harvested animal), `shop.ts` (cuts, bundles, Ranch Box plans, reviews), `beefFaq.ts`, `beefSales.ts` (sample beef sales) |
 | `src/data/` (Ranch Goods) | `goodsTypes.ts`, `goods.ts` (catalog, what came back from each harvested animal, conversion recipes and batches, subscription boxes, cross-sells, wholesale inquiries) |
+| `src/data/` (Soil & Fuel) | `soilFuelTypes.ts`, `soilFuel.ts` (stock, compliance, quotes, applications, waitlist, inquiries, compost and fuel batches), `dealers.ts`, `coloradoZips.ts` |
 | `src/store/` | Zustand stores. `useRanchStore` holds the demo data (herd, lots, pools, products, cart, orders, cut sheets, account) and saves it to localStorage. `usePreferences` holds light/dark, which side of the site you're on, ZIP codes, and delivery choices. |
-| `src/lib/` | Logic with no UI: lot stats, filters, freight, chute scan timing, CSV import and export, cart math, dashboard numbers. Beef: `yield.ts`, `cutSheet.ts`, `shop.ts`, `delivery.ts`, `useCheckoutSummary.ts`, `poolAdmin.ts`, `processorExport.ts`, `profit.ts`, `beefAnalytics.ts`. Ranch Goods: `byproducts.ts` (tier prices, compliance, value per animal, what share buyers' extras take, what wasn't recovered, herd projection, storefront filters). Tests sit next to them as `*.test.ts`. |
-| `src/components/` | Grouped by area: `layout/`, `cattle/` (`CattleImage`, `EarTag`), `beef/` (fill meter, claim dialog, carcass diagram, `CutImage`, delivery choices), `goods/` (`GoodsImage`, cards, cross-sells, the Whole Animal diagram), `shop/`, `lots/`, `lot/`, `animal/`, `scan/`, `dashboard/`, `syndicate/`, `cart/`, and `ui/` (shadcn/ui) |
-| `src/pages/` | One file per route. Beef pages in `pages/beef/` and `pages/shop/`; Ranch Goods in `pages/goods/`; customer account in `pages/account/` (shares `AccountLayout`); owner pages in `pages/dashboard/` (share `OwnerLayout`) |
+| `src/lib/` | Logic with no UI: lot stats, filters, freight, chute scan timing, CSV import and export, cart math, dashboard numbers. Beef: `yield.ts`, `cutSheet.ts`, `shop.ts`, `delivery.ts`, `useCheckoutSummary.ts`, `poolAdmin.ts`, `processorExport.ts`, `profit.ts`, `beefAnalytics.ts`. Ranch Goods: `byproducts.ts` (tier prices, compliance, value per animal, what share buyers' extras take, what wasn't recovered, herd projection, storefront filters). Soil & Fuel: `soilFuel.ts` (unit conversions, truckload and delivered prices, coverage calculator, tiers, store distance, production checks, low stock), `manurePlanner.ts` (the planner and the Whole Ranch projection), `divisionColors.ts`. Tests sit next to them as `*.test.ts`. |
+| `src/components/` | Grouped by area: `layout/`, `cattle/` (`CattleImage`, `EarTag`), `beef/` (fill meter, claim dialog, carcass diagram, `CutImage`, delivery choices), `goods/` (`GoodsImage`, cards, cross-sells, the Whole Animal diagram), `soilfuel/` (`SoilFuelImage`, coverage calculator, loop graphic, trust section, waitlist, Soil & Fuel delivery choice), `about/` (the About Farrell story), `home/` (including **One ranch, four ways it pays**), `shop/`, `lots/`, `lot/`, `animal/`, `scan/`, `dashboard/`, `syndicate/`, `cart/`, and `ui/` (shadcn/ui) |
+| `src/pages/` | One file per route. Beef pages in `pages/beef/` and `pages/shop/`; Ranch Goods in `pages/goods/`; Soil in `pages/soil/` and Fuel in `pages/fuel/`; customer account in `pages/account/` (shares `AccountLayout`); owner pages in `pages/dashboard/` (share `OwnerLayout`) |
 | `reference/sample-csv/` | Sample files for the CSV import, with a README explaining each |
 
 ### Mock data notes
@@ -140,9 +188,15 @@ This demo fakes everything below. Each needs a backend:
 - **Share pools for real buyers.** Claims are saved per browser, so every visitor sees their own copy of each fill meter. The live "Mike from Omaha just claimed…" activity is simulated.
 - **Processor and fulfillment.** Harvest booking, processor cut-sheet export, shipping labels, delivery routes, and pickup slots are mock. Production needs the processor's schedule, real cold-chain shipping, and balance invoices from actual hanging weights.
 - **Recurring billing and gift cards.** The Ranch Box doesn't charge again; gift cards and promo codes are checked only in the browser.
-- **Inventory.** Butcher Shop and Ranch Goods stock is per browser; a real shop needs one shared count, so a one-of-a-kind hide can't sell twice.
+- **Inventory.** Butcher Shop, Ranch Goods, and Soil & Fuel stock is per browser; a real shop needs one shared count, so a one-of-a-kind hide can't sell twice.
 - **Ranch Goods compliance.** Edible items need inspected processing and labels, pet chews need state feed registration, and garden meal needs fertilizer registration. The checklist tracks this but can't do it. Byproduct yields and prices are placeholders until the rancher confirms them.
 - **Wholesale replies.** Replies are saved in the browser, not emailed.
+- **Soil & Fuel launch.**
+  - Compost needs Colorado Department of Agriculture registration (soil amendment or fertilizer), compliant labels, and lab testing before the "Lab tested" badge can go on. Manure fuel needs an air-quality check with CDPHE and the county.
+  - Delivered prices use straight-line distance from rough ZIP centers × a road factor; a real quote needs a routing API.
+  - Quotes, pro and dealer applications, and the waitlist are saved in the browser and not emailed.
+  - The store map is a placeholder for a real map.
+  - Every Soil & Fuel price and planner number is a placeholder.
 - **Selling by the cut** needs USDA- or state-inspected processing and labeling (`sellByTheCut` in `src/config/beef.ts`).
 
 - **Accounts and sign-in.** The dashboard is open to anyone and shows a mock "Logged in as Owner" badge. Customer sign-in accepts any password and keeps the account in the browser.

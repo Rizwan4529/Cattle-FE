@@ -13,6 +13,18 @@ The byproduct store, nose-to-tail explorer, byproduct rights in the share flow, 
 - **Estimates:** `src/config/byproducts.ts` holds placeholder yields and prices; pass `withSettings(config, byproductSettings)` anywhere the owner's own numbers should apply.
 - **Zustand 5:** never `.filter()` inside a selector (`useRanchStore((s) => s.goods.filter(...))`). It returns a new array every render and loops. Select the array, then filter.
 
+## CROWDER rebrand and Soil & Fuel (SPEC-SOIL-FUEL)
+
+The rebrand (CROWDER, owner Farrell) and the Soil & Fuel divisions were built in phases S1–S6. The plan, decisions, and a per-phase log are in `reference/soil-fuel-build-plan.md`. Notes:
+- **Store:** persist version 5.
+  - Soil & Fuel slices: `soilFuelEnabled`, `soilFuelCompliance`, `soilStock`, `fuelStock`, `truckloadQuotes`, `proApplications`, `dealerApplications`, `waitlist`, `fuelInquiries`, `compostBatches`, `fuelBatches`, `plannerSettings`.
+  - The persist `merge` fills new planner fields from `plannerDefaults`, so adding a planner input doesn't need a version bump.
+- **Cart:** `kind: 'soil'` (bag/yard/ton) and `kind: 'fuel'` (bundle/case/pallet) lines; `OrderItem.farm` records what left stock; `Order.farmDelivery` holds pickup or ranch truck.
+  - `summarizeShop` needs the farm stock argument to flag low stock and switched-off products. Use `useCheckoutSummary().shop`, never a bare `summarizeShop` call.
+- **Nav:** a third side, `soil`, in `nav.ts` (`SIDE_ORDER`); `/soil*` and `/fuel*` belong to it.
+- **Colors:** five-division colors are in `lib/divisionColors.ts`, and the seven-channel palette is on the Sales by channel page. Both were validated with the dataviz palette checker; keep the order if you add a channel.
+- **Layout gotcha:** a CSS grid with no explicit columns grows to its widest child. Lists of cards with long emails or buttons need `grid-cols-[minmax(0,1fr)]` to stay inside 375px.
+
 ## Status
 - **Done:** Phases 1 to 4. Home, Browse, Lot Detail, Animal Passport, Chute Scan (`/scan`), and the owner dashboard: one page per section in a sidebar layout (`src/components/layout/OwnerLayout.tsx`): `/dashboard`, `/dashboard/herd`, `/lots`, `/offers`, `/import`, `/settings`, `/syndicate`; old `?tab=` links redirect: overview stats and charts, herd table (search, filters, inline edit, bulk select, create lot, CSV download), lots list, offers inbox, CSV import, settings with Reset demo data. Lot builder at `/dashboard/lots/new` (accepts `?tags=CRW-1,CRW-2`) and `/dashboard/lots/:lotId/edit`.
 - **Also done (task 8):** syndication at `/dashboard/syndicate` (accepts `?lots=lot-101,lot-102`): pick lots, sale barns (search, state filter) and marketplace channels, pick a format (auction-ready CSV, standard CSV, printable lot sheet with preview), real CSV downloads, printing only the lot sheet, an animated send dialog, and a send history whose partner replies (viewed/interested) arrive over the next ~30 seconds with toasts.
