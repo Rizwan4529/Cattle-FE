@@ -40,11 +40,11 @@ export function AllNaturalBadge({ className }: { className?: string }) {
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1.5 rounded-full border border-success/40 bg-success/10 px-3 py-1 font-semibold text-success',
+        'inline-flex items-center gap-1.5 rounded-full border border-success/40 bg-success/10 px-3 py-1 font-semibold text-foreground',
         className,
       )}
     >
-      <Leaf className="size-4" aria-hidden />
+      <Leaf className="size-4 text-success" aria-hidden />
       {v.label}
     </span>
   )
