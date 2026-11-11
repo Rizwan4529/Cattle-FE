@@ -88,6 +88,7 @@ export const router = createBrowserRouter([
               { path: 'byproducts', ...page(() => import('@/pages/dashboard/ByproductInventoryPage')) },
               { path: 'wholesale', ...page(() => import('@/pages/dashboard/WholesaleInboxPage')) },
               { path: 'compliance', ...page(() => import('@/pages/dashboard/CompliancePage')) },
+              { path: 'manure-planner', ...page(() => import('@/pages/dashboard/ManurePlannerPage')) },
               { path: 'lots/new', ...page(() => import('@/pages/LotBuilderPage')) },
               { path: 'lots/:lotId/edit', ...page(() => import('@/pages/LotBuilderPage')) },
             ],

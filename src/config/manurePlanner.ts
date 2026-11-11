@@ -23,15 +23,19 @@ export const plannerDefaults: PlannerSettings = {
   hayPerTon: 0.15,
   hayCostPerTon: 190,
 
-  toCompost: 0.55,
-  toFuel: 0.15,
+  toCompost: 0.6,
+  toFuel: 0.05,
 
+  compostLbPerYard: 1100,
+  compostBagLb: 60,
   compostMix: { bag: 0.25, yard: 0.45, ton: 0.3 },
   compostPrice: { bag: 9.5, yard: 46, ton: 70 },
 
   fuelLbPerBundle: 13,
   /** Blended across bundles, cases, and pallets */
   fuelPricePerBundle: 10.5,
+  /** The research sheet's warning: outside South Asia it's a small, hard-to-find market */
+  fuelMaxBundles: 2500,
 
   laborRate: 22,
   laborHoursPerTonCompost: 0.8,

@@ -2,6 +2,7 @@ import { ScanLine, Send } from 'lucide-react'
 import { Link, useNavigate } from 'react-router'
 import { InventoryByClassChart, SalesChart, WeightDistributionChart } from '@/components/dashboard/OverviewCharts'
 import { OverviewStats } from '@/components/dashboard/OverviewStats'
+import { WholeRanchCard } from '@/components/dashboard/WholeRanchCard'
 import { Button } from '@/components/ui/button'
 import { ranch } from '@/config/ranch'
 import { classBreakdown, getOverview, indexLots, salesSeries, weightBins } from '@/lib/dashboard'
@@ -26,7 +27,7 @@ export default function OverviewPage() {
         <div className="max-w-3xl">
           <h1 className="text-4xl font-bold">Overview</h1>
           <p className="mt-2 text-lg text-muted-foreground">
-            {ranch.owner}, {ranch.name}. Your herd, lots, offers, and sales in one place.
+            {ranch.owner}, {ranch.name}. The whole ranch, your herd, lots, offers, and sales in one place.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -44,6 +45,7 @@ export default function OverviewPage() {
           </Button>
         </div>
       </div>
+      <WholeRanchCard />
       <OverviewStats overview={overview} onOpenOffers={() => navigate('/dashboard/offers')} />
       <div className="grid gap-6 xl:grid-cols-2">
         <SalesChart months={sales} className="xl:col-span-2" />

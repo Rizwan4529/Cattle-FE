@@ -14,8 +14,8 @@ function Slider({
 }: React.ComponentProps<typeof SliderPrimitive.Root> & {
   /** Accessible name for each thumb, e.g. ["Minimum weight", "Maximum weight"] */
   thumbLabels?: string[]
-  /** Spoken value for a thumb, e.g. 650 → "650 lb" */
-  getValueText?: (value: number) => string
+  /** Spoken value for a thumb, e.g. 650 → "650 lb" (index = which thumb) */
+  getValueText?: (value: number, index: number) => string
 }) {
   const _values = React.useMemo(
     () => (Array.isArray(value) ? value : Array.isArray(defaultValue) ? defaultValue : [min, max]),
@@ -46,7 +46,7 @@ function Slider({
           data-slot="slider-thumb"
           key={index}
           aria-label={thumbLabels?.[index]}
-          aria-valuetext={getValueText?.(_values[index])}
+          aria-valuetext={getValueText?.(_values[index], index)}
           className="relative block size-6 shrink-0 rounded-full border-2 border-primary bg-card shadow-sm ring-ring/50 transition-[color,box-shadow] select-none after:absolute after:-inset-2 hover:ring-3 focus-visible:ring-3 focus-visible:outline-hidden active:ring-3 disabled:pointer-events-none disabled:opacity-50"
         />
       ))}

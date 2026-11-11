@@ -250,6 +250,10 @@ interface RanchActions {
   setSoilFuelEnabled: (productId: SoilProductId | FuelProductId, enabled: boolean) => void
   /** Owner: updates a Soil & Fuel compliance requirement's progress. */
   setSoilFuelCompliance: (id: ComplianceRequirementId, patch: Partial<Omit<ComplianceStatus, 'updatedAt'>>) => void
+  /** Owner: changes Manure Revenue Planner inputs. */
+  updatePlanner: (patch: Partial<PlannerSettings>) => void
+  /** Owner: back to the planner's placeholder defaults. */
+  resetPlanner: () => void
   resetDemo: () => void
 }
 
@@ -808,6 +812,10 @@ export const useRanchStore = create<RanchState>()(
           soilFuelCompliance: { ...s.soilFuelCompliance, [id]: { ...s.soilFuelCompliance[id], ...patch, updatedAt: new Date().toISOString() } },
         })),
 
+      updatePlanner: (patch) => set((s) => ({ plannerSettings: { ...s.plannerSettings, ...patch } })),
+
+      resetPlanner: () => set({ plannerSettings: structuredClone(plannerDefaults) }),
+
       resetDemo: () => set(seed()),
     }),
     {
@@ -816,6 +824,11 @@ export const useRanchStore = create<RanchState>()(
       version: 5,
       // A changed data shape starts fresh from the seed data.
       migrate: () => seed(),
+      // New planner inputs added after a browser saved its settings fall back to the defaults.
+      merge: (persisted, current) => {
+        const saved = (persisted ?? {}) as Partial<RanchData>
+        return { ...current, ...saved, plannerSettings: { ...plannerDefaults, ...saved.plannerSettings } }
+      },
       partialize: ({
         animals,
         lots,

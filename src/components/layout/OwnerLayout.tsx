@@ -18,6 +18,7 @@ import {
   Send,
   Settings,
   Snowflake,
+  Sprout,
   Tags,
 } from 'lucide-react'
 import { NavLink, Outlet, useLocation } from 'react-router'
@@ -25,6 +26,7 @@ import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { byproductsConfig } from '@/config/byproducts'
 import { ranch } from '@/config/ranch'
+import { soilFuelConfig } from '@/config/soilFuel'
 import { isOpenOffer } from '@/lib/dashboard'
 import { cn } from '@/lib/utils'
 import { useRanchStore } from '@/store/useRanchStore'
@@ -69,6 +71,14 @@ const GROUPS: { label: string; links: OwnerLink[] }[] = [
             { to: '/dashboard/wholesale', label: 'Wholesale inquiries', icon: Inbox, showNewInquiries: true },
             { to: '/dashboard/compliance', label: 'Compliance checklist', icon: ShieldCheck },
           ],
+        },
+      ]
+    : []),
+  ...(soilFuelConfig.soilEnabled || soilFuelConfig.fuelEnabled
+    ? [
+        {
+          label: 'Soil & Fuel',
+          links: [{ to: '/dashboard/manure-planner', label: 'Manure revenue planner', icon: Sprout }],
         },
       ]
     : []),

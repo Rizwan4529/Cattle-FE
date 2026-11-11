@@ -6,7 +6,7 @@ Phases follow the user's S1–S6 list; each is finished and committed (`[FEAT]` 
 |---|---|---|
 | S1 | Part 1 rebrand: CROWDER, owner Farrell, About Farrell story | Done (`1d70eef`) |
 | S2 | Data model + config for Soil and Fuel, nav entry | Done |
-| S3 | Part 4: Manure Revenue Planner + Whole Ranch summary card | |
+| S3 | Part 4: Manure Revenue Planner + Whole Ranch summary card | Done |
 | S4 | Part 2: Soil storefront, unit switcher, coverage calculator, truckload quotes, pro accounts, dealer locator, waitlist, trust | |
 | S5 | Part 3 Fuel storefront + wholesale inquiry; Part 5 Production Tracker | |
 | S6 | "One ranch, four ways it pays" home section + full QA + README | |
@@ -70,3 +70,12 @@ Phases follow the user's S1–S6 list; each is finished and committed (`[FEAT]` 
   - Store: 12 new slices; persist version 5.
   - Nav: a third tab, Soil & Fuel, with simple `/soil` and `/fuel` pages.
   - Small jobs (1 yd or less) are pointed to bags; bulk has a 1-yard minimum.
+- **S3:** Manure Revenue Planner (`/dashboard/manure-planner`) and the Whole Ranch card at the top of the Overview.
+  - Every input is editable and saved to the store; "Back to the defaults" restores them. Inputs still on the placeholder default show an "Estimate" tag.
+  - A two-handle allocation slider splits collected manure between compost, fuel, and pasture.
+  - "What one ton of manure earns" puts compost, fuel, and pasture side by side, as the spec asks.
+  - A 12-month chart has a By season / Evenly toggle, plus a full cost table and equipment payback.
+  - **Decision:** added "Bundles you can sell a year" (default 2,500). Per ton, fuel logs earn far more than compost, but the research sheet warns the market is small. Pressing past what sells only adds labor, so the cap is what makes the comparison honest.
+  - **Whole Ranch** (Beef, Ranch Goods, Soil, Fuel, Live cattle) is a stacked bar of today vs. with Soil & Fuel. The palette is validated in both modes.
+  - **Persist:** the store merges saved planner settings over the defaults, so new planner fields never show NaN.
+  - The math is in `lib/manurePlanner.ts` (9 tests); the colors are in `lib/divisionColors.ts`.

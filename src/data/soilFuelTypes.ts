@@ -288,6 +288,9 @@ export interface PlannerSettings {
   /** Share of collected manure to each use; the rest stays on pasture */
   toCompost: number
   toFuel: number
+  /** Finished compost: lb per cubic yard, and lb per bag */
+  compostLbPerYard: number
+  compostBagLb: number
   /** How finished compost is sold, shares adding to 1 */
   compostMix: { bag: number; yard: number; ton: number }
   /** Revenue per unit */
@@ -295,6 +298,8 @@ export interface PlannerSettings {
   /** Fuel: finished lb per bundle, and blended price per bundle after case/pallet discounts */
   fuelLbPerBundle: number
   fuelPricePerBundle: number
+  /** Bundles the market will take in a year (manure fuel is a small market) */
+  fuelMaxBundles: number
   /** Costs */
   laborRate: number
   laborHoursPerTonCompost: number
