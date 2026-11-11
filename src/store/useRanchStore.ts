@@ -33,6 +33,36 @@ import type {
 import { byproductsConfig } from '@/config/byproducts'
 import { batchUnits, defaultSettings } from '@/lib/byproducts'
 import { products as seedProducts } from '@/data/products'
+import { plannerDefaults } from '@/config/manurePlanner'
+import {
+  seedCompostBatches,
+  seedDealerApplications,
+  seedFuelBatches,
+  seedFuelInquiries,
+  seedFuelStock,
+  seedProApplications,
+  seedSoilFuelCompliance,
+  seedSoilFuelEnabled,
+  seedSoilStock,
+  seedTruckloadQuotes,
+  seedWaitlist,
+} from '@/data/soilFuel'
+import type {
+  CompostBatch,
+  ComplianceRequirementId,
+  DealerApplication,
+  FuelBatch,
+  FuelInquiry,
+  FuelProductId,
+  FuelStock,
+  PlannerSettings,
+  ProApplication,
+  SoilFuelCompliance,
+  SoilProductId,
+  SoilStock,
+  TruckloadQuote,
+  WaitlistSignup,
+} from '@/data/soilFuelTypes'
 import type { Animal, CartItem, GiftCardCartItem, Lot, Offer, Order, SendRecord, ShareCartItem, SubscriptionCartItem } from '@/data/types'
 import { advancePool as stepPool, type NewPoolInput, newPool, scheduleHarvest as bookHarvest } from '@/lib/poolAdmin'
 import { isClaimable, poolSegments, quoteShare, segmentsClaimed, segmentsFor, segmentsLeft } from '@/lib/yield'
@@ -82,6 +112,22 @@ interface RanchData {
   byproductSettings: ByproductSettings
   /** Raw byproducts turned into stock */
   byproductBatches: ByproductBatch[]
+  // CROWDER Soil & Fuel (SPEC-SOIL-FUEL)
+  /** Owner's per-product on/off switches */
+  soilFuelEnabled: Record<SoilProductId | FuelProductId, boolean>
+  /** Owner's progress on each Soil & Fuel compliance requirement */
+  soilFuelCompliance: SoilFuelCompliance
+  soilStock: SoilStock
+  fuelStock: FuelStock
+  truckloadQuotes: TruckloadQuote[]
+  proApplications: ProApplication[]
+  dealerApplications: DealerApplication[]
+  waitlist: WaitlistSignup[]
+  fuelInquiries: FuelInquiry[]
+  compostBatches: CompostBatch[]
+  fuelBatches: FuelBatch[]
+  /** Manure Revenue Planner inputs */
+  plannerSettings: PlannerSettings
 }
 
 /** What else an order creates besides the order itself. */
@@ -200,6 +246,10 @@ interface RanchActions {
   setGoodsStock: (goodsId: string, stock: number) => void
   /** Owner: updates a category's compliance progress. */
   setComplianceStatus: (category: GoodsCategoryId, patch: Partial<Omit<ComplianceStatus, 'updatedAt'>>) => void
+  /** Owner: switches one Soil or Fuel product on or off in the store. */
+  setSoilFuelEnabled: (productId: SoilProductId | FuelProductId, enabled: boolean) => void
+  /** Owner: updates a Soil & Fuel compliance requirement's progress. */
+  setSoilFuelCompliance: (id: ComplianceRequirementId, patch: Partial<Omit<ComplianceStatus, 'updatedAt'>>) => void
   resetDemo: () => void
 }
 
@@ -241,6 +291,18 @@ function seed(): RanchData {
     wholesaleInquiries: structuredClone(seedWholesaleInquiries),
     byproductSettings: defaultSettings(byproductsConfig),
     byproductBatches: structuredClone(seedBatches),
+    soilFuelEnabled: structuredClone(seedSoilFuelEnabled),
+    soilFuelCompliance: structuredClone(seedSoilFuelCompliance),
+    soilStock: structuredClone(seedSoilStock),
+    fuelStock: structuredClone(seedFuelStock),
+    truckloadQuotes: structuredClone(seedTruckloadQuotes),
+    proApplications: structuredClone(seedProApplications),
+    dealerApplications: structuredClone(seedDealerApplications),
+    waitlist: structuredClone(seedWaitlist),
+    fuelInquiries: structuredClone(seedFuelInquiries),
+    compostBatches: structuredClone(seedCompostBatches),
+    fuelBatches: structuredClone(seedFuelBatches),
+    plannerSettings: structuredClone(plannerDefaults),
   }
 }
 
@@ -739,12 +801,19 @@ export const useRanchStore = create<RanchState>()(
       setComplianceStatus: (category, patch) =>
         set((s) => ({ compliance: { ...s.compliance, [category]: { ...s.compliance[category], ...patch, updatedAt: new Date().toISOString() } } })),
 
+      setSoilFuelEnabled: (productId, enabled) => set((s) => ({ soilFuelEnabled: { ...s.soilFuelEnabled, [productId]: enabled } })),
+
+      setSoilFuelCompliance: (id, patch) =>
+        set((s) => ({
+          soilFuelCompliance: { ...s.soilFuelCompliance, [id]: { ...s.soilFuelCompliance[id], ...patch, updatedAt: new Date().toISOString() } },
+        })),
+
       resetDemo: () => set(seed()),
     }),
     {
       name: 'ranch-demo-data',
-      // v4: CROWDER rebrand (CRW ear tags, Colorado mock data).
-      version: 4,
+      // v4: CROWDER rebrand (CRW ear tags, Colorado mock data). v5: Soil & Fuel slices.
+      version: 5,
       // A changed data shape starts fresh from the seed data.
       migrate: () => seed(),
       partialize: ({
@@ -771,6 +840,18 @@ export const useRanchStore = create<RanchState>()(
         wholesaleInquiries,
         byproductSettings,
         byproductBatches,
+        soilFuelEnabled,
+        soilFuelCompliance,
+        soilStock,
+        fuelStock,
+        truckloadQuotes,
+        proApplications,
+        dealerApplications,
+        waitlist,
+        fuelInquiries,
+        compostBatches,
+        fuelBatches,
+        plannerSettings,
       }): RanchData => ({
         animals,
         lots,
@@ -795,6 +876,18 @@ export const useRanchStore = create<RanchState>()(
         wholesaleInquiries,
         byproductSettings,
         byproductBatches,
+        soilFuelEnabled,
+        soilFuelCompliance,
+        soilStock,
+        fuelStock,
+        truckloadQuotes,
+        proApplications,
+        dealerApplications,
+        waitlist,
+        fuelInquiries,
+        compostBatches,
+        fuelBatches,
+        plannerSettings,
       }),
     },
   ),

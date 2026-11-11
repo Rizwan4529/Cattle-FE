@@ -1,10 +1,10 @@
 import { Link, useMatch } from 'react-router'
 import { useSide } from '@/lib/useSide'
 import { cn } from '@/lib/utils'
-import { type Side, SIDES } from './nav'
+import { SIDE_ORDER, SIDES } from './nav'
 
 /**
- * "Buy Beef | Buy Cattle": the top-level split of the site, drawn as two
+ * "Buy Beef | Soil & Fuel | Buy Cattle": the top-level split of the site, drawn as
  * folder tabs on a leather strip above the header. The active tab runs into
  * the header below it.
  */
@@ -15,8 +15,8 @@ export function SideSwitch() {
   return (
     <div className="bg-leather text-leather-foreground print:hidden">
       <div className={cn(ownerArea ? 'container-wide' : 'container-page', 'flex items-end justify-between gap-4 pt-1.5')}>
-        <nav aria-label="Shop for" className="flex gap-1">
-          {(Object.keys(SIDES) as Side[]).map((s) => {
+        <nav aria-label="Shop for" className="flex gap-0.5 sm:gap-1">
+          {SIDE_ORDER.map((s) => {
             const active = s === side
             return (
               <Link
@@ -24,7 +24,7 @@ export function SideSwitch() {
                 to={SIDES[s].to}
                 aria-current={active ? 'page' : undefined}
                 className={cn(
-                  'grid min-h-10 place-items-center rounded-t-lg px-4 font-semibold whitespace-nowrap transition-colors focus-visible:ring-3 focus-visible:ring-ring/60 focus-visible:outline-none sm:px-5',
+                  'grid min-h-10 place-items-center rounded-t-lg px-2.5 font-semibold min-[400px]:px-3.5 whitespace-nowrap transition-colors focus-visible:ring-3 focus-visible:ring-ring/60 focus-visible:outline-none sm:px-5',
                   active ? 'bg-background text-foreground' : 'text-leather-foreground/85 hover:bg-white/10 hover:text-leather-foreground',
                 )}
               >

@@ -3,6 +3,7 @@ import { Link } from 'react-router'
 import { beefConfig } from '@/config/beef'
 import { byproductsConfig } from '@/config/byproducts'
 import { ranch, ranchPhoneHref } from '@/config/ranch'
+import { soilFuelConfig } from '@/config/soilFuel'
 import { BrandMark } from './RanchBrand'
 
 const columns = [
@@ -17,6 +18,17 @@ const columns = [
       { to: '/account', label: 'Your account' },
     ],
   },
+  ...(soilFuelConfig.soilEnabled || soilFuelConfig.fuelEnabled
+    ? [
+        {
+          heading: 'Soil & Fuel',
+          links: [
+            ...(soilFuelConfig.soilEnabled ? [{ to: '/soil', label: soilFuelConfig.soil.brand }] : []),
+            ...(soilFuelConfig.fuelEnabled ? [{ to: '/fuel', label: soilFuelConfig.fuel.brand }] : []),
+          ],
+        },
+      ]
+    : []),
   {
     heading: 'Buying cattle',
     links: [
@@ -41,7 +53,7 @@ export function Footer() {
   const { location } = ranch
   return (
     <footer className="bg-leather pb-24 text-leather-foreground lg:pb-0 print:hidden">
-      <div className="container-page grid gap-10 py-12 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-[1.2fr_0.9fr_0.9fr_0.9fr_1.5fr]">
+      <div className="container-page grid gap-10 py-12 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-[1.2fr_0.9fr_0.8fr_0.9fr_0.9fr_1.4fr]">
         <div>
           <div className="flex items-center gap-3">
             <BrandMark className="h-12 text-tag" />

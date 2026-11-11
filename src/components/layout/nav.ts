@@ -4,6 +4,7 @@ import {
   CircleHelp,
   ClipboardList,
   Gauge,
+  Flame,
   Gift,
   House,
   type LucideIcon,
@@ -11,6 +12,7 @@ import {
   Route,
   ScanLine,
   Send,
+  Shovel,
   ShoppingCart,
   Store,
   UserRound,
@@ -18,6 +20,7 @@ import {
 } from 'lucide-react'
 import { beefConfig } from '@/config/beef'
 import { byproductsConfig } from '@/config/byproducts'
+import { soilFuelConfig } from '@/config/soilFuel'
 
 export interface NavItem {
   to: string
@@ -30,17 +33,23 @@ export interface NavItem {
 }
 
 /**
- * The site has two sides: Buy Beef (families buying beef) and Buy Cattle
- * (the livestock marketplace). The header switch moves between them and the
- * menus show the links for the side you're on.
+ * The site has three sides: Buy Beef (families buying beef and Ranch Goods),
+ * Soil & Fuel (CROWDER compost and manure fuel logs), and Buy Cattle (the
+ * livestock marketplace). The header switch moves between them and the menus
+ * show the links for the side you're on.
  */
-export type Side = 'beef' | 'cattle'
+export type Side = 'beef' | 'soil' | 'cattle'
 
 export const SIDES: Record<Side, { label: string; to: string; description: string }> = {
   beef: { label: 'Buy Beef', to: '/', description: 'Beef for your freezer, from one animal you choose.' },
+  soil: { label: 'Soil & Fuel', to: '/soil', description: 'Compost and fire logs made from what the ranch leaves behind.' },
   cattle: { label: 'Buy Cattle', to: '/livestock', description: 'Live cattle for ranchers, buyers, and sale barns.' },
 }
 
+/** Soil & Fuel shows only while at least one of its divisions is switched on. */
+export const SIDE_ORDER: Side[] = soilFuelConfig.soilEnabled || soilFuelConfig.fuelEnabled ? ['beef', 'soil', 'cattle'] : ['beef', 'cattle']
+
+const SOIL_PATHS = ['/soil', '/fuel']
 const BEEF_PATHS = ['/beef', '/shop', '/gifts', '/account', '/ranch-goods', '/nothing-wasted']
 const CATTLE_PATHS = ['/livestock', '/cattle', '/lots', '/scan', '/how-it-works', '/dashboard']
 
@@ -49,6 +58,7 @@ const under = (pathname: string, base: string) => pathname === base || pathname.
 /** The side a page belongs to, or null for shared pages (about, contact, cart…), which keep the side you came from. */
 export function sideForPath(pathname: string): Side | null {
   if (pathname === '/' || BEEF_PATHS.some((p) => under(pathname, p))) return 'beef'
+  if (SOIL_PATHS.some((p) => under(pathname, p))) return 'soil'
   if (CATTLE_PATHS.some((p) => under(pathname, p))) return 'cattle'
   return null
 }
@@ -67,6 +77,12 @@ export const primaryNav: Record<Side, NavItem[]> = {
     { to: '/gifts', label: 'Gifts', icon: Gift },
     // Reached from claims, orders, and the account; the menu keeps it one tap away.
     { to: '/beef/cut-sheet', label: 'Cut sheet builder', short: 'Cut sheet', icon: ClipboardList, menuOnly: true },
+    ABOUT,
+    CONTACT,
+  ],
+  soil: [
+    ...(soilFuelConfig.soilEnabled ? [{ to: '/soil', label: 'Soil', icon: Shovel }] : []),
+    ...(soilFuelConfig.fuelEnabled ? [{ to: '/fuel', label: 'Fuel', icon: Flame }] : []),
     ABOUT,
     CONTACT,
   ],
@@ -99,6 +115,12 @@ export const tabNav: Record<Side, NavItem[]> = {
     { to: '/', label: 'Home', icon: House },
     { to: '/beef', label: 'Shares', icon: Beef },
     beefConfig.sellByTheCut ? { to: '/shop', label: 'Shop', icon: Store } : { to: '/gifts', label: 'Gifts', icon: Gift },
+    { to: '/cart', label: 'Cart', icon: ShoppingCart },
+  ],
+  soil: [
+    { to: '/soil', label: 'Soil', icon: Shovel },
+    { to: '/fuel', label: 'Fuel', icon: Flame },
+    { to: '/about', label: 'About', icon: Wheat },
     { to: '/cart', label: 'Cart', icon: ShoppingCart },
   ],
   cattle: [
