@@ -31,7 +31,7 @@ function InquiryCard({ inquiry }: { inquiry: WholesaleInquiry }) {
   const categories = inquiry.categories.map((c) => byproductsConfig.categories.find((x) => x.id === c)?.name ?? c).join(', ')
 
   return (
-    <li className="grid gap-4 rounded-2xl border bg-card p-5">
+    <li className="grid grid-cols-[minmax(0,1fr)] gap-4 rounded-2xl border bg-card p-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h2 className="flex flex-wrap items-center gap-2 text-xl font-bold">
@@ -42,11 +42,11 @@ function InquiryCard({ inquiry }: { inquiry: WholesaleInquiry }) {
             {kind}. {inquiry.contact}, {formatDate(inquiry.createdAt)}.
           </p>
         </div>
-        <div className="flex flex-wrap gap-2">
-          <Button asChild variant="outline" size="sm">
+        <div className="flex min-w-0 max-w-full flex-wrap gap-2">
+          <Button asChild variant="outline" size="sm" className="max-w-full">
             <a href={`mailto:${inquiry.email}`}>
               <Mail aria-hidden />
-              {inquiry.email}
+              <span className="truncate">{inquiry.email}</span>
             </a>
           </Button>
           {inquiry.phone && (
@@ -165,7 +165,7 @@ export default function WholesaleInboxPage() {
   const open = inquiries.filter((w) => w.status !== 'handled').length
 
   return (
-    <div className="grid gap-6">
+    <div className="grid grid-cols-[minmax(0,1fr)] gap-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h1 className="text-4xl font-bold">Wholesale inquiries</h1>
@@ -186,7 +186,7 @@ export default function WholesaleInboxPage() {
         </ToggleGroup>
       </div>
       {shown.length ? (
-        <ul className="grid gap-4">
+        <ul className="grid grid-cols-[minmax(0,1fr)] gap-4">
           {shown.map((w) => (
             <InquiryCard key={w.id} inquiry={w} />
           ))}
