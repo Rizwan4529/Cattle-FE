@@ -37,7 +37,7 @@ export default function RanchBoxPage() {
     <div className="container-page pb-16">
       <PageHeader
         title="The Ranch Box"
-        description="A box of our beef at your door every month or two, picked by the Harmon family from what’s in the freezer. Skip a box or pause any time from your account."
+        description="A box of our beef at your door every month or two, picked by the Farrell family from what’s in the freezer. Skip a box or pause any time from your account."
       />
 
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_24rem]">

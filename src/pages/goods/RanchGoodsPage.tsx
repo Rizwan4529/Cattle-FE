@@ -147,7 +147,7 @@ export default function RanchGoodsPage() {
       <div className="container-page">
         {/* Search, filter, sort */}
         <div id="goods-results" className="grid scroll-mt-36 gap-3 pt-8 md:grid-cols-[minmax(0,1fr)_auto_auto_auto] md:items-center">
-          <SearchBox value={q} onChange={onSearch} placeholder="Tallow, bully stick, HCR-2672…" label="Search Ranch Goods by name, use, or ear tag" />
+          <SearchBox value={q} onChange={onSearch} placeholder="Tallow, bully stick, CRW-2672…" label="Search Ranch Goods by name, use, or ear tag" />
           <Select value={use ?? 'all'} onValueChange={(v) => update({ use: v })}>
             <SelectTrigger aria-label="Filter by use" className="h-13 min-w-40 text-base">
               <SelectValue />

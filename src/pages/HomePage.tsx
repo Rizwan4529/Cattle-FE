@@ -1,5 +1,6 @@
 import { BadgeCheck, Phone, ShieldCheck, Trees } from 'lucide-react'
 import { Link } from 'react-router'
+import { FarrellStory } from '@/components/about/FarrellStory'
 import { FeaturedLots } from '@/components/home/FeaturedLots'
 import { HeroScanCard } from '@/components/home/HeroScanCard'
 import { HowItWorksSteps } from '@/components/home/HowItWorksSteps'
@@ -53,6 +54,14 @@ export default function HomePage() {
       <MarketTicker />
       <FeaturedLots />
       <HowItWorksSteps />
+
+      <div className="container-page pt-14 lg:pt-20">
+        <FarrellStory>
+          <Button asChild variant="outline" size="lg" className="justify-self-start">
+            <Link to="/about">Read the whole story</Link>
+          </Button>
+        </FarrellStory>
+      </div>
 
       <section className="container-page py-14 lg:py-20">
         <div className="grid items-center gap-6 rounded-2xl bg-primary p-8 text-primary-foreground sm:p-10 md:grid-cols-[1fr_auto]">

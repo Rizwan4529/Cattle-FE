@@ -124,8 +124,8 @@ export const beefConfig = {
   },
 
   processor: {
-    name: 'Polk County Custom Meats',
-    city: 'Bolivar, MO',
+    name: 'High Plains Custom Meats',
+    city: 'Elizabeth, CO',
     inspection: 'USDA-inspected',
   },
 
@@ -142,19 +142,19 @@ export const beefConfig = {
 
   delivery: {
     localZones: [
-      { id: 'bolivar', name: 'Bolivar & Polk County', zipPrefixes: ['656'], fee: 0, freeOver: 0, days: 'Tuesdays and Fridays' },
-      { id: 'springfield', name: 'Springfield area', zipPrefixes: ['657', '658'], fee: 15, freeOver: 150, days: 'Fridays' },
+      { id: 'elbert', name: 'Elbert & Douglas counties', zipPrefixes: ['801'], fee: 0, freeOver: 0, days: 'Tuesdays and Fridays' },
+      { id: 'denver', name: 'Denver metro', zipPrefixes: ['800', '802'], fee: 15, freeOver: 150, days: 'Fridays' },
       {
-        id: 'joplin-kc',
-        name: 'Joplin & Kansas City metro',
-        zipPrefixes: ['648', '640', '641', '660', '661', '662'],
+        id: 'front-range',
+        name: 'Colorado Springs & northern Front Range',
+        zipPrefixes: ['808', '809', '805', '806'],
         fee: 35,
         freeOver: 300,
         days: 'Every other Saturday',
       },
     ] satisfies DeliveryZone[],
     pickup: {
-      place: 'The ranch store, 18420 County Road 211',
+      place: 'The ranch store, 24180 County Road 45',
       days: ['Thursday', 'Friday', 'Saturday'],
       slots: ['9:00–11:00 am', '1:00–3:00 pm', '4:00–6:00 pm'],
     },
@@ -181,7 +181,7 @@ export const beefConfig = {
   box: { targetLb: 15, discount: 0.1 },
 
   guarantee: {
-    title: 'The Harmon family guarantee',
+    title: 'The Farrell family guarantee',
     body: 'If any cut from our ranch isn’t the best beef you’ve had, call us. We’ll replace it or refund it, no forms and no arguing.',
   },
 }

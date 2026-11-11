@@ -27,7 +27,7 @@ export const TARGET_FIELDS: FieldSpec[] = [
     key: 'tagId',
     label: 'Ear tag',
     required: true,
-    hint: 'HCR-2417, or just 2417',
+    hint: 'CRW-2417, or just 2417',
     synonyms: ['tagid', 'tag', 'eartag', 'tagnumber', 'tagno', 'tagnum', 'visualtag', 'visualid', 'animalid', 'id'],
   },
   {
@@ -174,7 +174,7 @@ const COATS: [RegExp, CoatColor][] = [
 ]
 export const parseCoat = (s: string) => COATS.find(([re]) => re.test(s.trim().toLowerCase()))?.[1] ?? null
 
-/** "2417" → "HCR-2417"; "hcr 2417" → "HCR-2417". Anything else is kept, uppercased. */
+/** "2417" → "CRW-2417"; "crw 2417" → "CRW-2417". Anything else is kept, uppercased. */
 export function normalizeTag(s: string): { tag: string; prefixed: boolean } {
   const t = s.trim().toUpperCase()
   if (/^\d{1,6}$/.test(t)) return { tag: `${ranch.tagPrefix}-${t}`, prefixed: true }

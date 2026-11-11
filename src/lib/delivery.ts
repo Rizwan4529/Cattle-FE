@@ -47,7 +47,7 @@ export function deliveryOptions(zip: string, subtotal: number, lb: number, cfg: 
       cost: zone ? (zone.fee === 0 || (zone.freeOver > 0 && subtotal >= zone.freeOver) ? 0 : zone.fee) : 0,
       note: zone
         ? `${zone.days}.${zone.fee ? ` Free over $${zone.freeOver}.` : ' Always free.'}`
-        : 'Around Bolivar, Springfield, Joplin, and Kansas City.',
+        : 'Around Kiowa, Denver, Colorado Springs, and the northern Front Range.',
       available: Boolean(zone),
       reason: !validZip
         ? 'Enter your ZIP code to check.'

@@ -743,7 +743,8 @@ export const useRanchStore = create<RanchState>()(
     }),
     {
       name: 'ranch-demo-data',
-      version: 3,
+      // v4: CROWDER rebrand (CRW ear tags, Colorado mock data).
+      version: 4,
       // A changed data shape starts fresh from the seed data.
       migrate: () => seed(),
       partialize: ({

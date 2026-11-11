@@ -14,19 +14,19 @@ import type {
  * Ranch Goods catalog, seeded from the rancher's byproduct mockup (names,
  * descriptions, prices, units). Stock comes from six harvested animals:
  *
- * - August: HCR-2672 (horned Hereford), HCR-2678 (horned Charolais cross),
- *   HCR-2683 (Red Angus heifer). Mostly hides, horns, and hooves were kept;
+ * - August: CRW-2672 (horned Hereford), CRW-2678 (horned Charolais cross),
+ *   CRW-2683 (Red Angus heifer). Mostly hides, horns, and hooves were kept;
  *   the hides are back from the tannery as rugs.
- * - September: HCR-2690, HCR-2692 (Angus), HCR-2695 (Wagyu cross). Most parts
- *   came back; HCR-2695's hide is still at the tannery.
+ * - September: CRW-2690, CRW-2692 (Angus), CRW-2695 (Wagyu cross). Most parts
+ *   came back; CRW-2695's hide is still at the tannery.
  *
  * One-of-a-kind items (each hide and horn) have stock 1 and link to the exact
  * animal they came from. Leather, glue, and garden meal come from earlier
  * harvests or the processor, so they don't name an animal.
  */
 
-const AUGUST = ['HCR-2672', 'HCR-2678'] as const
-const SEPT = ['HCR-2690', 'HCR-2692', 'HCR-2695'] as const
+const AUGUST = ['CRW-2672', 'CRW-2678'] as const
+const SEPT = ['CRW-2690', 'CRW-2692', 'CRW-2695'] as const
 
 export const goods: GoodsProduct[] = [
   // ---------------------------------------------------------------------------
@@ -41,7 +41,7 @@ export const goods: GoodsProduct[] = [
     unit: 'lb',
     uses: ['cooking', 'home'],
     part: 'fat',
-    sourceTagIds: ['HCR-2690', 'HCR-2692'],
+    sourceTagIds: ['CRW-2690', 'CRW-2692'],
     stock: 28,
     bulk: true,
     art: 'tallow',
@@ -56,7 +56,7 @@ export const goods: GoodsProduct[] = [
     unit: 'pail',
     uses: ['crafts', 'home'],
     part: 'fat',
-    sourceTagIds: ['HCR-2690', 'HCR-2692'],
+    sourceTagIds: ['CRW-2690', 'CRW-2692'],
     stock: 6,
     bulk: true,
     art: 'pail',
@@ -70,7 +70,7 @@ export const goods: GoodsProduct[] = [
     unit: 'lb',
     uses: ['cooking', 'home'],
     part: 'fat',
-    sourceTagIds: ['HCR-2692'],
+    sourceTagIds: ['CRW-2692'],
     stock: 12,
     bulk: true,
     art: 'suet',
@@ -84,7 +84,7 @@ export const goods: GoodsProduct[] = [
     unit: 'bar',
     uses: ['home'],
     part: 'fat',
-    sourceTagIds: ['HCR-2690'],
+    sourceTagIds: ['CRW-2690'],
     stock: 36,
     bulk: true,
     // Soap isn't food, so it doesn't need an inspected source.
@@ -157,7 +157,7 @@ export const goods: GoodsProduct[] = [
     unit: 'lb',
     uses: ['cooking', 'pets'],
     part: 'organs',
-    sourceTagIds: ['HCR-2690', 'HCR-2692'],
+    sourceTagIds: ['CRW-2690', 'CRW-2692'],
     stock: 7,
     art: 'heart',
   },
@@ -201,7 +201,7 @@ export const goods: GoodsProduct[] = [
     unit: 'bag',
     uses: ['pets'],
     part: 'tendons',
-    sourceTagIds: ['HCR-2690', 'HCR-2692'],
+    sourceTagIds: ['CRW-2690', 'CRW-2692'],
     stock: 3,
     art: 'tendon',
   },
@@ -214,7 +214,7 @@ export const goods: GoodsProduct[] = [
     unit: 'each',
     uses: ['pets'],
     part: 'ears',
-    sourceTagIds: ['HCR-2683', ...SEPT],
+    sourceTagIds: ['CRW-2683', ...SEPT],
     stock: 12,
     art: 'ear',
   },
@@ -240,7 +240,7 @@ export const goods: GoodsProduct[] = [
     unit: 'each',
     uses: ['pets'],
     part: 'hooves',
-    sourceTagIds: ['HCR-2683', 'HCR-2690', 'HCR-2692'],
+    sourceTagIds: ['CRW-2683', 'CRW-2690', 'CRW-2692'],
     stock: 12,
     art: 'hoof',
   },
@@ -253,7 +253,7 @@ export const goods: GoodsProduct[] = [
     unit: 'each',
     uses: ['pets'],
     part: 'bones',
-    sourceTagIds: ['HCR-2692', 'HCR-2695'],
+    sourceTagIds: ['CRW-2692', 'CRW-2695'],
     stock: 6,
     art: 'knuckle',
   },
@@ -262,7 +262,7 @@ export const goods: GoodsProduct[] = [
   // Hides & Leather: each hide is one of a kind
   // ---------------------------------------------------------------------------
   {
-    id: 'hide-rug-hcr-2672',
+    id: 'hide-rug-crw-2672',
     name: 'Hereford cowhide rug',
     category: 'hides',
     description: 'Hair-on, tanned. Red with a white face line and belly, from one horned Hereford steer.',
@@ -271,7 +271,7 @@ export const goods: GoodsProduct[] = [
     uses: ['home'],
     part: 'hide',
     unique: true,
-    sourceTagIds: ['HCR-2672'],
+    sourceTagIds: ['CRW-2672'],
     stock: 1,
     bulk: true,
     details: ['About 5 × 7 ft', 'Red and white', 'Tanned in October'],
@@ -280,7 +280,7 @@ export const goods: GoodsProduct[] = [
     featured: true,
   },
   {
-    id: 'hide-rug-hcr-2678',
+    id: 'hide-rug-crw-2678',
     name: 'Cream Charolais cowhide rug',
     category: 'hides',
     description: 'Hair-on, tanned. A big, even cream hide from one Charolais-cross steer.',
@@ -289,7 +289,7 @@ export const goods: GoodsProduct[] = [
     uses: ['home'],
     part: 'hide',
     unique: true,
-    sourceTagIds: ['HCR-2678'],
+    sourceTagIds: ['CRW-2678'],
     stock: 1,
     bulk: true,
     details: ['About 6 × 7 ft', 'Cream', 'Tanned in October'],
@@ -297,7 +297,7 @@ export const goods: GoodsProduct[] = [
     coat: 'charolais',
   },
   {
-    id: 'hide-rug-hcr-2683',
+    id: 'hide-rug-crw-2683',
     name: 'Red Angus cowhide rug',
     category: 'hides',
     description: 'Hair-on, tanned. Solid deep red from one grass-finished heifer.',
@@ -306,7 +306,7 @@ export const goods: GoodsProduct[] = [
     uses: ['home'],
     part: 'hide',
     unique: true,
-    sourceTagIds: ['HCR-2683'],
+    sourceTagIds: ['CRW-2683'],
     stock: 1,
     bulk: true,
     details: ['About 5 × 6 ft', 'Solid red', 'Tanned in October'],
@@ -314,7 +314,7 @@ export const goods: GoodsProduct[] = [
     coat: 'red',
   },
   {
-    id: 'raw-hide-hcr-2690',
+    id: 'raw-hide-crw-2690',
     name: 'Raw salted hide',
     category: 'hides',
     description: 'Salted and folded, ready to tan yourself or for craft. Black, from one Angus steer.',
@@ -323,7 +323,7 @@ export const goods: GoodsProduct[] = [
     uses: ['crafts'],
     part: 'hide',
     unique: true,
-    sourceTagIds: ['HCR-2690'],
+    sourceTagIds: ['CRW-2690'],
     stock: 1,
     bulk: true,
     details: ['About 65 lb green weight', 'Black', 'Salted in September'],
@@ -339,7 +339,7 @@ export const goods: GoodsProduct[] = [
     unit: 'each',
     uses: ['crafts'],
     part: 'hide',
-    sourceTagIds: ['HCR-2692'],
+    sourceTagIds: ['CRW-2692'],
     stock: 2,
     bulk: true,
     art: 'rawhide',
@@ -377,7 +377,7 @@ export const goods: GoodsProduct[] = [
   // Horn, Bone & Craft: each horn is one of a kind
   // ---------------------------------------------------------------------------
   {
-    id: 'drinking-horn-hcr-2672',
+    id: 'drinking-horn-crw-2672',
     name: 'Polished drinking horn',
     category: 'craft',
     description: 'Left horn of a Hereford steer, polished and food-safe sealed. Comes with a wooden stand.',
@@ -386,14 +386,14 @@ export const goods: GoodsProduct[] = [
     uses: ['home', 'crafts'],
     part: 'horns',
     unique: true,
-    sourceTagIds: ['HCR-2672'],
+    sourceTagIds: ['CRW-2672'],
     stock: 1,
     details: ['About 14 in along the curve', 'Honey and cream'],
     art: 'drinking-horn',
     featured: true,
   },
   {
-    id: 'horn-hcr-2672',
+    id: 'horn-crw-2672',
     name: 'Cleaned cow horn',
     category: 'craft',
     description: 'Right horn of the same Hereford steer. Raw and degreased, ready to carve or polish.',
@@ -402,14 +402,14 @@ export const goods: GoodsProduct[] = [
     uses: ['crafts'],
     part: 'horns',
     unique: true,
-    sourceTagIds: ['HCR-2672'],
+    sourceTagIds: ['CRW-2672'],
     stock: 1,
     bulk: true,
     details: ['About 13 in along the curve'],
     art: 'horn',
   },
   {
-    id: 'drinking-horn-hcr-2678',
+    id: 'drinking-horn-crw-2678',
     name: 'Polished drinking horn',
     category: 'craft',
     description: 'Left horn of a Charolais-cross steer, polished and food-safe sealed. Comes with a wooden stand.',
@@ -418,13 +418,13 @@ export const goods: GoodsProduct[] = [
     uses: ['home', 'crafts'],
     part: 'horns',
     unique: true,
-    sourceTagIds: ['HCR-2678'],
+    sourceTagIds: ['CRW-2678'],
     stock: 1,
     details: ['About 15 in along the curve', 'Pale with a dark tip'],
     art: 'drinking-horn',
   },
   {
-    id: 'horn-hcr-2678',
+    id: 'horn-crw-2678',
     name: 'Cleaned cow horn',
     category: 'craft',
     description: 'Right horn of the same Charolais-cross steer. Raw and degreased.',
@@ -433,7 +433,7 @@ export const goods: GoodsProduct[] = [
     uses: ['crafts'],
     part: 'horns',
     unique: true,
-    sourceTagIds: ['HCR-2678'],
+    sourceTagIds: ['CRW-2678'],
     stock: 1,
     bulk: true,
     details: ['About 15 in along the curve'],
@@ -462,7 +462,7 @@ export const goods: GoodsProduct[] = [
     unit: 'oz',
     uses: ['crafts'],
     part: 'tendons',
-    sourceTagIds: ['HCR-2690', 'HCR-2692'],
+    sourceTagIds: ['CRW-2690', 'CRW-2692'],
     stock: 10,
     art: 'sinew',
   },
@@ -529,19 +529,19 @@ export const goods: GoodsProduct[] = [
  * shows it as money not recovered.
  */
 export const byproductRecoveries: ByproductRecovery[] = [
-  { tagId: 'HCR-2672', recovered: { hide: 1, horns: 2, hooves: 4 }, note: 'First harvest where we asked for the hide and horns back.' },
-  { tagId: 'HCR-2678', recovered: { hide: 1, horns: 2, hooves: 4 } },
-  { tagId: 'HCR-2683', recovered: { hide: 1, hooves: 4, ears: 2 } },
+  { tagId: 'CRW-2672', recovered: { hide: 1, horns: 2, hooves: 4 }, note: 'First harvest where we asked for the hide and horns back.' },
+  { tagId: 'CRW-2678', recovered: { hide: 1, horns: 2, hooves: 4 } },
+  { tagId: 'CRW-2683', recovered: { hide: 1, hooves: 4, ears: 2 } },
   {
-    tagId: 'HCR-2690',
+    tagId: 'CRW-2690',
     recovered: { hide: 1, fat: 45, bones: 30, organs: 15, tail: 2.5, tendons: 4, ears: 2, trachea: 1, hooves: 4, pizzle: 1 },
   },
   {
-    tagId: 'HCR-2692',
+    tagId: 'CRW-2692',
     recovered: { hide: 1, fat: 52, bones: 35, organs: 15, tail: 2.5, tendons: 3, ears: 2, trachea: 1, hooves: 4, pizzle: 1 },
   },
   {
-    tagId: 'HCR-2695',
+    tagId: 'CRW-2695',
     recovered: { hide: 1, bones: 32, organs: 14, tail: 2.5, ears: 2, trachea: 1, pizzle: 1 },
     note: 'Hide is still at the tannery. The processor rendered the fat; ask for it back next time.',
   },
@@ -551,7 +551,7 @@ export const byproductRecoveries: ByproductRecovery[] = [
 export const seedCompliance: Record<GoodsCategoryId, ComplianceStatus> = {
   tallow: { state: 'in-progress', note: 'Rendered at our USDA-inspected processor. Label approval pending.', updatedAt: '2026-10-20' },
   bones: { state: 'cleared', note: 'Cut and packed at our USDA-inspected processor.', updatedAt: '2026-09-18' },
-  'dog-chews': { state: 'in-progress', note: 'Missouri commercial feed registration filed. Waiting on the label review.', updatedAt: '2026-10-28' },
+  'dog-chews': { state: 'in-progress', note: 'Colorado commercial feed registration filed. Waiting on the label review.', updatedAt: '2026-10-28' },
   hides: { state: 'cleared', note: 'No registration needed for hides and leather.', updatedAt: '2026-08-10' },
   craft: { state: 'cleared', note: 'No registration needed for horn and craft goods.', updatedAt: '2026-08-10' },
   garden: { state: 'not-started', note: 'Needs a state fertilizer registration and a guaranteed-analysis label.', updatedAt: '2026-08-10' },
@@ -628,23 +628,23 @@ export const seedWholesaleInquiries: WholesaleInquiry[] = [
     kind: 'soap-candle',
     contact: 'Jenna Ruiz',
     email: 'jenna@prairielye.example',
-    phone: '(417) 555-0148',
+    phone: '(719) 555-0148',
     categories: ['tallow'],
     volume: 'About 40 lb of rendered tallow a month',
-    message: 'We make cold-process soap in Springfield and want a local, grass-fed tallow source. Can you do 5 lb pails on a standing order?',
+    message: 'We make cold-process soap in Colorado Springs and want a local, grass-fed tallow source. Can you do 5 lb pails on a standing order?',
     status: 'new',
     createdAt: '2026-11-04T15:12:00.000Z',
   },
   {
     id: 'wholesale-seed-2',
-    business: 'Ozark Barkery',
+    business: 'Front Range Barkery',
     kind: 'pet-treats',
     contact: 'Marcus Lee',
-    email: 'marcus@ozarkbarkery.example',
-    phone: '(417) 555-0193',
+    email: 'marcus@frontrangebarkery.example',
+    phone: '(303) 555-0193',
     categories: ['dog-chews'],
     volume: '50 bully sticks and 30 ears every other month',
-    message: 'Two pet stores in Bolivar and Springfield. Customers ask where our chews come from, and a named ranch would sell.',
+    message: 'Two pet stores in Castle Rock and Parker. Customers ask where our chews come from, and a named ranch would sell.',
     status: 'replied',
     reply: 'Thanks, Marcus. We can do about half that volume per harvest for now. Sending a price sheet.',
     createdAt: '2026-10-22T18:40:00.000Z',

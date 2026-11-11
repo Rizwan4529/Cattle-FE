@@ -160,7 +160,7 @@ export interface ShareCartItem {
   id: string
   poolId: string
   size: ShareSize
-  /** How the claim shows on the fill meter, e.g. "Sarah · Kansas City" */
+  /** How the claim shows on the fill meter, e.g. "Sarah · Denver" */
   firstName: string
   city: string
   state: string

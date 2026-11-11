@@ -16,28 +16,28 @@ const HOUR = 3_600_000
 
 /** Neighbors who claim shares, for seeded claims and the live activity toasts. */
 export const CLAIMANTS: { firstName: string; city: string; state: string }[] = [
-  { firstName: 'Sarah', city: 'Kansas City', state: 'MO' },
-  { firstName: 'Mike', city: 'Omaha', state: 'NE' },
-  { firstName: 'Jen', city: 'Joplin', state: 'MO' },
-  { firstName: 'Tom', city: 'Bentonville', state: 'AR' },
-  { firstName: 'Dale', city: 'Springfield', state: 'MO' },
-  { firstName: 'Rosa', city: 'Tulsa', state: 'OK' },
-  { firstName: 'Brian', city: 'Lee’s Summit', state: 'MO' },
-  { firstName: 'Amy', city: 'Columbia', state: 'MO' },
-  { firstName: 'Carlos', city: 'Bolivar', state: 'MO' },
-  { firstName: 'Karen', city: 'Ozark', state: 'MO' },
-  { firstName: 'Greg', city: 'Branson', state: 'MO' },
-  { firstName: 'Mary', city: 'Nixa', state: 'MO' },
-  { firstName: 'Luke', city: 'Wichita', state: 'KS' },
-  { firstName: 'Priya', city: 'Overland Park', state: 'KS' },
-  { firstName: 'Dan', city: 'Fayetteville', state: 'AR' },
-  { firstName: 'Hannah', city: 'Lincoln', state: 'NE' },
-  { firstName: 'Josh', city: 'Lebanon', state: 'MO' },
-  { firstName: 'Ellen', city: 'St. Louis', state: 'MO' },
-  { firstName: 'Ray', city: 'Des Moines', state: 'IA' },
-  { firstName: 'Tasha', city: 'Jefferson City', state: 'MO' },
-  { firstName: 'Kyle', city: 'Pittsburg', state: 'KS' },
-  { firstName: 'Beth', city: 'Rogers', state: 'AR' },
+  { firstName: 'Sarah', city: 'Denver', state: 'CO' },
+  { firstName: 'Mike', city: 'Cheyenne', state: 'WY' },
+  { firstName: 'Jen', city: 'Colorado Springs', state: 'CO' },
+  { firstName: 'Tom', city: 'Laramie', state: 'WY' },
+  { firstName: 'Dale', city: 'Castle Rock', state: 'CO' },
+  { firstName: 'Rosa', city: 'Pueblo', state: 'CO' },
+  { firstName: 'Brian', city: 'Parker', state: 'CO' },
+  { firstName: 'Amy', city: 'Fort Collins', state: 'CO' },
+  { firstName: 'Carlos', city: 'Kiowa', state: 'CO' },
+  { firstName: 'Karen', city: 'Elizabeth', state: 'CO' },
+  { firstName: 'Greg', city: 'Monument', state: 'CO' },
+  { firstName: 'Mary', city: 'Franktown', state: 'CO' },
+  { firstName: 'Luke', city: 'Goodland', state: 'KS' },
+  { firstName: 'Priya', city: 'Boulder', state: 'CO' },
+  { firstName: 'Dan', city: 'Santa Fe', state: 'NM' },
+  { firstName: 'Hannah', city: 'Scottsbluff', state: 'NE' },
+  { firstName: 'Josh', city: 'Limon', state: 'CO' },
+  { firstName: 'Ellen', city: 'Aurora', state: 'CO' },
+  { firstName: 'Ray', city: 'Greeley', state: 'CO' },
+  { firstName: 'Tasha', city: 'Lakewood', state: 'CO' },
+  { firstName: 'Kyle', city: 'Sterling', state: 'CO' },
+  { firstName: 'Beth', city: 'Loveland', state: 'CO' },
 ]
 
 const person = (name: string) => CLAIMANTS.find((c) => c.firstName === name)!
@@ -61,11 +61,11 @@ interface PoolSeed {
 }
 
 const SEEDS: PoolSeed[] = [
-  { tagId: 'HCR-2701', status: 'open', claims: [], deadlineDays: 27.2, createdDaysAgo: 2 },
-  { tagId: 'HCR-2703', status: 'open', claims: [['quarter', 'Sarah', 5]], deadlineDays: 19.4, createdDaysAgo: 9 },
-  { tagId: 'HCR-2706', status: 'open', claims: [['half', 'Dale', 8, 'roll-over']], deadlineDays: 12.6, createdDaysAgo: 14 },
+  { tagId: 'CRW-2701', status: 'open', claims: [], deadlineDays: 27.2, createdDaysAgo: 2 },
+  { tagId: 'CRW-2703', status: 'open', claims: [['quarter', 'Sarah', 5]], deadlineDays: 19.4, createdDaysAgo: 9 },
+  { tagId: 'CRW-2706', status: 'open', claims: [['half', 'Dale', 8, 'roll-over']], deadlineDays: 12.6, createdDaysAgo: 14 },
   {
-    tagId: 'HCR-2708',
+    tagId: 'CRW-2708',
     status: 'open',
     claims: [
       ['quarter', 'Mike', 12],
@@ -75,9 +75,9 @@ const SEEDS: PoolSeed[] = [
     deadlineDays: 3.26,
     createdDaysAgo: 22,
   },
-  { tagId: 'HCR-2709', status: 'open', claims: [['quarter', 'Rosa', 20, 'roll-over']], deadlineDays: 1.8, createdDaysAgo: 28 },
+  { tagId: 'CRW-2709', status: 'open', claims: [['quarter', 'Rosa', 20, 'roll-over']], deadlineDays: 1.8, createdDaysAgo: 28 },
   {
-    tagId: 'HCR-2711',
+    tagId: 'CRW-2711',
     status: 'harvest-scheduled',
     claims: [
       ['half', 'Brian', 26],
@@ -91,7 +91,7 @@ const SEEDS: PoolSeed[] = [
     agingDays: 21,
   },
   {
-    tagId: 'HCR-2712',
+    tagId: 'CRW-2712',
     status: 'dry-aging',
     claims: [['whole', 'Karen', 21]],
     deadlineDays: -21,
@@ -102,7 +102,7 @@ const SEEDS: PoolSeed[] = [
     dressing: 0.618,
   },
   {
-    tagId: 'HCR-2714',
+    tagId: 'CRW-2714',
     status: 'cut-wrap',
     claims: [
       ['half', 'Greg', 40],
@@ -116,7 +116,7 @@ const SEEDS: PoolSeed[] = [
     dressing: 0.626,
   },
   {
-    tagId: 'HCR-2715',
+    tagId: 'CRW-2715',
     status: 'ready',
     claims: [
       ['quarter', 'Luke', 50],

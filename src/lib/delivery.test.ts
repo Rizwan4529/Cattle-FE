@@ -6,17 +6,17 @@ const option = (zip: string, subtotal: number, lb: number, method: string) => de
 
 describe('delivery zones', () => {
   it('matches ZIPs to local zones by their first three digits', () => {
-    expect(zoneForZip('65613')?.id).toBe('bolivar')
-    expect(zoneForZip('65804')?.id).toBe('springfield')
-    expect(zoneForZip('64111')?.id).toBe('joplin-kc')
+    expect(zoneForZip('80117')?.id).toBe('elbert')
+    expect(zoneForZip('80205')?.id).toBe('denver')
+    expect(zoneForZip('80903')?.id).toBe('front-range')
     expect(zoneForZip('10001')).toBeUndefined()
-    expect(zoneForZip('656')).toBeUndefined()
+    expect(zoneForZip('801')).toBeUndefined()
   })
 
   it('makes local delivery free over the zone threshold', () => {
-    expect(option('65804', 100, 10, 'local').cost).toBe(15)
-    expect(option('65804', 150, 10, 'local').cost).toBe(0)
-    expect(option('65613', 20, 2, 'local').cost).toBe(0)
+    expect(option('80205', 100, 10, 'local').cost).toBe(15)
+    expect(option('80205', 150, 10, 'local').cost).toBe(0)
+    expect(option('80117', 20, 2, 'local').cost).toBe(0)
   })
 
   it('only offers local delivery inside a zone', () => {
@@ -54,7 +54,7 @@ describe('pickupDates', () => {
 describe('applyCode', () => {
   const card: GiftCard = {
     id: 'g',
-    code: 'HCR-ABCD-1234',
+    code: 'CRW-ABCD-1234',
     amount: 100,
     balance: 60,
     fromName: 'A',
@@ -83,13 +83,13 @@ describe('applyCode', () => {
   })
 
   it('applies a gift card balance, up to what’s due today', () => {
-    expect(applyCode('hcr-abcd-1234', { beefSubtotal: 0, payToday: 400, giftCards: [card] })).toMatchObject({
+    expect(applyCode('crw-abcd-1234', { beefSubtotal: 0, payToday: 400, giftCards: [card] })).toMatchObject({
       ok: true,
       kind: 'gift-card',
       discount: 60,
     })
-    expect(applyCode('HCR-ABCD-1234', { beefSubtotal: 0, payToday: 40, giftCards: [card] })).toMatchObject({ discount: 40 })
-    expect(applyCode('HCR-ABCD-1234', { beefSubtotal: 0, payToday: 40, giftCards: [{ ...card, balance: 0 }] }).ok).toBe(false)
+    expect(applyCode('CRW-ABCD-1234', { beefSubtotal: 0, payToday: 40, giftCards: [card] })).toMatchObject({ discount: 40 })
+    expect(applyCode('CRW-ABCD-1234', { beefSubtotal: 0, payToday: 40, giftCards: [{ ...card, balance: 0 }] }).ok).toBe(false)
   })
 
   it('rejects unknown codes', () => {

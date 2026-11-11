@@ -94,7 +94,7 @@ export function maxQty(product: GoodsProduct) {
   return product.unique ? Math.min(1, product.stock) : product.stock
 }
 
-/** "From HCR-2672" / "From HCR-2690, HCR-2692 and 1 more" / "" */
+/** "From CRW-2672" / "From CRW-2690, CRW-2692 and 1 more" / "" */
 export function sourceLabel(product: Pick<GoodsProduct, 'sourceTagIds'>) {
   const tags = product.sourceTagIds
   if (!tags.length) return ''

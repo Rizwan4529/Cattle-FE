@@ -55,6 +55,8 @@ export function DashboardSettings() {
             ['Email', ranch.email],
             ['Address', `${ranch.location.address}, ${ranch.location.city}, ${ranch.location.state} ${ranch.location.zip}`],
             ['Ear tag prefix', ranch.tagPrefix],
+            ['About Farrell story', ranch.story.confirmed ? 'Confirmed' : 'Placeholder copy, confirm it'],
+            ['“All Natural” wording', ranch.values.allNatural.enabled ? `On: ${ranch.values.allNatural.label}` : 'Off'],
           ].map(([label, value]) => (
             <div key={label} className="min-w-0 border-t pt-2">
               <dt className="text-sm text-muted-foreground">{label}</dt>

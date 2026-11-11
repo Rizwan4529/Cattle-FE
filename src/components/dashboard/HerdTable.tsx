@@ -13,6 +13,7 @@ import { downloadText } from '@/lib/chuteScan'
 import { HERD_CLASSES, type HerdClassId, herdCsv, herdCsvName, type HerdStatus, herdStatus, indexLots, type LotIndex } from '@/lib/dashboard'
 import { formatAge, formatNumber } from '@/lib/format'
 import { COAT_LABELS, SEX_LABELS } from '@/lib/labels'
+import { ranch } from '@/config/ranch'
 import { useMediaQuery } from '@/lib/useMediaQuery'
 import { cn } from '@/lib/utils'
 import { useRanchStore } from '@/store/useRanchStore'
@@ -121,7 +122,7 @@ export function HerdTable() {
   const q = query
     .trim()
     .toLowerCase()
-    .replace(/^hcr-?/, '')
+    .replace(new RegExp(`^${ranch.tagPrefix.toLowerCase()}-?`), '')
   const classMatch = HERD_CLASSES.find((c) => c.id === classId)?.match
   const visible = animals
     .filter((a) => !classMatch || classMatch(a))

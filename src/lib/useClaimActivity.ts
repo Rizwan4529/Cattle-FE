@@ -10,7 +10,7 @@ const MAX_MS = 40_000
 
 /**
  * Demo activity on the beef pages: every 20–40 seconds a neighbor claims a
- * share ("Mike from Omaha just claimed a quarter of HCR-2708") and the fill
+ * share ("Mike from Omaha just claimed a quarter of CRW-2708") and the fill
  * meters update. Switch it off under Owner → Settings.
  */
 export function useClaimActivity() {

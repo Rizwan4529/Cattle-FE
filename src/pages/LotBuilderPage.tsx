@@ -164,7 +164,7 @@ function LotBuilderForm({ existing, initialTags }: { existing?: Lot; initialTags
   const q = query
     .trim()
     .toLowerCase()
-    .replace(/^hcr-?/, '')
+    .replace(new RegExp(`^${ranch.tagPrefix.toLowerCase()}-?`), '')
   const classMatch = HERD_CLASSES.find((c) => c.id === classFilter)?.match
   const listed = available
     .filter((a) => show !== 'selected' || form.selected.has(a.tagId))

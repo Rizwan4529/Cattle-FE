@@ -38,7 +38,7 @@ export function ZipChecker({ summary, compact }: { summary: CheckoutSummary; com
         }}
         inputMode="numeric"
         autoComplete="postal-code"
-        placeholder="e.g. 65804"
+        placeholder="e.g. 80205"
         className="max-w-40"
         aria-describedby={`${id}-zip-result`}
       />

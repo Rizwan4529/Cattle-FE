@@ -99,8 +99,8 @@ describe('tier pricing', () => {
   })
 
   it('caps one-of-a-kind items at 1', () => {
-    expect(maxQty(product('hide-rug-hcr-2672'))).toBe(1)
-    expect(maxQty({ ...product('hide-rug-hcr-2672'), stock: 0 })).toBe(0)
+    expect(maxQty(product('hide-rug-crw-2672'))).toBe(1)
+    expect(maxQty({ ...product('hide-rug-crw-2672'), stock: 0 })).toBe(0)
     expect(maxQty(product('soup-bones'))).toBe(30)
   })
 })
@@ -133,8 +133,8 @@ describe('value per animal', () => {
   })
 
   it('values what each harvested animal left with the processor', () => {
-    const r2695 = byproductRecoveries.find((r) => r.tagId === 'HCR-2695')!
-    const report = recoveryReport(config, r2695, byTag.get('HCR-2695'))
+    const r2695 = byproductRecoveries.find((r) => r.tagId === 'CRW-2695')!
+    const report = recoveryReport(config, r2695, byTag.get('CRW-2695'))
     const fatLine = report.parts.find((p) => p.part === 'fat')!
     expect(fatLine.lost).toBe(50)
     expect(fatLine.lostValue).toBe(valueOfRaw(fat, 50).net)
@@ -147,7 +147,7 @@ describe('value per animal', () => {
 describe('storefront filters', () => {
   it('searches by name and ear tag', () => {
     expect(filterGoods(goods, { q: 'bully' }).map((g) => g.id)).toEqual(['bully-stick-12', 'bully-stick-6'])
-    expect(filterGoods(goods, { q: 'hcr-2678' }).every((g) => g.sourceTagIds.includes('HCR-2678'))).toBe(true)
+    expect(filterGoods(goods, { q: 'crw-2678' }).every((g) => g.sourceTagIds.includes('CRW-2678'))).toBe(true)
   })
 
   it('filters by category, use, and price', () => {
@@ -207,7 +207,7 @@ describe('owner numbers and inventory', () => {
     expect(onHand.fat).toBe(5)
     expect(onHand.bones).toBe(37)
     expect(onHand.pizzle).toBe(3)
-    // 6 hides: 3 rugs, 1 raw salted hide, 1 made into rawhide; HCR-2695's is still at the tannery
+    // 6 hides: 3 rugs, 1 raw salted hide, 1 made into rawhide; CRW-2695's is still at the tannery
     expect(onHand.hide).toBe(1)
     // 4 horns, all listed one of a kind
     expect(onHand.horns).toBe(0)

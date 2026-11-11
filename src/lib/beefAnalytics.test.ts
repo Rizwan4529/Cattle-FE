@@ -4,7 +4,7 @@ import { revenueByChannel } from './beefAnalytics'
 
 const order = (items: Order['items']): Order => ({
   id: 'o1',
-  number: 'HCR-1',
+  number: 'CRW-1',
   createdAt: '2026-11-08T12:00:00.000Z',
   buyer: { name: 'A', phone: '', email: '', address: '' },
   fulfillment: 'pickup',

@@ -13,7 +13,7 @@ import { cn } from '@/lib/utils'
 import { useRanchStore } from '@/store/useRanchStore'
 
 /**
- * "From animal HCR-2672 · Hereford": ties an item to the animal(s) it came
+ * "From animal CRW-2672 · Hereford": ties an item to the animal(s) it came
  * from, each linking to its passport. Says where it came from otherwise.
  */
 export function GoodsTrace({ product, animals, className }: { product: GoodsProduct; animals: Animal[]; className?: string }) {

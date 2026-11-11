@@ -120,5 +120,5 @@ export function expiryValid(value: string, now = new Date()) {
   return new Date(year, month, 1) > now
 }
 
-/** Readable order number, e.g. HCR-10482. */
+/** Readable order number, e.g. CRW-10482. */
 export const newOrderNumber = () => `${ranch.tagPrefix}-${Math.floor(10_000 + Math.random() * 89_999)}`

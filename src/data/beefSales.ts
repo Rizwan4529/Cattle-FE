@@ -42,10 +42,10 @@ export const cutsSold: Record<string, number> = {
 
 /** Earlier pools that filled, and how many days each took (sample) */
 export const pastPools: { tagId: string; program: string; days: number }[] = [
-  { tagId: 'HCR-2601', program: 'Grain-finished', days: 19 },
-  { tagId: 'HCR-2604', program: 'Grass-finished', days: 26 },
-  { tagId: 'HCR-2610', program: 'Grain-finished', days: 12 },
-  { tagId: 'HCR-2615', program: 'Forage + grain', days: 16 },
-  { tagId: 'HCR-2622', program: 'Grain-finished', days: 9 },
-  { tagId: 'HCR-2630', program: 'Grass-finished', days: 21 },
+  { tagId: 'CRW-2601', program: 'Grain-finished', days: 19 },
+  { tagId: 'CRW-2604', program: 'Grass-finished', days: 26 },
+  { tagId: 'CRW-2610', program: 'Grain-finished', days: 12 },
+  { tagId: 'CRW-2615', program: 'Forage + grain', days: 16 },
+  { tagId: 'CRW-2622', program: 'Grain-finished', days: 9 },
+  { tagId: 'CRW-2630', program: 'Grass-finished', days: 21 },
 ]

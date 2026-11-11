@@ -1,6 +1,6 @@
-# Heritage Creek Ranch — ranch-direct beef and cattle (demo)
+# CROWDER — every part of the ranch, put to work (demo)
 
-A frontend-only sales demo for a cattle ranch. Every animal has an ear tag, a camera-chute scan record, and a page of its own. The site has two sides, switched with the **Buy Beef | Buy Cattle** tabs at the top of every page:
+A frontend-only sales demo for **CROWDER**, the Farrell family's cattle ranch in Colorado. Every animal has an ear tag, a camera-chute scan record, and a page of its own. The site has two sides, switched with the **Buy Beef | Buy Cattle** tabs at the top of every page:
 
 - **Buy Beef** (the home page): families claim a share of one animal they choose, fill out a cut sheet, or buy steaks, boxes, a Ranch Box subscription, and gifts in the Butcher Shop. Every share and pack traces back to an ear tag.
 - **Ranch Goods** (`/ranch-goods`, under Buy Beef): everything else from the animal (tallow, bones, dog chews, hides, horn, garden meal). One-of-a-kind hides and horns link to the exact animal they came from. The owner dashboard shows the money currently left with the processor.
@@ -30,14 +30,14 @@ npm test         # unit tests (Vitest): beef math, cut sheets, shop, delivery, p
 1. **Home** (`/`). The hero shows a real animal filling up. Every 20 to 40 seconds a neighbor claims a share and the meters move (switch this off in **Owner → Settings**).
 2. **Claim your beef** (`/beef`). Filter by feed program, breed, finish date, or share size, or type "I want about 300 lb" into the helper. Open an animal for its live, hanging, and take-home weights, price by share, and beef timeline. Choose **Claim**, pick a size, and add it to the cart.
 3. **Butcher Shop** (`/shop`). Shop by cut, open a product for its source animal, cooking guide, and reviews, then try **Build your own box** (15 lb unlocks 10% off) and the **Ranch Box**. **Gifts** has gift boxes, gift cards, and a corporate gifting form.
-4. **Cart → Checkout.** Enter a ZIP like `65804` (local delivery) or `10001` (shipping), pick a pickup slot or delivery, try the promo code `WELCOME10`, and pay with `4242 4242 4242 4242`. The confirmation shows a timeline; claiming the last share of an animal locks in its harvest.
+4. **Cart → Checkout.** Enter a ZIP like `80205` (local delivery) or `10001` (shipping), pick a pickup slot or delivery, try the promo code `WELCOME10`, and pay with `4242 4242 4242 4242`. The confirmation shows a timeline; claiming the last share of an animal locks in its harvest.
 5. **Cut sheet.** From the order (or the animal page), click the carcass drawing to choose steaks, roasts, or ground for each section, start from a preset, save, print, or download CSV.
 6. **Your account** (person icon). Orders, shares with live timelines, **My animals**, cut sheets, Ranch Box (skip, pause, change), favorites, gift cards, and addresses. Sign-in is a mock: any password works.
 7. **Owner → Beef** in the dashboard sidebar: open a share pool, book a harvest and **Simulate a week passing**, export processor cut sheets, adjust packaged inventory, read beef sales, and compare **Sell live vs. sell as beef**.
 
 ## A five-minute demo: Ranch Goods
 
-1. **Ranch Goods** (`/ranch-goods`). Tap a category chip (they stay pinned on phones), search `bully` or an ear tag like `HCR-2678`, or filter by use and price. **Add** turns into a − / + stepper once an item is in the cart.
+1. **Ranch Goods** (`/ranch-goods`). Tap a category chip (they stay pinned on phones), search `bully` or an ear tag like `CRW-2678`, or filter by use and price. **Add** turns into a − / + stepper once an item is in the cart.
 2. **Open a hide rug** (for example the cream Charolais rug). It names the exact animal; tap the tag for its passport, which lists everything made from that animal. Buy it and it shows as **Sold** for good.
 3. **Volume pricing.** Add 20 lb of rendered tallow: the cart applies 20% off. **Makers & Wholesale** (`/ranch-goods/wholesale`) has the price table and an inquiry form.
 4. **Boxes** (`/ranch-goods/boxes`): the Monthly Dog Chew Box and Bone Broth Box use the same subscription system as the Ranch Box (manage them under **Your account → Subscriptions**).
@@ -94,14 +94,16 @@ The catalog (seeded from the mockup), subscription boxes, cross-sell lists, and 
 
 Everything brand-related is in **`src/config/ranch.ts`**:
 
-- **Identity:** ranch name, brand-mark initials, tagline, owner and family name, year established, acres.
-- **Contact:** phone, email, hours, address, and map coordinates (used for freight estimates).
-- **Commerce:** the ear-tag prefix (`HCR`) and the checkout deposit rate.
+- **Identity:** ranch name (`CROWDER`), brand-mark initials, tagline, owner (`Farrell`) and family name, year established, acres.
+- **About Farrell story** (`story`): the lede, the four story points (family operation, the land, all natural, his earlier organic fertilizer business), his quote, and the About-page timeline. Shown on the About page, in Meet the Rancher on the home page, and on the Buy Cattle home page. **⚠ Placeholder copy**: confirm every line and year with Farrell, then set `story.confirmed: true` (the owner's Settings page shows which it is).
+- **Brand values** (`values.allNatural`): the "All Natural" badge and wording. Set `enabled: false` or reword it until the owner confirms what they can claim.
+- **Contact:** phone, email, hours, address, and map coordinates (used for freight estimates). The Colorado address, phone, and email are placeholders.
+- **Commerce:** the ear-tag prefix (`CRW`) and the checkout deposit rate.
 - **Look:** heading and body fonts, and the full light and dark color palettes.
 
 Colors are injected as CSS variables at startup (`src/lib/brand-theme.ts`), so every component, chart, and illustration picks them up. `src/index.css` only maps those variables into Tailwind; don't put colors there.
 
-The browser-tab icon is a static file at `public/favicon.svg`. Update its letters and color when you rebrand. Some page copy (the About story, FAQ answers) mentions specifics such as the brand location; read through `src/pages/AboutPage.tsx` and `FaqPage.tsx` too.
+The browser-tab icon is a static file at `public/favicon.svg`. Update its letters and color when you rebrand. Some page copy (FAQ answers) mentions specifics such as the brand location; read through `FaqPage.tsx` too. Local delivery zones and the processor are in `src/config/beef.ts`; mock buyers, reviews, and inquiries (in `src/data/`) use Colorado towns.
 
 ## Where things live
 
@@ -122,8 +124,8 @@ The browser-tab icon is a static file at `public/favicon.svg`. Update its letter
 - **Fixed seed:** the herd is generated from a fixed seed, so it's identical on every load. Edit the groups at the top of `src/data/animals.ts` to change breeds, weights, or dates.
 - **Calculated lot numbers:** a lot's head count, average weight, weight range, $/cwt, and total come from its animals (`src/lib/lots.ts`), never typed in. Edit an animal's weight and every listing updates.
 - **Demo "today":** `DEMO_TODAY` in `src/data/animals.ts` (Nov 6, 2026). Ages, weaning days, and preconditioning are measured from it.
-- **Beef animals:** 12 finished animals (`HCR-2690` to `HCR-2715`) are added at the end of the herd, so the original 44 head are unchanged. Three were harvested in September; the Butcher Shop beef comes from them.
-- **Ranch Goods animals:** three more harvested animals (`HCR-2672` horned Hereford, `HCR-2678` horned Charolais cross, `HCR-2683` Red Angus heifer, harvested in August) carry the hide rugs and horns, because Angus are naturally polled. `Animal.horned` marks horned animals.
+- **Beef animals:** 12 finished animals (`CRW-2690` to `CRW-2715`) are added at the end of the herd, so the original 44 head are unchanged. Three were harvested in September; the Butcher Shop beef comes from them.
+- **Ranch Goods animals:** three more harvested animals (`CRW-2672` horned Hereford, `CRW-2678` horned Charolais cross, `CRW-2683` Red Angus heifer, harvested in August) carry the hide rugs and horns, because Angus are naturally polled. `Animal.horned` marks horned animals.
 - **Share pool dates** (deadlines, claims, harvest and aging days) are set relative to when the demo data is first created, so countdowns always make sense. **Reset demo data** starts them over.
 - **Auction partners:** parsed from `reference/Cattle data 1.pdf`. Entries marked demo, test, or inactive were skipped, along with horse-only sales, events, entries without a phone number, and entries that reuse the demo phone line.
 

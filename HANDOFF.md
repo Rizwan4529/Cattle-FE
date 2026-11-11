@@ -1,4 +1,4 @@
-# Handoff: Heritage Creek Ranch cattle marketplace (frontend-only demo)
+# Handoff: CROWDER ranch marketplace (frontend-only demo)
 
 You're continuing a build that's partway done. Read `reference/Spec.md` first (the full product spec), then this file. The project lives at `d:\Client Projects\Cattke website\Cattle-FE` (Windows, a git repo; commit each phase with a `[FEAT]` or `[FIX]` prefix). Work in the spec's phases, show a short plan before each phase, then build, then verify in a real browser before reporting.
 
@@ -14,7 +14,7 @@ The byproduct store, nose-to-tail explorer, byproduct rights in the share flow, 
 - **Zustand 5:** never `.filter()` inside a selector (`useRanchStore((s) => s.goods.filter(...))`). It returns a new array every render and loops. Select the array, then filter.
 
 ## Status
-- **Done:** Phases 1 to 4. Home, Browse, Lot Detail, Animal Passport, Chute Scan (`/scan`), and the owner dashboard: one page per section in a sidebar layout (`src/components/layout/OwnerLayout.tsx`): `/dashboard`, `/dashboard/herd`, `/lots`, `/offers`, `/import`, `/settings`, `/syndicate`; old `?tab=` links redirect: overview stats and charts, herd table (search, filters, inline edit, bulk select, create lot, CSV download), lots list, offers inbox, CSV import, settings with Reset demo data. Lot builder at `/dashboard/lots/new` (accepts `?tags=HCR-1,HCR-2`) and `/dashboard/lots/:lotId/edit`.
+- **Done:** Phases 1 to 4. Home, Browse, Lot Detail, Animal Passport, Chute Scan (`/scan`), and the owner dashboard: one page per section in a sidebar layout (`src/components/layout/OwnerLayout.tsx`): `/dashboard`, `/dashboard/herd`, `/lots`, `/offers`, `/import`, `/settings`, `/syndicate`; old `?tab=` links redirect: overview stats and charts, herd table (search, filters, inline edit, bulk select, create lot, CSV download), lots list, offers inbox, CSV import, settings with Reset demo data. Lot builder at `/dashboard/lots/new` (accepts `?tags=CRW-1,CRW-2`) and `/dashboard/lots/:lotId/edit`.
 - **Also done (task 8):** syndication at `/dashboard/syndicate` (accepts `?lots=lot-101,lot-102`): pick lots, sale barns (search, state filter) and marketplace channels, pick a format (auction-ready CSV, standard CSV, printable lot sheet with preview), real CSV downloads, printing only the lot sheet, an animated send dialog, and a send history whose partner replies (viewed/interested) arrive over the next ~30 seconds with toasts.
 - **Also done (task 9):** `/cart` (pickup or delivery, ZIP freight estimate for the whole order, subtotal, 10% deposit, balance), `/checkout` ("Demo — no real payment." banner, buyer details, delivery address, card form with Luhn/expiry/CVC checks and test card 4242 4242 4242 4242, processing state), `/order/:orderId` confirmation with next steps and Print receipt. Placing an order marks its lots sold, declines open offers on them, and empties them from the cart; dashboard revenue picks the order up.
 - **Also done (task 10):** `/about`, `/how-it-works` (buyers and the ranch's side), `/faq` (inspection, health papers, brand inspection, freight, payment, returns; native `<details>`), `/contact` (validated form, success state, prefill via `?lot=lot-101`, map placeholder, directions link). Full QA: every route at 375px and 1366px in light and dark with no overflow or console errors, all internal links resolve, axe-core WCAG 2.1 AA audit clean on every page and on interactive and empty states, README rewritten. `PagePlaceholder` deleted.
@@ -31,7 +31,7 @@ The byproduct store, nose-to-tail explorer, byproduct rights in the share flow, 
 - **Fonts:** Rokkitt (headings) and Public Sans (body), installed locally via `@fontsource-variable`.
 
 ## Branding and theming (important)
-- **All brand values live in `src/config/ranch.ts`:** name, initials, owner (placeholder "Walt Harmon"), phone, email, address and coordinates, tag prefix `HCR`, `commerce.depositRate` (0.1), fonts, and full light/dark `ThemeTokens`.
+- **All brand values live in `src/config/ranch.ts`:** name, initials, owner ("Farrell"; the business is CROWDER), the About Farrell `story` and `values.allNatural` (placeholder copy until the owner confirms), phone, email, address and coordinates, tag prefix `CRW`, `commerce.depositRate` (0.1), fonts, and full light/dark `ThemeTokens`.
 - **Custom tokens beyond shadcn's:** `success`, `warning`, `tag` (ear-tag yellow), `leather`, `leatherUp`, `leatherDown`, `sceneSky`, `sceneHill`, `sceneGround`, and `chart1`–`chart5`.
 - **How colors reach the page:** `src/lib/brand-theme.ts` injects the tokens as CSS variables before React renders. It includes an `@media print` block that forces the light palette. `src/index.css` only maps the variables into Tailwind. **Never hard-code colors.**
 - **`index.css` also holds:** the `container-page` utility, the `ticker` keyframes, print rules (`@page` margins, 10.5pt root), and a 17px root font size.
@@ -60,8 +60,8 @@ The byproduct store, nose-to-tail explorer, byproduct rights in the share flow, 
 - **`types.ts`:** `Animal`, `Lot`, `Offer` (with `fromThisDevice`), `CartItem` (`lotId`, `addedAt`), `Order`, `AuctionPartner`, `MarketChannel`, `SendRecord`, `ExportFormat`.
 - **`animals.ts`:**
   - **Herd:** 44 head from a fixed-seed generator (`mulberry32(2417)`) with `DEMO_TODAY = '2026-11-06'`, covering lots 101–110.
-  - **Unlisted head:** HCR-2421 and HCR-2424 (replacement heifers), HCR-1912, HCR-2011 and HCR-2115 (bred cows), and HCR-2402 (a steer held for a foot-rot withdrawal).
-  - **Special records:** HCR-2414 has a pinkeye treatment on file.
+  - **Unlisted head:** CRW-2421 and CRW-2424 (replacement heifers), CRW-1912, CRW-2011 and CRW-2115 (bred cows), and CRW-2402 (a steer held for a foot-rot withdrawal).
+  - **Special records:** CRW-2414 has a pinkeye treatment on file.
 - **`lots.ts`:** 10 lots. Lot 106 is pending, 108 is sold, 103 and 109 are offer-only, 105 and 108 are buy-now only.
   - **Never store derived numbers.** Head count, average and range of weights, $/cwt and lot total all come from `getLotStats()` in `src/lib/lots.ts`.
 - **`offers.ts`:** 3 seed offers.
@@ -89,13 +89,13 @@ The byproduct store, nose-to-tail explorer, byproduct rights in the share flow, 
   - **`animalTimeline.ts`:** `buildTimeline`, `getGainStats`, `formatEid`.
 - **`usePageTitle.ts`:** sets the browser tab title. **`useMediaQuery.ts`:** matchMedia hook.
 - **`lotDraft.ts`:** generic lot creation: `classOf`/`inferLotClass`, `suggestedCwt`, `suggestLot` (title + price; feeder cattle by $/cwt, breeding stock from the ranch's other lots), `describeLot`, `highlightsFor`, `breedSummaryOf`, `buildDraftLot`. Used by `components/lots/CreateLotDialog` from both the scan and the herd table.
-- **`herdImport.ts`:** CSV import: `TARGET_FIELDS` (with header synonyms), `guessMapping`, `parseCsv` (keeps file line numbers, counts blank lines), value parsers (`parseDate` takes yyyy-mm-dd or m/d/yy(yy), `parseSex`, `parseCoat`, `normalizeTag` adds the HCR- prefix), `checkRows` (errors: missing tag, duplicate tag, missing/odd weight, missing sex for new animals; everything else is a warning with the fix stated), `toNewAnimal`, `toUpdate` (one imported reading per animal per day), `templateCsv`.
+- **`herdImport.ts`:** CSV import: `TARGET_FIELDS` (with header synonyms), `guessMapping`, `parseCsv` (keeps file line numbers, counts blank lines), value parsers (`parseDate` takes yyyy-mm-dd or m/d/yy(yy), `parseSex`, `parseCoat`, `normalizeTag` adds the CRW- prefix), `checkRows` (errors: missing tag, duplicate tag, missing/odd weight, missing sex for new animals; everything else is a warning with the fix stated), `toNewAnimal`, `toUpdate` (one imported reading per animal per day), `templateCsv`.
 - **`dashboard.ts`:** `indexLots`, `herdStatus`, `HERD_CLASSES`, `salesSeries` (seed history + accepted offers + orders added to the current month), `getOverview`, `classBreakdown`, `weightBins`, `herdCsv`.
 - **`checkout.ts`:** `summarizeCart` (lines, unavailable lots, subtotal, one combined haul via `estimateFreight`, deposit from `ranch.commerce.depositRate`, balance), card helpers (`luhnValid`, `cardBrand`, `formatCardNumber`, `formatExpiry`, `expiryValid`), `newOrderNumber`. Store action `placeOrder`. `usePreferences` also holds `fulfillment` ('pickup' | 'delivery').
 - **`syndication.ts`:** `EXPORT_FORMATS`, `auctionCsv` (one row per lot, sale-barn column names), `standardCsv` (one row per animal), `RECIPIENTS`/`recipientById` (partners + channels), `planReplies` (~60% view, ~25% interested, at least one; stored as `viewedAt`/`interestedAt` timestamps on each recipient) and `statusAt(recipient, now)`. Store action `logSend`.
 - **Paper preview:** `.theme-paper` (in `brand-theme.ts`) keeps the light palette inside dark mode, used by the lot sheet preview.
 - **Overflow gotcha:** a table wrapper with `overflow-x-auto` needs `relative`, or an `sr-only` header cell escapes it and widens the page.
-- **`chuteScan.ts`:** scan groups (steer calves, heifer calves, yearling steers), `generateScanBatch` (uses the exported `buildAnimal` from `data/animals.ts`, picks free tags from HCR-2470 up), timing (`TIMING`, `CYCLE`, `phaseAt`, `runLength`), the CSV (`scanCsv`, `downloadText`, `csvFileName`; snake_case columns meant to match the Phase 4 CSV import). `RESCAN_BELOW = 92` flags low-confidence reads.
+- **`chuteScan.ts`:** scan groups (steer calves, heifer calves, yearling steers), `generateScanBatch` (uses the exported `buildAnimal` from `data/animals.ts`, picks free tags from CRW-2470 up), timing (`TIMING`, `CYCLE`, `phaseAt`, `runLength`), the CSV (`scanCsv`, `downloadText`, `csvFileName`; snake_case columns meant to match the Phase 4 CSV import). `RESCAN_BELOW = 92` flags low-confidence reads.
 
 ## Components
 - **`layout/`:** the site shell.
@@ -105,7 +105,7 @@ The byproduct store, nose-to-tail explorer, byproduct rights in the share flow, 
 - **`cattle/`:** `CattleImage` and `EarTag`.
   - **`CattleImage`:** draws an SVG cow on a pasture scene in a 400×300 frame (4:3). It handles six coat colors, a grazing pose, a calf at side for pairs, and a bull's crest. An empty `alt` makes it decorative, and a `photos` array swaps in real photos.
 - **`lots/`:** `LotCard` (grid and list layouts), `LotActions` (`size` and `onLotPage` props), `MakeOfferDialog` (validated in on-screen field order), `LotStatusBadge`.
-- **`browse/`:** `FilterPanel`, `SearchBox` (debounced, matches tags like "2417" or "HCR-2417"), `ActiveFilters`.
+- **`browse/`:** `FilterPanel`, `SearchBox` (debounced, matches tags like "2417" or "CRW-2417"), `ActiveFilters`.
 - **`home/`:** `HeroScanCard`, `StatsStrip` (count-up), `MarketTicker` (marked as sample data), `FeaturedLots` (scroll-snap carousel), `HowItWorksSteps`.
 - **`lot/`:** `LotGallery` (includes a fake video player), `WeightChart`, `AnimalTable` (sortable, pinned tag column), `HealthSummary` and `VerificationBadges`, `FreightEstimator`, `ShareLot` (QR, share, copy, download).
 - **`animal/`:** `PassportCard`, `WeightGainChart`, `HealthTimeline`, `ScanHistory`.

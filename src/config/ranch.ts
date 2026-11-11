@@ -1,5 +1,5 @@
 /**
- * Ranch branding — the single place to rebrand the site.
+ * CROWDER branding — the single place to rebrand the site.
  *
  * Change the name, contact details, location, fonts, and the full light/dark
  * color palette here. Colors are injected as CSS variables at startup
@@ -53,33 +53,94 @@ export interface ThemeTokens {
 }
 
 export const ranch = {
-  name: 'Heritage Creek Ranch',
+  name: 'CROWDER',
   /** Letters burned into the brand mark (logo) */
-  initials: 'HC',
-  tagline: 'Ranch-direct cattle from southwest Missouri',
-  family: 'The Harmon family',
-  owner: 'Walt Harmon',
-  established: 1962,
-  acres: 2400,
+  initials: 'CR',
+  tagline: 'Every part of the ranch, put to work.',
+  family: 'The Farrell family',
+  owner: 'Farrell',
+  established: 1984,
+  acres: 3200,
 
-  phone: '(417) 555-0148',
-  email: 'office@heritagecreekranch.com',
+  // ⚠ Placeholder contact details and address: confirm with the owner.
+  phone: '(303) 555-0148',
+  email: 'office@crowderranch.com',
   hours: 'Mon–Sat, 6 am to 7 pm',
 
   location: {
-    address: '18420 County Road 211',
-    city: 'Bolivar',
-    state: 'MO',
-    stateName: 'Missouri',
-    zip: '65613',
-    county: 'Polk County',
+    address: '24180 County Road 45',
+    city: 'Kiowa',
+    state: 'CO',
+    stateName: 'Colorado',
+    zip: '80117',
+    county: 'Elbert County',
     /** Used by the freight estimator */
-    lat: 37.614,
-    lng: -93.41,
+    lat: 39.347,
+    lng: -104.465,
   },
 
-  /** Prefix for ear-tag IDs, e.g. HCR-2417 */
-  tagPrefix: 'HCR',
+  /**
+   * Brand values used in copy and badges. "All Natural" is the owner's wording;
+   * switch it off or reword it here once they confirm what they can stand behind.
+   */
+  values: {
+    allNatural: {
+      enabled: true,
+      label: 'All Natural',
+      text: 'Grass, hay, water, and time. No added hormones in the cattle, no synthetic fertilizer on the pasture, and nothing in our compost but manure and hay.',
+    },
+  },
+
+  /**
+   * The "About Farrell" story on the About page, the Meet the Rancher section,
+   * and the home pages.
+   *
+   * ⚠ PLACEHOLDER COPY. Written for the demo from what we know: a family
+   * operation, all-natural values, and Farrell's earlier organic fertilizer
+   * business. Every line, year, and number needs the owner's OK. Set
+   * `confirmed: true` once it has been checked.
+   */
+  story: {
+    confirmed: false,
+    heading: 'About Farrell',
+    lede: 'Farrell has ranched this ground for more than forty years. Before beef went online, he built an organic fertilizer business from the manure most ranches haul off as waste. CROWDER puts both halves of that life to work.',
+    generations: 2,
+    sections: [
+      {
+        id: 'family',
+        title: 'A family operation',
+        text: 'Farrell runs the ranch with his family: cows, calves, hay, and the books. No investors and no hired manager. When you call, you get one of us.',
+      },
+      {
+        id: 'land',
+        title: 'The land',
+        text: 'Shortgrass prairie and irrigated alfalfa meadows on the plains east of the Front Range. The cattle graze the native grass from spring to fall and eat our own hay through the winter.',
+      },
+      {
+        id: 'natural',
+        title: 'All natural, start to finish',
+        text: 'Grass, hay, water, and time. We don’t use added hormones or synthetic fertilizer, and what the cattle leave behind goes back into the soil.',
+      },
+      {
+        id: 'fertilizer',
+        title: 'He’s built a fertilizer business before',
+        text: 'Years before CROWDER, Farrell composted manure with alfalfa and sold it to Front Range gardeners, landscapers, and farms. That know-how is behind CROWDER Soil and our fuel logs.',
+      },
+    ],
+    quote:
+      'Every part of this ranch has a use: the beef, the hide, even the manure. My dad taught me not to waste anything, and it turns out nothing on a ranch has to go to waste.',
+    timeline: [
+      { year: '1984', text: 'The first 320 acres and forty Hereford cows on Elbert County shortgrass.' },
+      { year: '1996', text: 'The herd moves to Angus and Angus-cross cows. The first irrigated alfalfa meadows go in.' },
+      { year: '2005', text: 'Farrell starts composting manure with alfalfa and sells organic fertilizer to Front Range gardeners and farms.' },
+      { year: '2012', text: 'Every calf gets an electronic ID tag at birth. The ranch is certified in Beef Quality Assurance.' },
+      { year: '2024', text: 'A camera chute tunnel goes into Barn 2. Weights and scores now take seconds, with no scale crew.' },
+      { year: '2026', text: 'CROWDER sells cattle, beef, Ranch Goods, soil, and fuel straight from the ranch, every one traced to the herd.' },
+    ],
+  },
+
+  /** Prefix for ear-tag IDs, e.g. CRW-2417 */
+  tagPrefix: 'CRW',
 
   commerce: {
     /** Share of the purchase price due at checkout */
@@ -176,5 +237,5 @@ export const ranch = {
 /** `tel:` link for the ranch phone number */
 export const ranchPhoneHref = `tel:+1${ranch.phone.replace(/\D/g, '')}`
 
-/** One-line location, e.g. "Bolivar, Missouri" */
+/** One-line location, e.g. "Kiowa, Colorado" */
 export const ranchPlace = `${ranch.location.city}, ${ranch.location.stateName}`

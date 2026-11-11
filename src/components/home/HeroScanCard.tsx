@@ -7,7 +7,7 @@ import { formatAge, formatShortDate, formatWeight } from '@/lib/format'
 import { SEX_LABELS } from '@/lib/labels'
 import { useRanchStore } from '@/store/useRanchStore'
 
-const FEATURED_TAG = 'HCR-2417'
+const FEATURED_TAG = 'CRW-2417'
 
 /**
  * The hero's proof point: one real animal's scan record. On load a scan line

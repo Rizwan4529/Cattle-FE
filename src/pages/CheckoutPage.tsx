@@ -65,7 +65,7 @@ function Section({ id, title, children, description }: { id: string; title: stri
 }
 
 const randomCode = () =>
-  `HCR-${Math.random().toString(36).slice(2, 6).toUpperCase()}-${Math.random().toString(36).slice(2, 6).toUpperCase().padEnd(4, '7')}`
+  `CRW-${Math.random().toString(36).slice(2, 6).toUpperCase()}-${Math.random().toString(36).slice(2, 6).toUpperCase().padEnd(4, '7')}`
 
 export default function CheckoutPage() {
   usePageTitle('Checkout')

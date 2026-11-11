@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils'
 import { useRanchStore } from '@/store/useRanchStore'
 
 /**
- * "From animal HCR-2692 · Grain-finished · Angus": the line on every product
+ * "From animal CRW-2692 · Grain-finished · Angus": the line on every product
  * that ties the beef to one animal, linking to its passport.
  */
 export function TraceLine({

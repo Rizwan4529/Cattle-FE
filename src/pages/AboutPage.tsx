@@ -1,5 +1,6 @@
 import { Handshake, Phone, ScrollText, Sprout, Tags } from 'lucide-react'
 import { Link } from 'react-router'
+import { FarrellStory } from '@/components/about/FarrellStory'
 import { CattleImage } from '@/components/cattle/CattleImage'
 import { EarTag } from '@/components/cattle/EarTag'
 import { Button } from '@/components/ui/button'
@@ -8,13 +9,7 @@ import { formatNumber } from '@/lib/format'
 import { usePageTitle } from '@/lib/usePageTitle'
 import { useRanchStore } from '@/store/useRanchStore'
 
-const HISTORY = [
-  { year: String(ranch.established), text: `The first 160 acres and twenty Hereford cows on ${ranch.location.county} fescue.` },
-  { year: '1985', text: 'The herd moves to Angus and Angus-cross cows, and artificial insemination starts with the heifers.' },
-  { year: '2009', text: 'Every calf gets an electronic ID tag at birth. The ranch is certified in Beef Quality Assurance.' },
-  { year: '2024', text: 'A camera chute tunnel goes into Barn 2. Weights and scores now take seconds, with no scale crew.' },
-  { year: '2026', text: 'Cattle are sold ranch-direct online, every animal with its own record.' },
-]
+const HISTORY = ranch.story.timeline
 
 const VALUES = [
   {
@@ -40,13 +35,13 @@ const VALUES = [
 ]
 
 const PHOTOS = [
-  { coat: 'black', pose: 'grazing', seed: 'about-1', caption: 'Spring pairs on stockpiled fescue' },
-  { coat: 'black-baldy', pose: 'standing', seed: 'about-2', caption: 'Bred heifers in the creek trap' },
+  { coat: 'black', pose: 'grazing', seed: 'about-1', caption: 'Spring pairs on native shortgrass' },
+  { coat: 'black-baldy', pose: 'standing', seed: 'about-2', caption: 'Bred heifers by the alfalfa meadow' },
   { coat: 'hereford', pose: 'grazing', seed: 'about-3', caption: 'The Hereford cows that started it all' },
 ] as const
 
 export default function AboutPage() {
-  usePageTitle('About the ranch')
+  usePageTitle('About CROWDER and Farrell')
   const head = useRanchStore((s) => s.animals.length)
   const years = new Date().getFullYear() - ranch.established
 
@@ -59,17 +54,18 @@ export default function AboutPage() {
           </h1>
           <p className="mt-5 max-w-[60ch] text-lg">
             {ranch.name} is a family cow-calf and stocker operation outside {ranch.location.city}, {ranch.location.stateName}. {ranch.family} has
-            raised beef cattle here for {years} years, and {ranch.owner} still checks the cows every morning.
+            raised beef cattle here for {years} years, and {ranch.owner} still checks the cows every morning. {ranch.tagline}
           </p>
           <p className="mt-4 max-w-[60ch] text-lg text-muted-foreground">
-            This website is how we sell now: straight from our pasture to your trailer, with every animal's record out in the open.
+            This website is how we sell now: cattle, beef, ranch goods, soil, and fuel, straight from the ranch, with every animal's record out in the
+            open.
           </p>
         </div>
         <figure className="overflow-hidden rounded-2xl border shadow-sm">
           <div className="aspect-4/3">
             <CattleImage coat="black" sex="cow" withCalf seed="about-hero" pose="grazing" alt="A black cow and calf grazing on the ranch" />
           </div>
-          <figcaption className="border-t bg-card px-4 py-3 text-muted-foreground">Fall-calving pairs on the north place</figcaption>
+          <figcaption className="border-t bg-card px-4 py-3 text-muted-foreground">Fall-calving pairs on the north pasture</figcaption>
         </figure>
       </section>
 
@@ -77,9 +73,9 @@ export default function AboutPage() {
         <dl className="container-page grid grid-cols-2 gap-6 py-8 md:grid-cols-4">
           {[
             [`Since ${ranch.established}`, `${years} years in the family`],
-            [`${formatNumber(ranch.acres)} acres`, 'Fescue, clover, and native grass'],
+            [`${formatNumber(ranch.acres)} acres`, 'Shortgrass prairie and irrigated alfalfa'],
             [`${head} head`, 'On the records today'],
-            ['3 generations', 'Working the same ground'],
+            [`${ranch.story.generations} generations`, 'Working the same ground'],
           ].map(([value, label]) => (
             <div key={value}>
               <dt className="sr-only">{label}</dt>
@@ -91,12 +87,16 @@ export default function AboutPage() {
       </section>
 
       <div className="container-page grid gap-16 pt-14">
+        <FarrellStory />
+
         <section aria-labelledby="story-heading" className="grid gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
           <div>
             <h2 id="story-heading" className="text-3xl font-bold sm:text-4xl">
               How we got here
             </h2>
-            <p className="mt-3 text-lg text-muted-foreground">Sixty-some years of small changes, each one about knowing the cattle better.</p>
+            <p className="mt-3 text-lg text-muted-foreground">
+              Forty-some years of small changes, each one about knowing the cattle, and the land, better.
+            </p>
           </div>
           <ol className="grid gap-6">
             {HISTORY.map((h) => (

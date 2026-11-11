@@ -7,6 +7,7 @@ import { CutImage } from '@/components/beef/CutImage'
 import { FeedProgramCards } from '@/components/beef/FeedProgramCards'
 import { FillMeter } from '@/components/beef/FillMeter'
 import { PoolCard } from '@/components/beef/PoolCard'
+import { AllNaturalBadge, FarrellQuote, StoryPoints } from '@/components/about/FarrellStory'
 import { CattleImage } from '@/components/cattle/CattleImage'
 import { EarTag } from '@/components/cattle/EarTag'
 import { BundleCard } from '@/components/shop/BundleCard'
@@ -416,11 +417,11 @@ export default function BeefHomePage() {
               {ranch.family} has run cattle on {ranch.acres.toLocaleString()} acres in {ranch.location.county} since {ranch.established}. For most of
               that time, every calf left on a truck to a sale barn, and we never knew who ate the beef.
             </p>
-            <blockquote className="mt-6 border-l-4 border-tag pl-5 text-xl">
-              “I’d rather sell you a quarter of a steer I raised than sell him to a feedlot I’ll never see. You can call me about your beef, and I’ll
-              know which animal it was.”
-              <footer className="mt-3 text-base text-leather-foreground/75">{ranch.owner}</footer>
-            </blockquote>
+            <h3 className="mt-8 font-heading text-2xl font-bold">{ranch.story.heading}</h3>
+            <p className="mt-2 text-lg text-leather-foreground/85">{ranch.story.lede}</p>
+            <AllNaturalBadge className="mt-4 border-leather-foreground/30 bg-leather-foreground/10 text-leather-foreground" />
+            <StoryPoints onDark headingLevel={4} className="mt-6 gap-y-5 sm:grid-cols-1" />
+            <FarrellQuote onDark className="mt-8" />
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Button asChild size="lg" variant="secondary">
                 <a href={ranchPhoneHref}>
@@ -436,7 +437,7 @@ export default function BeefHomePage() {
               >
                 <Link to="/about">
                   <Tractor aria-hidden />
-                  Our story
+                  Farrell’s story
                 </Link>
               </Button>
             </div>

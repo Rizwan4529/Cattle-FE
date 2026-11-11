@@ -11,6 +11,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { beefConfig, feedProgram } from '@/config/beef'
 import { byproductsConfig } from '@/config/byproducts'
+import { ranch } from '@/config/ranch'
 import type { SharePool, ShareSize, UnfilledChoice } from '@/data/beefTypes'
 import { US_STATES } from '@/data/geo'
 import type { Animal } from '@/data/types'
@@ -56,7 +57,7 @@ export function ClaimDialog({
   const [size, setSize] = useState<ShareSize>(initialSize && sizes.includes(initialSize) ? initialSize : (sizes.at(-1) ?? 'quarter'))
   const [firstName, setFirstName] = useState(saved?.firstName ?? '')
   const [city, setCity] = useState(saved?.city ?? '')
-  const [state, setState] = useState(saved?.state ?? 'MO')
+  const [state, setState] = useState(saved?.state ?? ranch.location.state)
   const [ifUnfilled, setIfUnfilled] = useState<UnfilledChoice>('roll-over')
   const [rights, setRights] = useState(false)
   const [errors, setErrors] = useState<Partial<Record<Field, string>>>({})
@@ -176,7 +177,7 @@ export function ClaimDialog({
 
           <fieldset className="grid gap-3">
             <legend className="mb-1 text-base font-semibold">Your name on the fill meter</legend>
-            <p className="-mt-1 text-sm text-muted-foreground">Neighbors see your first name and town, like “Sarah · Kansas City.” Nothing else.</p>
+            <p className="-mt-1 text-sm text-muted-foreground">Neighbors see your first name and town, like “Sarah · Denver.” Nothing else.</p>
             <div className="grid gap-4 sm:grid-cols-[1fr_1fr_6.5rem]">
               <div className="grid content-start gap-2">
                 <Label htmlFor={`${id}-firstName`}>First name</Label>

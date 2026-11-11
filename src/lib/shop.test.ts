@@ -123,8 +123,8 @@ describe('Ranch Goods in the cart', () => {
   })
 
   it('flags a one-of-a-kind item that already sold', () => {
-    const sold = goods.map((g) => (g.id === 'hide-rug-hcr-2672' ? { ...g, stock: 0 } : g))
-    const cart: CartItem[] = [{ kind: 'goods', id: 'g2', goodsId: 'hide-rug-hcr-2672', qty: 1, addedAt: t }]
+    const sold = goods.map((g) => (g.id === 'hide-rug-crw-2672' ? { ...g, stock: 0 } : g))
+    const cart: CartItem[] = [{ kind: 'goods', id: 'g2', goodsId: 'hide-rug-crw-2672', qty: 1, addedAt: t }]
     expect(summarizeShop(cart, products, BUNDLES, sold).problems[0]?.problem).toBe('Already sold')
   })
 

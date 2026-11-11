@@ -270,5 +270,5 @@ export function ratingSummary(reviews: Pick<ProductReview, 'rating'>[]) {
   return { avg, count, dist }
 }
 
-/** "Ribeye from HCR-2692" */
+/** "Ribeye from CRW-2692" */
 export const productShortName = (p: Pick<BeefProduct, 'cut' | 'sourceTagId'>) => `${cutLabel(p.cut)} from ${p.sourceTagId}`

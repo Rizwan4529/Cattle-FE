@@ -123,7 +123,7 @@ export interface LotResult extends LotRow {
 const compact = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, '')
 
 /**
- * Search by ear tag ("2417", "HCR-2417") or by keywords. Every keyword must
+ * Search by ear tag ("2417", "CRW-2417") or by keywords. Every keyword must
  * appear somewhere in the lot's title, breed, class, description, highlights,
  * location, or lot number.
  */

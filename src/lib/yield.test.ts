@@ -205,7 +205,7 @@ describe('share pools', () => {
   const now = Date.parse('2026-11-10T12:00:00Z')
   const pool = (claimed: number, overrides: Partial<SharePool> = {}): SharePool => ({
     id: 'p',
-    tagId: 'HCR-1',
+    tagId: 'CRW-1',
     feedProgram: 'grain-finished',
     pricePerHangingLb: 7.1,
     unit: 'quarter',
@@ -215,7 +215,7 @@ describe('share pools', () => {
       segments: 1,
       firstName: 'A',
       city: 'B',
-      state: 'MO',
+      state: 'CO',
       claimedAt: '2026-11-01T00:00:00Z',
       ifUnfilled: 'refund' as const,
       deposit: 100,

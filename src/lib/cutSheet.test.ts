@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { applyPreset, cutSheetCsv, cutSheetRows, estimateCuts, newCutSheet, PRESETS, presetById, PRIMALS, TRIM_SHARE } from './cutSheet'
 
-const quarter = () => newCutSheet('quarter', { tagId: 'HCR-2708', claimId: 'c1' })
+const quarter = () => newCutSheet('quarter', { tagId: 'CRW-2708', claimId: 'c1' })
 
 describe('primals', () => {
   it('cover the nine primals in the spec', () => {
@@ -28,7 +28,7 @@ describe('new sheets and presets', () => {
   it('start as Butcher’s Choice, named after the animal', () => {
     const s = quarter()
     expect(s.preset).toBe('butchers-choice')
-    expect(s.name).toBe('Quarter of HCR-2708')
+    expect(s.name).toBe('Quarter of CRW-2708')
     expect(s.claimId).toBe('c1')
   })
 
@@ -104,8 +104,8 @@ describe('processor export', () => {
   })
 
   it('includes the owner and special instructions in the CSV', () => {
-    const csv = cutSheetCsv({ ...quarter(), notes: 'No tenderizing' }, 'Sarah, Kansas City')
-    expect(csv).toContain('Owner,"Sarah, Kansas City"')
+    const csv = cutSheetCsv({ ...quarter(), notes: 'No tenderizing' }, 'Sarah, Denver')
+    expect(csv).toContain('Owner,"Sarah, Denver"')
     expect(csv).toContain('Special instructions,No tenderizing')
   })
 })

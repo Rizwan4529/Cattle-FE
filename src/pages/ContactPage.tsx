@@ -55,7 +55,7 @@ function MapPlaceholder() {
       <path d="M0 112 H400" className="stroke-card" strokeWidth="10" />
       <path d="M200 0 V240" className="stroke-card" strokeWidth="8" />
       <text x="12" y="106" className="fill-foreground/70" fontSize="12" fontWeight="600">
-        County Road 211
+        {ranch.location.address.replace(/^\d+\s+/, '')}
       </text>
       <text x="206" y="232" className="fill-foreground/70" fontSize="12" fontWeight="600">
         to {ranch.location.city}

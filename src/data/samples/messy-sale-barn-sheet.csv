@@ -1,15 +1,15 @@
 Ear Tag,RFID,Breed,Sex,Color,DOB,Wt (lbs),Frame,BCS,Comments
-HCR-2601,840003100000001,Angus,Steer,Black,3/2/2026,588,5,5,
-HCR-2602,840003100000002,Angus,Steer,BLK,3/9/2026,602,6,5,
-2603,840003100000003,Angus cross,S,BWF,3/15/2026,571,5,6,Tag written without the HCR prefix
-HCR-2604,84000310000,Angus cross,steer,red,3/20/2026,549,5,5,EID is short a few digits
-HCR-2605,,Angus,steer,black,2026-03-24,,5,5,Weight missing
-HCR-2602,840003100000002,Angus,Steer,Black,3/9/2026,604,6,5,Entered twice
-HCR-2606,,Hereford,heifer,white face,4/1/2026,512,5,12,BCS typo
-HCR-2607,,Angus cross,hfr,black baldy,04/05/26,534 lb,5,5,
+CRW-2601,840003100000001,Angus,Steer,Black,3/2/2026,588,5,5,
+CRW-2602,840003100000002,Angus,Steer,BLK,3/9/2026,602,6,5,
+2603,840003100000003,Angus cross,S,BWF,3/15/2026,571,5,6,Tag written without the CRW prefix
+CRW-2604,84000310000,Angus cross,steer,red,3/20/2026,549,5,5,EID is short a few digits
+CRW-2605,,Angus,steer,black,2026-03-24,,5,5,Weight missing
+CRW-2602,840003100000002,Angus,Steer,Black,3/9/2026,604,6,5,Entered twice
+CRW-2606,,Hereford,heifer,white face,4/1/2026,512,5,12,BCS typo
+CRW-2607,,Angus cross,hfr,black baldy,04/05/26,534 lb,5,5,
 ,,,,,,,,,
-HCR-2417,,,,,,655,,6,Reweighed at the scale
-HCR-2608,,Angus,calf,black,3/28/2026,566,5,5,Sex not filled in properly
-HCR-2609,,Charolais cross,steer,spotted,13/40/2026,610,6,5,Odd color and date
-HCR-2610,,Angus,heifer,black,3/28/2026,98000,5,5,Extra zeros on the weight
-HCR-2611,840003100000011,Red Angus,heifer,red,3/18/2026,541,5,6,Replacement prospect
+CRW-2417,,,,,,655,,6,Reweighed at the scale
+CRW-2608,,Angus,calf,black,3/28/2026,566,5,5,Sex not filled in properly
+CRW-2609,,Charolais cross,steer,spotted,13/40/2026,610,6,5,Odd color and date
+CRW-2610,,Angus,heifer,black,3/28/2026,98000,5,5,Extra zeros on the weight
+CRW-2611,840003100000011,Red Angus,heifer,red,3/18/2026,541,5,6,Replacement prospect

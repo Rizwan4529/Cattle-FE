@@ -1,4 +1,5 @@
 import { beefConfig } from '@/config/beef'
+import { ranch } from '@/config/ranch'
 import type { Animal, AnimalSex, CalfAtSide, CoatColor, HealthEvent, Pregnancy, ScanRecord, WeighIn } from './types'
 
 /**
@@ -13,7 +14,7 @@ import type { Animal, AnimalSex, CalfAtSide, CoatColor, HealthEvent, Pregnancy, 
 export const DEMO_TODAY = '2026-11-06'
 
 const VET = 'Dr. Ellen Price, DVM'
-const RANCH_HAND = 'Walt Harmon'
+const RANCH_HAND: string = ranch.owner
 export const CHUTE_STATION = 'Barn 2 chute tunnel'
 
 // ---------------------------------------------------------------------------
@@ -74,7 +75,7 @@ export interface HerdGroup {
   notes: string[]
 }
 
-export const COMMERCIAL_SIRES = ['HCR Ridgeline 2105', 'HCR Big Sky 1903', 'Harmon Boundary 708']
+export const COMMERCIAL_SIRES = ['CRW Ridgeline 2105', 'CRW Big Sky 1903', 'Farrell Boundary 708']
 
 const groups: HerdGroup[] = [
   // Lot 101: Black Angus steers
@@ -106,7 +107,7 @@ const groups: HerdGroup[] = [
     program: 'calf',
     weanDate: '2026-09-04',
     lastScan: '2026-11-02',
-    sires: ['Creekside Lineman 44', 'HCR Red Ember 1810'],
+    sires: ['Creekside Lineman 44', 'CRW Red Ember 1810'],
     notes: ['Open, never exposed.', 'Replacement quality, good udder on dam.', 'Open, never exposed.'],
   },
   // Lot 103: Black Baldy bred heifers
@@ -121,8 +122,8 @@ const groups: HerdGroup[] = [
     bcs: [6, 6],
     program: 'bred-heifer',
     lastScan: '2026-10-30',
-    sires: ['Harmon Boundary 708', 'HCR Patriot 1612'],
-    pregnancy: { bredTo: 'HCR Easy Calver 2210 (calving-ease Angus)', bred: ['2026-05-26', '2026-06-08'] },
+    sires: ['Farrell Boundary 708', 'CRW Patriot 1612'],
+    pregnancy: { bredTo: 'CRW Easy Calver 2210 (calving-ease Angus)', bred: ['2026-05-26', '2026-06-08'] },
     notes: ['AI bred, one service.', 'Bangs vaccinated.', 'Gentle, halter-started as a calf.', ''],
   },
   // Lot 104: cow-calf pairs
@@ -137,7 +138,7 @@ const groups: HerdGroup[] = [
     bcs: [5, 6],
     program: 'cow',
     lastScan: '2026-10-28',
-    sires: ['HCR Big Sky 1903', 'Creekside Lineman 44'],
+    sires: ['CRW Big Sky 1903', 'Creekside Lineman 44'],
     calf: { tags: [2642, 2645, 2649], born: ['2026-09-02', '2026-09-24'], weight: [165, 225] },
     notes: ['Exposed back to an Angus bull since Nov 1.', 'Raised a heavy calf every year.', 'Sound feet and udder.'],
   },
@@ -153,7 +154,7 @@ const groups: HerdGroup[] = [
     bcs: [6, 6],
     program: 'bull',
     lastScan: '2026-10-30',
-    sires: ['HCR Patriot 1612', 'HCR Ridgeline 2105'],
+    sires: ['CRW Patriot 1612', 'CRW Ridgeline 2105'],
     registry: 'AAA',
     notes: ['Calving-ease EPDs in the top 25% of the breed.', 'Docile, walks the alley quietly.'],
   },
@@ -170,7 +171,7 @@ const groups: HerdGroup[] = [
     program: 'calf',
     weanDate: '2026-08-21',
     lastScan: '2026-10-31',
-    sires: ['HCR White Cap 1907'],
+    sires: ['CRW White Cap 1907'],
     notes: ['Big-framed, lots of stretch.', '', 'Bunk-broke.'],
   },
   // Lot 107: Hereford stocker heifers
@@ -186,7 +187,7 @@ const groups: HerdGroup[] = [
     program: 'calf',
     weanDate: '2026-09-11',
     lastScan: '2026-11-03',
-    sires: ['HCR Domino 1714'],
+    sires: ['CRW Domino 1714'],
     notes: ['Good grass heifers.', 'Pigmented eyes.', ''],
   },
   // Lot 108: Black Angus yearling steers (sold)
@@ -203,7 +204,7 @@ const groups: HerdGroup[] = [
     weanDate: '2025-09-10',
     lastScan: '2026-10-12',
     sires: COMMERCIAL_SIRES,
-    notes: ['Off fescue pasture.', ''],
+    notes: ['Off native grass pasture.', ''],
   },
   // Lot 109: polled Hereford herd bull
   {
@@ -217,7 +218,7 @@ const groups: HerdGroup[] = [
     bcs: [6, 6],
     program: 'bull',
     lastScan: '2026-10-30',
-    sires: ['HCR Domino 1714'],
+    sires: ['CRW Domino 1714'],
     registry: 'AHA',
     notes: ['Two seasons on our cows. Selling only to avoid breeding his own daughters.'],
   },
@@ -250,7 +251,7 @@ const groups: HerdGroup[] = [
     program: 'calf',
     weanDate: '2026-09-04',
     lastScan: '2026-11-02',
-    sires: ['HCR Ridgeline 2105'],
+    sires: ['CRW Ridgeline 2105'],
     notes: ['Kept back as a replacement.'],
   },
   // Unlisted: spring-calving bred cows
@@ -265,8 +266,8 @@ const groups: HerdGroup[] = [
     bcs: [5, 6],
     program: 'cow',
     lastScan: '2026-10-28',
-    sires: ['HCR Big Sky 1903'],
-    pregnancy: { bredTo: 'HCR Ridgeline 2105', bred: ['2026-06-20', '2026-07-12'] },
+    sires: ['CRW Big Sky 1903'],
+    pregnancy: { bredTo: 'CRW Ridgeline 2105', bred: ['2026-06-20', '2026-07-12'] },
     notes: ['Core of the cow herd.'],
   },
   // Unlisted: steer held back
@@ -282,7 +283,7 @@ const groups: HerdGroup[] = [
     program: 'calf',
     weanDate: '2026-09-04',
     lastScan: '2026-11-02',
-    sires: ['HCR Big Sky 1903'],
+    sires: ['CRW Big Sky 1903'],
     notes: ['Held back until his foot rot treatment withdrawal clears.'],
   },
 
@@ -321,7 +322,7 @@ const groups: HerdGroup[] = [
     weanDate: '2025-05-20',
     lastScan: '2026-10-07',
     sires: COMMERCIAL_SIRES,
-    notes: ['Never had a bite of grain. Finished on fall fescue and clover.'],
+    notes: ['Never had a bite of grain. Finished on irrigated grass and alfalfa regrowth.'],
   },
   // Hereford steers
   {
@@ -336,7 +337,7 @@ const groups: HerdGroup[] = [
     program: 'yearling',
     weanDate: '2025-06-10',
     lastScan: '2026-10-06',
-    sires: ['HCR Domino 1714'],
+    sires: ['CRW Domino 1714'],
     notes: ['Out of one of our oldest Hereford cow families.', 'Wintered on our own hay.'],
   },
   // Red Angus heifer
@@ -352,7 +353,7 @@ const groups: HerdGroup[] = [
     program: 'yearling',
     weanDate: '2025-08-15',
     lastScan: '2026-10-08',
-    sires: ['HCR Red Ember 1810'],
+    sires: ['CRW Red Ember 1810'],
     notes: ['Never bred. Finished alongside the steers.'],
   },
   // Wagyu-cross steer
@@ -384,7 +385,7 @@ const groups: HerdGroup[] = [
     program: 'yearling',
     weanDate: '2025-05-20',
     lastScan: '2026-10-06',
-    sires: ['Harmon Boundary 708'],
+    sires: ['Farrell Boundary 708'],
     notes: ['Grass his whole life.'],
   },
   // Harvested in September: the beef in the Butcher Shop comes from these three
@@ -462,7 +463,7 @@ const groups: HerdGroup[] = [
     program: 'yearling',
     weanDate: '2025-05-26',
     lastScan: '2026-07-28',
-    sires: ['Harmon Boundary 708'],
+    sires: ['Farrell Boundary 708'],
     horned: true,
     notes: ['Horned Charolais cross, forage-fed with a grain finish. Harvested in August; his cream hide and horns are in Ranch Goods.'],
   },
@@ -486,21 +487,21 @@ const groups: HerdGroup[] = [
 /** Feed program, finish date, and (for harvested animals) the processor's record. */
 const BEEF_ANIMALS: Record<string, Pick<Animal, 'feedProgram' | 'finishDate'> & { harvest?: { date: string; agedDays: number; dressing: number } }> =
   {
-    'HCR-2701': { feedProgram: 'grain-finished', finishDate: '2026-11-20' },
-    'HCR-2703': { feedProgram: 'grass-finished', finishDate: '2026-12-05' },
-    'HCR-2706': { feedProgram: 'forage-grain', finishDate: '2026-11-28' },
-    'HCR-2708': { feedProgram: 'grain-finished', finishDate: '2026-11-15' },
-    'HCR-2709': { feedProgram: 'grass-finished', finishDate: '2026-11-12' },
-    'HCR-2711': { feedProgram: 'grain-finished', finishDate: '2026-11-10' },
-    'HCR-2712': { feedProgram: 'grass-finished', finishDate: '2026-10-25' },
-    'HCR-2714': { feedProgram: 'grain-finished', finishDate: '2026-10-15' },
-    'HCR-2715': { feedProgram: 'forage-grain', finishDate: '2026-10-08' },
-    'HCR-2690': { feedProgram: 'grass-finished', finishDate: '2026-09-10', harvest: { date: '2026-09-15', agedDays: 21, dressing: 0.608 } },
-    'HCR-2692': { feedProgram: 'grain-finished', finishDate: '2026-09-10', harvest: { date: '2026-09-15', agedDays: 18, dressing: 0.627 } },
-    'HCR-2695': { feedProgram: 'grain-finished', finishDate: '2026-09-10', harvest: { date: '2026-09-16', agedDays: 21, dressing: 0.634 } },
-    'HCR-2672': { feedProgram: 'grain-finished', finishDate: '2026-07-30', harvest: { date: '2026-08-04', agedDays: 21, dressing: 0.621 } },
-    'HCR-2678': { feedProgram: 'forage-grain', finishDate: '2026-07-30', harvest: { date: '2026-08-04', agedDays: 18, dressing: 0.628 } },
-    'HCR-2683': { feedProgram: 'grass-finished', finishDate: '2026-08-20', harvest: { date: '2026-08-25', agedDays: 21, dressing: 0.603 } },
+    'CRW-2701': { feedProgram: 'grain-finished', finishDate: '2026-11-20' },
+    'CRW-2703': { feedProgram: 'grass-finished', finishDate: '2026-12-05' },
+    'CRW-2706': { feedProgram: 'forage-grain', finishDate: '2026-11-28' },
+    'CRW-2708': { feedProgram: 'grain-finished', finishDate: '2026-11-15' },
+    'CRW-2709': { feedProgram: 'grass-finished', finishDate: '2026-11-12' },
+    'CRW-2711': { feedProgram: 'grain-finished', finishDate: '2026-11-10' },
+    'CRW-2712': { feedProgram: 'grass-finished', finishDate: '2026-10-25' },
+    'CRW-2714': { feedProgram: 'grain-finished', finishDate: '2026-10-15' },
+    'CRW-2715': { feedProgram: 'forage-grain', finishDate: '2026-10-08' },
+    'CRW-2690': { feedProgram: 'grass-finished', finishDate: '2026-09-10', harvest: { date: '2026-09-15', agedDays: 21, dressing: 0.608 } },
+    'CRW-2692': { feedProgram: 'grain-finished', finishDate: '2026-09-10', harvest: { date: '2026-09-15', agedDays: 18, dressing: 0.627 } },
+    'CRW-2695': { feedProgram: 'grain-finished', finishDate: '2026-09-10', harvest: { date: '2026-09-16', agedDays: 21, dressing: 0.634 } },
+    'CRW-2672': { feedProgram: 'grain-finished', finishDate: '2026-07-30', harvest: { date: '2026-08-04', agedDays: 21, dressing: 0.621 } },
+    'CRW-2678': { feedProgram: 'forage-grain', finishDate: '2026-07-30', harvest: { date: '2026-08-04', agedDays: 18, dressing: 0.628 } },
+    'CRW-2683': { feedProgram: 'grass-finished', finishDate: '2026-08-20', harvest: { date: '2026-08-25', agedDays: 21, dressing: 0.603 } },
   }
 
 function withBeef(a: Animal): Animal {
@@ -665,7 +666,7 @@ function growthFor(
 
 export function buildAnimal(group: HerdGroup, index: number): Animal {
   const tagNumber = group.tags[index]
-  const tagId = `HCR-${tagNumber}`
+  const tagId = `CRW-${tagNumber}`
   const coat = Array.isArray(group.coat) ? group.coat[index % group.coat.length] : group.coat
   const birthDate = dateBetween(group.born)
   const estWeight = int(...group.weight)
@@ -687,7 +688,7 @@ export function buildAnimal(group: HerdGroup, index: number): Animal {
   let calfAtSide: CalfAtSide | undefined
   if (group.calf) {
     calfAtSide = {
-      tagId: `HCR-${group.calf.tags[index]}`,
+      tagId: `CRW-${group.calf.tags[index]}`,
       sex: rand() > 0.5 ? 'bull calf' : 'heifer calf',
       birthDate: dateBetween(group.calf.born),
       estWeight: int(...group.calf.weight),
@@ -708,7 +709,7 @@ export function buildAnimal(group: HerdGroup, index: number): Animal {
     bcs,
     coatColor: coat,
     sire: pick(group.sires),
-    dam: group.program === 'calf' || group.program === 'yearling' || group.program === 'bred-heifer' ? `HCR-${int(1805, 2290)}` : undefined,
+    dam: group.program === 'calf' || group.program === 'yearling' || group.program === 'bred-heifer' ? `CRW-${int(1805, 2290)}` : undefined,
     registration: group.registry ? `${group.registry} ${int(20_400_000, 20_499_999)}` : undefined,
     health: healthFor(group, group.sex, birthDate, pregnancy),
     weighIns: growth.weighIns,
@@ -731,14 +732,14 @@ const generated = groups.flatMap((g) => g.tags.map((_, i) => buildAnimal(g, i)))
 
 // One-off records that make the herd feel lived-in.
 const special: Record<string, (a: Animal) => Animal> = {
-  'HCR-2414': (a) => ({
+  'CRW-2414': (a) => ({
     ...a,
     health: [
       ...a.health,
       event('2026-07-18', 'treatment', 'Pinkeye, right eye. Treated once, fully healed. Withdrawal period complete.', 'LA-200 (oxytetracycline)'),
     ].sort((x, y) => x.date.localeCompare(y.date)),
   }),
-  'HCR-2402': (a) => ({
+  'CRW-2402': (a) => ({
     ...a,
     health: [
       ...a.health,

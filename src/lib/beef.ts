@@ -11,7 +11,7 @@ import { isClaimable, isPastDeadline, openSizes, quoteShare, type ShareQuote, se
 export const beefTitle = (animal: Pick<Animal, 'breed' | 'sex' | 'feedProgram'>) =>
   `${animal.feedProgram ? `${feedProgram(animal.feedProgram).short} ` : ''}${animal.breed} ${SEX_LABELS[animal.sex].toLowerCase()}`
 
-/** "Sarah · Kansas City", as shown on the fill meter */
+/** "Sarah · Denver", as shown on the fill meter */
 export const claimLabel = (c: Pick<ShareClaim, 'firstName' | 'city'>) => `${c.firstName} · ${c.city}`
 
 /** "a quarter", "a half", "the whole animal" */
