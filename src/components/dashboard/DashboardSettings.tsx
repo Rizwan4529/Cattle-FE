@@ -101,7 +101,7 @@ export function DashboardSettings() {
       <Panel
         id="settings-reset"
         title="Reset demo data"
-        description="Puts back the original herd, lots, offers, and beef share pools. Clears new lots, edits, accepted offers, claims, the cart, and orders. The light or dark setting stays."
+        description="Puts back the original herd, lots, offers, beef share pools, Ranch Goods, and Soil & Fuel stock and batches. Clears new lots, edits, accepted offers, claims, the cart, orders, quotes, and applications. The light or dark setting stays."
       >
         <AlertDialog>
           <AlertDialogTrigger asChild>
@@ -118,8 +118,9 @@ export function DashboardSettings() {
             <AlertDialogHeader>
               <AlertDialogTitle className="font-heading text-2xl">Reset all demo data?</AlertDialogTitle>
               <AlertDialogDescription className="text-base">
-                Every change made in this browser is undone: new and edited lots, herd edits, offers, beef claims and sign-ups, the cart, and orders.
-                Share pool deadlines start counting down again. This can't be taken back.
+                Every change made in this browser is undone: new and edited lots, herd edits, offers, beef claims and sign-ups, the cart, orders,
+                Ranch Goods records, Soil &amp; Fuel stock, batches, quotes, applications, and your manure planner numbers. Share pool deadlines start
+                counting down again. This can't be taken back.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>

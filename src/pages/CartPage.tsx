@@ -11,14 +11,12 @@ import { DestinationZip, FulfillmentChoice, OrderTotals } from '@/components/car
 import { CattleImage } from '@/components/cattle/CattleImage'
 import { PageHeader } from '@/components/PageHeader'
 import { Button } from '@/components/ui/button'
-import { BUNDLES } from '@/data/shop'
 import { useNow } from '@/lib/beef'
 import { summarizeShares } from '@/lib/beefCart'
 import { summarizeCart } from '@/lib/checkout'
 import { formatCurrency, formatCwt, formatNumber, formatShortDate } from '@/lib/format'
 import { priceUnit } from '@/lib/labels'
 import { lotIllustration } from '@/lib/lots'
-import { summarizeShop } from '@/lib/shop'
 import { useCheckoutSummary } from '@/lib/useCheckoutSummary'
 import { usePageTitle } from '@/lib/usePageTitle'
 import { SHARE_LABELS } from '@/lib/yield'
@@ -46,13 +44,13 @@ export default function CartPage() {
   const shares = summarizeShares(cart, pools, animals, now)
   const hasLots = summary.lines.length > 0 || summary.unavailable.length > 0
   const hasShares = shares.lines.length > 0 || shares.unavailable.length > 0
-  const shop = summarizeShop(cart, products, BUNDLES, goods)
+  // Same numbers as checkout, including Butcher Shop and Soil & Fuel delivery, and Soil & Fuel stock and on/off checks.
+  const totals = useCheckoutSummary()
+  const shop = totals.shop
   const hasShop = shop.lines.length > 0
   const hasGoods = shop.lines.some((l) => ['goods', 'soil', 'fuel'].includes(l.item.kind))
   // Show section headings only when the cart mixes kinds of purchase.
   const mixed = [hasShares, hasShop, hasLots].filter(Boolean).length > 1
-  // Same numbers as checkout, including Butcher Shop delivery.
-  const totals = useCheckoutSummary()
   const payToday = totals.payToday
   const canCheckOut = (summary.lines.length > 0 || shares.lines.length > 0 || hasShop) && shop.problems.length === 0
   const beefLb = shares.takeHomeLb + shop.lb

@@ -344,7 +344,12 @@ export default function BeefHomePage() {
           <p className="mt-2 max-w-2xl text-lg text-muted-foreground">
             Mail-order is convenient. We’re convenient too, and you know exactly what you’re eating.
           </p>
-          <div className="mt-8 overflow-x-auto rounded-2xl border bg-background">
+          <div
+            className="mt-8 overflow-x-auto rounded-2xl border bg-background"
+            tabIndex={0}
+            role="region"
+            aria-label="Comparison with mail-order steaks, scrollable table"
+          >
             <table className="w-full min-w-[40rem] text-left">
               <caption className="sr-only">{ranch.name} compared with typical mail-order steaks</caption>
               <thead>
