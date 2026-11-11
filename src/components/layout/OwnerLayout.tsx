@@ -18,6 +18,7 @@ import {
   Send,
   Settings,
   Snowflake,
+  Factory,
   Sprout,
   Tags,
 } from 'lucide-react'
@@ -39,6 +40,8 @@ interface OwnerLink {
   end?: boolean
   showOpenOffers?: boolean
   showNewInquiries?: boolean
+  /** Count of new Soil & Fuel quotes, applications, and inquiries */
+  showSoilFuelNew?: boolean
 }
 
 const GROUPS: { label: string; links: OwnerLink[] }[] = [
@@ -80,6 +83,8 @@ const GROUPS: { label: string; links: OwnerLink[] }[] = [
           label: 'Soil & Fuel',
           links: [
             { to: '/dashboard/manure-planner', label: 'Manure revenue planner', icon: Sprout },
+            { to: '/dashboard/production', label: 'Production tracker', icon: Factory },
+            { to: '/dashboard/soil-fuel-inbox', label: 'Soil & Fuel inbox', icon: Inbox, showSoilFuelNew: true },
             { to: '/dashboard/soil-fuel-compliance', label: 'Soil & Fuel compliance', icon: ShieldCheck },
           ],
         },
@@ -111,11 +116,13 @@ function SidebarLink({
   link,
   openOffers,
   newInquiries,
+  soilFuelNew = 0,
   onNavigate,
 }: {
   link: OwnerLink
   openOffers: number
   newInquiries: number
+  soilFuelNew?: number
   onNavigate?: () => void
 }) {
   const Icon = link.icon
@@ -150,6 +157,13 @@ function SidebarLink({
               <span className="sr-only"> new</span>
             </span>
           )}
+          {link.showSoilFuelNew && soilFuelNew > 0 && (
+            <span className="grid min-w-6 place-items-center rounded-full bg-primary px-1.5 text-sm font-semibold text-primary-foreground tabular-nums">
+              <span className="sr-only">, </span>
+              {soilFuelNew}
+              <span className="sr-only"> new</span>
+            </span>
+          )}
         </>
       )}
     </NavLink>
@@ -159,6 +173,13 @@ function SidebarLink({
 function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
   const openOffers = useRanchStore((s) => s.offers.filter(isOpenOffer).length)
   const newInquiries = useRanchStore((s) => s.wholesaleInquiries.filter((w) => w.status === 'new').length)
+  const soilFuelNew = useRanchStore(
+    (s) =>
+      s.truckloadQuotes.filter((q) => q.status === 'new').length +
+      s.proApplications.filter((a) => a.status === 'new').length +
+      s.dealerApplications.filter((a) => a.status === 'new').length +
+      s.fuelInquiries.filter((q) => q.status === 'new').length,
+  )
   return (
     <nav aria-label="Owner dashboard" className="grid gap-3">
       {GROUPS.map((group) => (
@@ -167,7 +188,7 @@ function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
           <ul className="grid gap-0.5">
             {group.links.map((link) => (
               <li key={link.to}>
-                <SidebarLink link={link} openOffers={openOffers} newInquiries={newInquiries} onNavigate={onNavigate} />
+                <SidebarLink link={link} openOffers={openOffers} newInquiries={newInquiries} soilFuelNew={soilFuelNew} onNavigate={onNavigate} />
               </li>
             ))}
           </ul>

@@ -25,6 +25,12 @@ const columns = [
           links: [
             ...(soilFuelConfig.soilEnabled ? [{ to: '/soil', label: soilFuelConfig.soil.brand }] : []),
             ...(soilFuelConfig.fuelEnabled ? [{ to: '/fuel', label: soilFuelConfig.fuel.brand }] : []),
+            ...(soilFuelConfig.soilEnabled
+              ? [
+                  { to: '/soil/pro', label: 'Pro accounts' },
+                  { to: '/soil/stores', label: 'Find a store' },
+                ]
+              : []),
           ],
         },
       ]

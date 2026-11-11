@@ -169,6 +169,8 @@ export interface FuelProduct {
   bundleContents: string
   /** Pounds per bundle */
   bundleLb: number
+  /** Pressed pieces (logs, briquettes, chips) in one bundle, for the Production Tracker */
+  piecesPerBundle: number
   /** Burn time, minutes, low to high. PLACEHOLDER. */
   burnMinutes: [number, number]
   /** What "burn time" refers to, e.g. "per log" */

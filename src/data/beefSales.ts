@@ -12,15 +12,19 @@ export interface BeefMonth {
   subscriptions: number
   /** Ranch Goods (hides, tallow, chews…), including dog chew and bone broth boxes */
   goods: number
+  /** CROWDER Soil (first screened batches from August) */
+  soil: number
+  /** CROWDER Fuel (first logs packed in August) */
+  fuel: number
 }
 
 export const beefSalesHistory: BeefMonth[] = [
-  { month: '2026-06', shares: 6_200, cuts: 1_850, subscriptions: 0, goods: 0 },
-  { month: '2026-07', shares: 9_800, cuts: 2_640, subscriptions: 478, goods: 0 },
-  { month: '2026-08', shares: 12_400, cuts: 3_910, subscriptions: 1_195, goods: 420 },
-  { month: '2026-09', shares: 16_300, cuts: 4_420, subscriptions: 1_912, goods: 1_180 },
-  { month: '2026-10', shares: 19_700, cuts: 6_080, subscriptions: 2_629, goods: 1_960 },
-  { month: '2026-11', shares: 7_100, cuts: 2_210, subscriptions: 1_195, goods: 740 },
+  { month: '2026-06', shares: 6_200, cuts: 1_850, subscriptions: 0, goods: 0, soil: 0, fuel: 0 },
+  { month: '2026-07', shares: 9_800, cuts: 2_640, subscriptions: 478, goods: 0, soil: 0, fuel: 0 },
+  { month: '2026-08', shares: 12_400, cuts: 3_910, subscriptions: 1_195, goods: 420, soil: 0, fuel: 380 },
+  { month: '2026-09', shares: 16_300, cuts: 4_420, subscriptions: 1_912, goods: 1_180, soil: 1_240, fuel: 920 },
+  { month: '2026-10', shares: 19_700, cuts: 6_080, subscriptions: 2_629, goods: 1_960, soil: 2_980, fuel: 1_640 },
+  { month: '2026-11', shares: 7_100, cuts: 2_210, subscriptions: 1_195, goods: 740, soil: 1_100, fuel: 860 },
 ]
 
 /** Packs sold by cut since June (sample) */

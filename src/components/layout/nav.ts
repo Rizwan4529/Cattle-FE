@@ -17,6 +17,7 @@ import {
   BriefcaseBusiness,
   MapPin,
   Truck,
+  Warehouse,
   Store,
   UserRound,
   Wheat,
@@ -91,6 +92,7 @@ export const primaryNav: Record<Side, NavItem[]> = {
           { to: '/soil/pro', label: 'Pro accounts', icon: BriefcaseBusiness },
           { to: '/soil/stores', label: 'Find a store', short: 'Stores', icon: MapPin },
           { to: '/soil/truckload', label: 'Truckload quote', icon: Truck, menuOnly: true },
+          ...(soilFuelConfig.fuelEnabled ? [{ to: '/fuel/wholesale', label: 'Fuel wholesale', icon: Warehouse, menuOnly: true }] : []),
         ]
       : []),
     ABOUT,
@@ -106,7 +108,11 @@ export const primaryNav: Record<Side, NavItem[]> = {
 }
 
 /** Links whose pages sit under another link's path; the parent link isn't highlighted on them. */
-const SEPARATE_PAGES: Record<string, string[]> = { '/beef': ['/beef/cut-sheet'], '/soil': ['/soil/pro', '/soil/stores', '/soil/truckload'] }
+const SEPARATE_PAGES: Record<string, string[]> = {
+  '/beef': ['/beef/cut-sheet'],
+  '/soil': ['/soil/pro', '/soil/stores', '/soil/truckload'],
+  '/fuel': ['/fuel/wholesale'],
+}
 
 /** NavLink's match, minus pages that have their own link (the cut sheet lives under /beef). */
 export const navActive = (to: string, isActive: boolean, pathname: string) => isActive && !SEPARATE_PAGES[to]?.some((p) => pathname.startsWith(p))

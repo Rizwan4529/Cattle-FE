@@ -31,4 +31,17 @@ describe('sales by channel', () => {
     expect(after.subscriptions - before.subscriptions).toBe(239)
     expect(after.cuts - before.cuts).toBe(50)
   })
+
+  it('counts Soil and Fuel as their own channels', () => {
+    const before = revenueByChannel([]).find((m) => m.month === '2026-11')!
+    const after = revenueByChannel([
+      order([
+        { kind: 'soil', title: 'Garden Blend, by the cubic yard', qty: 2, total: 104, ref: 'garden-blend' },
+        { kind: 'fuel', title: 'Pressed Fuel Logs, by the case', qty: 1, total: 92, ref: 'fuel-logs' },
+      ]),
+    ]).find((m) => m.month === '2026-11')!
+    expect(after.soil - before.soil).toBe(104)
+    expect(after.fuel - before.fuel).toBe(92)
+    expect(after.cuts).toBe(before.cuts)
+  })
 })

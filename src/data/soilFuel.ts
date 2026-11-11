@@ -331,7 +331,7 @@ export const seedFuelBatches: FuelBatch[] = [
     hayShare: 0.1,
     pressedCount: 7800,
     status: 'curing',
-    moisture: moisture('2026-08-17', 65, 13, 42, 6),
+    moisture: moisture('2026-08-17', 65, 11, 42, 6),
   },
   {
     id: 'fuel-seed-3',

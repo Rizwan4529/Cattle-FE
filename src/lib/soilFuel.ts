@@ -9,7 +9,11 @@ import { ranch } from '@/config/ranch'
 import { soilFuelConfig, type SoilFuelConfig } from '@/config/soilFuel'
 import { CO_ZIP3, CO_ZIP5 } from '@/data/coloradoZips'
 import type {
+  CompostBatch,
+  CompostStatus,
   Dealer,
+  FuelBatch,
+  FuelBatchStatus,
   FuelProduct,
   FuelProductId,
   FuelStock,
@@ -198,6 +202,59 @@ export function findDealers(dealers: Dealer[], f: DealerFilter) {
     .filter((d) => !f.carries || f.carries === 'all' || d.carries.includes(f.carries))
     .map((d) => ({ dealer: d, miles: pt ? Math.round(milesBetween(pt, d)) : null }))
     .sort((a, b) => (a.miles ?? 0) - (b.miles ?? 0) || a.dealer.city.localeCompare(b.dealer.city))
+}
+
+// ---------------------------------------------------------------- Production
+
+/** The stages a windrow goes through, in order. */
+export const COMPOST_FLOW: CompostStatus[] = ['mixing', 'composting', 'curing', 'screened', 'bagged']
+export const FUEL_FLOW: FuelBatchStatus[] = ['pressed', 'drying', 'curing', 'packed']
+
+export const COMPOST_LABEL: Record<CompostStatus, string> = {
+  mixing: 'Mixing',
+  composting: 'Composting',
+  curing: 'Curing',
+  screened: 'Screened',
+  bagged: 'Bagged',
+}
+export const FUEL_LABEL: Record<FuelBatchStatus, string> = { pressed: 'Pressed', drying: 'Drying', curing: 'Curing', packed: 'Packed' }
+
+const dayDiff = (from: string, to: string) => Math.round((Date.parse(`${to}T12:00:00Z`) - Date.parse(`${from}T12:00:00Z`)) / 86_400_000)
+
+/** How a windrow is doing against the hot-phase rule: days logged at temperature, turns, and the last reading. */
+export function compostCheck(b: CompostBatch, cfg: SoilFuelConfig = soilFuelConfig) {
+  const { min, max } = cfg.production.tempTarget
+  const hot = [...b.temps].sort((x, y) => x.date.localeCompare(y.date))
+  // Days covered by readings at or above the minimum (each reading counts until the next one)
+  let hotDays = 0
+  for (let i = 0; i < hot.length; i++) {
+    if (hot[i].f < min) continue
+    const next = hot[i + 1]?.date
+    hotDays += next ? Math.max(1, dayDiff(hot[i].date, next)) : 1
+  }
+  const last = hot.at(-1)
+  return {
+    hotDays,
+    turns: b.turns.length,
+    last,
+    tooHot: last ? last.f > max : false,
+    metRule: hotDays >= cfg.production.hotDays && b.turns.length >= cfg.production.minTurns,
+  }
+}
+
+/** Days since a batch started (or between two dates). */
+export const daysSince = (from: string, to: string) => Math.max(0, dayDiff(from, to))
+
+/** Latest fuel moisture and whether it's dry enough to pack. */
+export function fuelCheck(b: FuelBatch, cfg: SoilFuelConfig = soilFuelConfig) {
+  const last = [...b.moisture].sort((x, y) => x.date.localeCompare(y.date)).at(-1)
+  return { last, dry: last ? last.pct <= cfg.production.fuelTargetMoisture : false }
+}
+
+/** Bundles a fuel batch packs into: pieces pressed ÷ pieces per bundle. */
+export function bundlesFromBatch(b: FuelBatch, cfg: SoilFuelConfig = soilFuelConfig) {
+  const p = fuelProduct(b.productId, cfg)
+  return Math.floor(b.pressedCount / Math.max(1, p.piecesPerBundle))
 }
 
 // ---------------------------------------------------------------- Stock

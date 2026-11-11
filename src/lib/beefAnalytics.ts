@@ -12,21 +12,22 @@ export interface ChannelMonth extends BeefMonth {
 
 const month = (iso: string) => iso.slice(0, 7)
 
-/** Revenue by channel per month: beef shares, cuts, subscriptions, Ranch Goods, and live cattle. */
+/** Revenue by channel per month: beef shares, cuts, subscriptions, Ranch Goods, live cattle, and CROWDER Soil and Fuel. */
 export function revenueByChannel(orders: Order[]): ChannelMonth[] {
   const rows: ChannelMonth[] = beefSalesHistory.map((m) => ({ ...m, live: salesHistory.find((s) => s.month === m.month)?.revenue ?? 0 }))
   for (const o of orders) {
     const m = month(o.createdAt)
     let row = rows.find((r) => r.month === m)
     if (!row) {
-      row = { month: m, shares: 0, cuts: 0, subscriptions: 0, goods: 0, live: 0 }
+      row = { month: m, shares: 0, cuts: 0, subscriptions: 0, goods: 0, soil: 0, fuel: 0, live: 0 }
       rows.push(row)
     }
     row.shares += (o.shares ?? []).reduce((n, s) => n + s.estimatedTotal, 0)
     for (const i of o.items ?? []) {
       // Ranch Goods, and the dog chew / bone broth boxes (subscriptions that carry a goods box id)
-      if (i.kind === 'soil' || i.kind === 'fuel') continue
-      if (i.kind === 'goods' || (i.kind === 'subscription' && i.ref)) row.goods += i.total
+      if (i.kind === 'soil') row.soil += i.total
+      else if (i.kind === 'fuel') row.fuel += i.total
+      else if (i.kind === 'goods' || (i.kind === 'subscription' && i.ref)) row.goods += i.total
       else if (i.kind === 'subscription') row.subscriptions += i.total
       else if (i.kind !== 'gift-card') row.cuts += i.total
     }
@@ -40,17 +41,21 @@ export function revenueByChannel(orders: Order[]): ChannelMonth[] {
       cuts: Math.round(r.cuts),
       subscriptions: Math.round(r.subscriptions),
       goods: Math.round(r.goods),
+      soil: Math.round(r.soil),
+      fuel: Math.round(r.fuel),
       live: Math.round(r.live),
     }))
 }
 
-/** Sales channels, in chart order. Colors live with the chart (BeefAnalyticsPage). */
+/** Sales channels, in chart order (the order the palette was validated in). Colors live with the chart (BeefAnalyticsPage). */
 export const CHANNELS = [
   { key: 'shares', label: 'Beef shares' },
   { key: 'cuts', label: 'Butcher Shop cuts' },
   { key: 'subscriptions', label: 'Ranch Box' },
   { key: 'goods', label: 'Ranch Goods' },
   { key: 'live', label: 'Live cattle' },
+  { key: 'fuel', label: 'Fuel' },
+  { key: 'soil', label: 'Soil' },
 ] as const
 
 /** Packs sold per cut, sample plus site orders, most first. */

@@ -8,7 +8,7 @@ Phases follow the user's S1–S6 list; each is finished and committed (`[FEAT]` 
 | S2 | Data model + config for Soil and Fuel, nav entry | Done |
 | S3 | Part 4: Manure Revenue Planner + Whole Ranch summary card | Done |
 | S4 | Part 2: Soil storefront, unit switcher, coverage calculator, truckload quotes, pro accounts, dealer locator, waitlist, trust | Done |
-| S5 | Part 3 Fuel storefront + wholesale inquiry; Part 5 Production Tracker | |
+| S5 | Part 3 Fuel storefront + wholesale inquiry; Part 5 Production Tracker | Done |
 | S6 | "One ranch, four ways it pays" home section + full QA + README | |
 
 ## S2 plan
@@ -89,3 +89,13 @@ Phases follow the user's S1–S6 list; each is finished and committed (`[FEAT]` 
   - **Cart:** soil and fuel lines are now in the cart union, with stock checks and stock that drops on order.
   - **Decision:** Soil & Fuel get their own delivery choice. Pickup at the ranch is free; otherwise it's one ranch-truck trip, base + per mile from the ZIP, shown in the cart, checkout, and confirmation.
   - New `formatPrice` keeps cents on unit prices, and shared form helpers live in `lib/forms.ts`.
+- **S5:** Fuel storefront and the Production Tracker.
+  - **Fuel storefront** (`/fuel`, `/fuel/:id`, `/fuel/wholesale`): bundle / case / pallet switcher with price per bundle and savings, burn time, the six process steps from the spreadsheet, storage tips, an outdoor-use note on every page, the wholesale price table, and the inquiry form.
+  - **Production Tracker** (`/dashboard/production`):
+    - Compost windrows: a temperature chart with the 131–160 °F target band, and temperature and turn logs. Stages advance from mixing through composting and curing to screened (with finished tons), then convert to bags and bulk yards. Hot days and turns are checked against the rule.
+    - Fuel batches: a moisture chart with a 15% line, readings, and stages; a batch packs into bundles once it's dry.
+    - Stock: editable inventory for both divisions, with low-stock alerts.
+  - **Soil & Fuel inbox** (`/dashboard/soil-fuel-inbox`): truckload quotes (send a price, won/lost), pro and dealer applications (approve/decline), fuel inquiries (reply/handled), and the waitlist (email everyone, remove). The sidebar shows a count of new items.
+  - **Analytics:** Soil and Fuel are their own channels in Sales by channel (with sample sales).
+    - **Decision:** soil is rust and fuel is magenta. Seven channels only pass the palette checks with these, in this order. The Whole Ranch card uses the same colors, and all five pass at 3:1.
+  - **Accessibility:** per-card buttons carry their windrow or batch name for screen readers.

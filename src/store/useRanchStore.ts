@@ -35,7 +35,7 @@ import { batchUnits, defaultSettings } from '@/lib/byproducts'
 import { products as seedProducts } from '@/data/products'
 import { plannerDefaults } from '@/config/manurePlanner'
 import { soilFuelConfig } from '@/config/soilFuel'
-import { fuelBundles, tonsPerYard } from '@/lib/soilFuel'
+import { COMPOST_FLOW, FUEL_FLOW, fuelBundles, tonsPerYard } from '@/lib/soilFuel'
 import {
   seedCompostBatches,
   seedDealerApplications,
@@ -50,6 +50,7 @@ import {
   seedWaitlist,
 } from '@/data/soilFuel'
 import type {
+  ApplicationStatus,
   CompostBatch,
   ComplianceRequirementId,
   DealerApplication,
@@ -264,6 +265,29 @@ interface RanchActions {
   submitDealerApplication: (a: Omit<DealerApplication, 'id' | 'createdAt' | 'status'>) => DealerApplication
   /** Launch-season waitlist. Returns false if that email is already on the list. */
   joinWaitlist: (w: Omit<WaitlistSignup, 'id' | 'createdAt'>) => boolean
+  /** Fuel: bulk/wholesale inquiry from campgrounds, retailers, institutions. */
+  submitFuelInquiry: (q: Omit<FuelInquiry, 'id' | 'createdAt' | 'status' | 'reply'>) => FuelInquiry
+  // Owner inboxes
+  updateTruckloadQuote: (id: string, patch: Partial<Pick<TruckloadQuote, 'status' | 'quoted'>>) => void
+  updateProApplication: (id: string, status: ApplicationStatus) => void
+  updateDealerApplication: (id: string, status: ApplicationStatus) => void
+  updateFuelInquiry: (id: string, patch: Partial<Pick<FuelInquiry, 'status' | 'reply'>>) => void
+  removeWaitlist: (id: string) => void
+  // Owner: Production Tracker
+  startCompostBatch: (input: Pick<CompostBatch, 'windrow' | 'manureTons' | 'hayTons'>) => CompostBatch
+  logCompostTemp: (id: string, f: number) => void
+  logCompostTurn: (id: string, note?: string) => void
+  /** Moves a windrow to its next stage; screening records the finished tons. */
+  advanceCompost: (id: string, finishedTons?: number) => void
+  /** Finished compost into stock: bags and bulk yards of one product. */
+  convertCompost: (id: string, input: { productId: SoilProductId; bags: number; yards: number }) => void
+  startFuelBatch: (input: Pick<FuelBatch, 'productId' | 'collectedTons' | 'hayShare' | 'pressedCount'>) => FuelBatch
+  logFuelMoisture: (id: string, pct: number) => void
+  advanceFuel: (id: string) => void
+  /** Packed fuel into stock, in bundles. */
+  convertFuel: (id: string, bundles: number) => void
+  setSoilStock: (productId: SoilProductId, patch: Partial<SoilStock[SoilProductId]>) => void
+  setFuelStock: (productId: FuelProductId, bundles: number) => void
   /** Owner: changes Manure Revenue Planner inputs. */
   updatePlanner: (patch: Partial<PlannerSettings>) => void
   /** Owner: back to the planner's placeholder defaults. */
@@ -887,6 +911,113 @@ export const useRanchStore = create<RanchState>()(
         set((s) => ({ waitlist: [{ ...w, email, id: uid('wait'), createdAt: new Date().toISOString() }, ...s.waitlist] }))
         return true
       },
+
+      submitFuelInquiry: (q) => {
+        const inquiry: FuelInquiry = { ...q, id: uid('fuel-inq'), status: 'new', createdAt: new Date().toISOString() }
+        set((s) => ({ fuelInquiries: [inquiry, ...s.fuelInquiries] }))
+        return inquiry
+      },
+
+      updateTruckloadQuote: (id, patch) => set((s) => ({ truckloadQuotes: s.truckloadQuotes.map((q) => (q.id === id ? { ...q, ...patch } : q)) })),
+      updateProApplication: (id, status) => set((s) => ({ proApplications: s.proApplications.map((a) => (a.id === id ? { ...a, status } : a)) })),
+      updateDealerApplication: (id, status) =>
+        set((s) => ({ dealerApplications: s.dealerApplications.map((a) => (a.id === id ? { ...a, status } : a)) })),
+      updateFuelInquiry: (id, patch) => set((s) => ({ fuelInquiries: s.fuelInquiries.map((q) => (q.id === id ? { ...q, ...patch } : q)) })),
+      removeWaitlist: (id) => set((s) => ({ waitlist: s.waitlist.filter((w) => w.id !== id) })),
+
+      startCompostBatch: (input) => {
+        const today = new Date().toISOString().slice(0, 10)
+        const batch: CompostBatch = {
+          ...input,
+          id: uid('compost'),
+          startDate: today,
+          status: 'mixing',
+          temps: [],
+          turns: [],
+          curingDays: soilFuelConfig.production.curingDays,
+        }
+        set((s) => ({ compostBatches: [batch, ...s.compostBatches] }))
+        return batch
+      },
+      logCompostTemp: (id, f) =>
+        set((s) => ({
+          compostBatches: s.compostBatches.map((b) =>
+            b.id === id ? { ...b, temps: [...b.temps, { date: new Date().toISOString().slice(0, 10), f: Math.round(f) }] } : b,
+          ),
+        })),
+      logCompostTurn: (id, note) =>
+        set((s) => ({
+          compostBatches: s.compostBatches.map((b) =>
+            b.id === id ? { ...b, turns: [...b.turns, { date: new Date().toISOString().slice(0, 10), note: note || undefined }] } : b,
+          ),
+        })),
+      advanceCompost: (id, finishedTons) =>
+        set((s) => ({
+          compostBatches: s.compostBatches.map((b) => {
+            if (b.id !== id) return b
+            const next = COMPOST_FLOW[COMPOST_FLOW.indexOf(b.status) + 1]
+            if (!next || next === 'bagged') return b
+            return { ...b, status: next, finishedTons: next === 'screened' ? Math.max(0, finishedTons ?? 0) : b.finishedTons }
+          }),
+        })),
+      convertCompost: (id, { productId, bags, yards }) =>
+        set((s) => {
+          const b = s.compostBatches.find((x) => x.id === id)
+          if (!b || b.status !== 'screened' || b.converted) return s
+          const stock = s.soilStock[productId]
+          return {
+            compostBatches: s.compostBatches.map((x) =>
+              x.id === id
+                ? { ...x, status: 'bagged' as const, converted: { productId, bags, yards, date: new Date().toISOString().slice(0, 10) } }
+                : x,
+            ),
+            soilStock: {
+              ...s.soilStock,
+              [productId]: { bags: stock.bags + Math.max(0, bags), yards: Math.round((stock.yards + Math.max(0, yards)) * 10) / 10 },
+            },
+          }
+        }),
+      startFuelBatch: (input) => {
+        const batch: FuelBatch = { ...input, id: uid('fuel'), startDate: new Date().toISOString().slice(0, 10), status: 'pressed', moisture: [] }
+        set((s) => ({ fuelBatches: [batch, ...s.fuelBatches] }))
+        return batch
+      },
+      logFuelMoisture: (id, pct) =>
+        set((s) => ({
+          fuelBatches: s.fuelBatches.map((b) =>
+            b.id === id ? { ...b, moisture: [...b.moisture, { date: new Date().toISOString().slice(0, 10), pct: Math.round(pct) }] } : b,
+          ),
+        })),
+      advanceFuel: (id) =>
+        set((s) => ({
+          fuelBatches: s.fuelBatches.map((b) => {
+            if (b.id !== id) return b
+            const next = FUEL_FLOW[FUEL_FLOW.indexOf(b.status) + 1]
+            return next && next !== 'packed' ? { ...b, status: next } : b
+          }),
+        })),
+      convertFuel: (id, bundles) =>
+        set((s) => {
+          const b = s.fuelBatches.find((x) => x.id === id)
+          if (!b || b.status !== 'curing' || b.converted) return s
+          return {
+            fuelBatches: s.fuelBatches.map((x) =>
+              x.id === id ? { ...x, status: 'packed' as const, converted: { bundles, date: new Date().toISOString().slice(0, 10) } } : x,
+            ),
+            fuelStock: { ...s.fuelStock, [b.productId]: s.fuelStock[b.productId] + Math.max(0, Math.round(bundles)) },
+          }
+        }),
+      setSoilStock: (productId, patch) =>
+        set((s) => ({
+          soilStock: {
+            ...s.soilStock,
+            [productId]: {
+              bags: Math.max(0, Math.round(patch.bags ?? s.soilStock[productId].bags)),
+              yards: Math.max(0, Math.round((patch.yards ?? s.soilStock[productId].yards) * 10) / 10),
+            },
+          },
+        })),
+      setFuelStock: (productId, bundles) => set((s) => ({ fuelStock: { ...s.fuelStock, [productId]: Math.max(0, Math.round(bundles)) } })),
 
       updatePlanner: (patch) => set((s) => ({ plannerSettings: { ...s.plannerSettings, ...patch } })),
 
